@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TMI - 공지사항 글보기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>aranoz</title>
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <!-- nice select CSS -->
+    <link rel="stylesheet" href="/assets/css/nice-select.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="/assets/css/slick.css">
+    <link rel="stylesheet" href="/assets/css/price_rangs.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+    <link rel="apple-touch-icon" href="/img/apple-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+    <link rel="stylesheet" href="/assets/css/notice/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/notice/templatemo.css">
+    <link rel="stylesheet" href="/assets/css/notice/css.css">
+
+    <!-- Load fonts style after rendering the layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="/assets/css/notice/fontawesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/assets/css/notice/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/assets/css/notice/all.min.css">
+
+    <script th:inline="javascript">
+        // Controller에서 받은 세션에 저장된 값
+        const ss_id = /*[[${session.SS_ID}]]*/ '';
+
+        // 공지사항 게시글 작성자 아이디
+        const id = /*[[${rDTO.customerId}]]*/ '';
+
+        // 현재 글번호, 자바에서 받을 변수들은 자바스크립트 변수로 저장하면 편함
+        const postNumber = /*[[${rDTO.postNumber}]]*/ '';
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function() {
+            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            $("#btnEdit").on("click", function() {
+                doEdit(); // 공지사항 수정하기 실행
+            })
+
+            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            $("#btnDelete").on("click", function() {
+                doDelete(); // 공지사항 수정하기 실행
+            })
+
+            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            $("#btnList").on("click", function() {
+                location.href = "/post/noticeList"; // 공지사항 리스트 이동
+            })
+        })
+
+        //수정하기
+        function doEdit() {
+            if (ss_id === id) {
+                location.href = "/post/postEditInfo?postNumber=" + postNumber;
+
+            } else if (ss_id === "") {
+                alert("로그인 하시길 바랍니다.");
+
+            } else {
+                alert("본인이 작성한 글만 수정 가능합니다.");
+
+            }
+        }
+
+        //삭제하기
+        function doDelete() {
+            if (ss_id === id) {
+                if (confirm("작성한 글을 삭제하시겠습니까?")) {
+                    $.ajax({
+                        url: "/post/postDelete",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: {
+                            "postNumber": postNumber
+                        }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function(json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                            if (json.result === 1) { // 로그인 성공
+                                alert(json.msg); // 메시지 띄우기
+                                location.href = "/post/noticeList"; // 로그인 성공 페이지 이동
+
+                            } else { // 로그인 실패
+                                alert(json.msg); // 메시지 띄우기
+                            }
+
+                        }
+                    })
+                }
+
+            } else if (ss_id === "") {
+                alert("로그인 하시길 바랍니다.");
+
+            } else {
+                alert("본인이 작성한 글만 삭제 가능합니다.");
+            }
+        }
+    </script>
+</head>
+
+<body>
+<!--::header part start::-->
+<header class="main_menu home_menu">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Header part end-->
+
+<!-- breadcrumb start-->
+<section class="breadcrumb" style="background-color: azure">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="breadcrumb_iner">
+                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
+                    <div class="breadcrumb_iner_item">
+                        <h2>공지사항</h2>
+                        <p>새로운 정보를 확인하세요!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb end-->
+
+<!-- navigation -->
+<div th:replace="customerNav.html"></div>
+<!-- ---------- -->
+
+<!--Main-->
+<form name="f" id="f">
+    <div class="board_wrap">
+        <div class="board_view_wrap">
+            <div class="board_view">
+                <div class="title">
+                    [[${rDTO.title}]]
+                </div>
+                <div class="info">
+                    <dl>
+                        <dt>작성일</dt>
+                        <dd>[[${rDTO.regDt}]]</dd>
+                    </dl>
+                    <dl>
+                        <dt>조회</dt>
+                        <dd>[[${rDTO.readCount}]]</dd>
+                    </dl>
+                    <dl>
+                        <dt>순번</dt>
+                        <dd name="seq">[[${rDTO.postNumber}]]</dd>
+                    </dl>
+                </div>
+                <div class="cont">
+                    <img th:src="@{${rDTO.image}}">
+                </div>
+                <div class="cont">
+                    [[${rDTO.contents}]]
+                </div>
+            </div>
+            <div class="bt_wrap">
+                <a href="/post/noticeList" class="on">목록</a>
+                <a id="btnEdit" onclick="doEdit()" type="button">수정</a>
+                <a id="btnDelete" onclick="doDelete()" type="button">삭제</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<!-- Start Script -->
+<script src="/assets/js/notice/jquery-1.11.0.min.js"></script>
+<script src="/assets/js/notice/jquery-migrate-1.2.1.min.js"></script>
+<script src="/assets/js/notice/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/notice/templatemo.js"></script>
+<script src="/assets/js/notice/custom.js"></script>
+<!-- jquery plugins here-->
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<!-- popper js -->
+<script src="/assets/js/popper.min.js"></script>
+<!-- bootstrap js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- easing js -->
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/swiper.min.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/masonry.pkgd.js"></script>
+<!-- particles js -->
+<script src="/assets/js/owl.carousel.min.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!-- slick js -->
+<script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<script src="/assets/js/stellar.js"></script>
+<script src="/assets/js/price_rangs.js"></script>
+<!-- custom js -->
+<script src="/assets/js/custom.js"></script>
+<!-- End Script -->
+</body>
+
+</html>

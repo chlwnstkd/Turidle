@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>KidKinder - Kindergarten Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="Free HTML Templates" name="keywords"/>
+    <meta content="Free HTML Templates" name="description"/>
+    <link href="/css/login.css" rel="stylesheet"/>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+
+            let f1 = document.getElementById("f1");
+            let f2 = document.getElementById("f2");
+            var emailAuthNumber = "";
+
+
+            $("#btnSearchUserId").on("click", function () {
+                if (f1.nickname1.value === "") {
+                    alert("별명을 입력하세요.");
+                    f1.nickname1.focus();
+                    return;
+                }
+                if (f1.email1.value === "") {
+                    alert("이메일을 입력하세요.");
+                    f1.email1.focus();
+                    return;
+                }
+                $.ajax({
+                        url: "/user/searchUserIdProc",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: $("#f1").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // 호출이 성공했다면..
+                            if (json.result === 1) {
+                                alert("이메일로 아이디가 전송되었습니다")
+                                location.href = json.msg
+                            } else {
+                                alert("일치하는 계정이 없습니다")
+                            }
+                        }
+                    }
+                )
+
+            })
+            // 이메일 중복체크
+            $("#btnEmail").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                emailExists(f2)
+
+            })
+
+            $("#btnSearchPassword").on("click", function () {
+                if (f2.id.value === "") {
+                    alert("아이디를 입력하세요.");
+                    f2.id.focus();
+                    return;
+                }
+                if (f2.nickname2.value === "") {
+                    alert("별명을 입력하세요.");
+                    f2.nickname2.focus();
+                    return;
+                }
+                if (f2.email.value === "") {
+                    alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+                if (f2.authNumber.value != emailAuthNumber) {
+                    alert("이메일 인증번호가 일치하지 않습니다.");
+                    f2.authNumber.focus();
+                    return;
+                }
+                $.ajax({
+                        url: "/user/searchPasswordProc",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: $("#f2").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // 호출이 성공했다면..
+                            if (json.result === 1) {
+                                location.href = json.msg
+                            } else {
+                                alert("일치하는 계정이 없습니다")
+                            }
+                        }
+                    }
+                )
+            })
+
+            // 이메일 중복 체크
+            function emailExists(f2) {
+                if (f2.email.value === "") {
+                    alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+
+                // Ajax 호출해서 이메일 찾기
+                $.ajax({
+                        url: "/user/getEmailExists",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: {email : f2.email.value,
+                                find : "Y"} , // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // 호출이 성공했다면..
+
+                            if (json.existsYn === "N") {
+                                alert("존재하지 않는 이메일입니다");
+                                f2.email2.focus();
+
+                            } else {
+                                alert("이메일로 인증번호가 발송되었습니다. \n받은 메일의 인증번호를 입력하기 바랍니다.");
+                                emailAuthNumber = json.authNumber;
+
+                            }
+
+                        }
+                    }
+                )
+            }
+
+        })
+    </script>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div class="sign-up-container">
+            <form id="f2" name="f2">
+                <h1>비밀번호 찾기</h1>
+                <br>
+                <input id="id" name="id" type="text" placeholder="아이디">
+                <input id="nickname2" name="nickname2" type="text" placeholder="별명">
+                <input id="email" name="email" type="email" placeholder="이메일">
+                <button id="btnEmail" type="button" class="form_btn" style="width: 65%">인증</button>
+                <input id="authNumber" type="text" placeholder="인증번호">
+                <button id="btnSearchPassword" type="button" class="form_btn" style="width: 65%">비밀번호 찾기</button>
+            </form>
+        </div>
+        <div class="sign-in-container">
+            <form id="f1" name="f1">
+                <h1>아이디 찾기</h1>
+                <br>
+                <input id="email1" name="email1" type="email" placeholder="이메일">
+                <input id="nickname1" name="nickname1" type="text" placeholder="별명">
+                <br>
+                <button id="btnSearchUserId" type="button" class="form_btn">아이디 찾기</button>
+                <br>
+                <div style="text-align: center">
+                    <a href="/user/login" style=" text-decoration: none; color: blue">로그인</a>
+                </div>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay-left">
+                <h1>아이디 찾기</h1>
+                <p>아이디 찾기 버튼을 눌러
+                <p>아이디를 찾으세요 </p>
+                <button id="signIn" class="overlay_btn">아이디 찾기</button>
+            </div>
+            <div class="overlay-right">
+
+                <h1>비밀번호 찾기</h1>
+                <p>비밀번호 찾기 버튼을 눌러
+                <p>비밀번호를 찾으세요 </p>
+                <button id="signUp" class="overlay_btn">비밀번호 찾기</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/login.js"></script>
+</body>
+</html>
+

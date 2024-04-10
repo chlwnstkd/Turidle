@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>KidKinder - Kindergarten Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="/css/login.css" rel="stylesheet"/>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        // 아이디 중복체크여부 (중복 Y / 중복아님 : N)
+        let userIdCheck = "Y";
+
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+            let f1 = document.getElementById("f1"); // form 태그
+            let f2 = document.getElementById("f2"); // form 태그
+
+            // 아이디 중복체크
+            $("#btnUserId").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                userIdExists(f2)
+            })
+            // 이메일 중복체크
+            $("#btnEmail").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                emailExists(f2)
+            })
+            // 회원가입
+            $("#btnSend").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                doSubmit(f2);
+            })
+            // 로그인
+            $("#btnLogin").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+
+                if (f1.id.value === "") {
+                    alert("아이디를 입력하세요.");
+                    f1.id.focus();
+                    return;
+                }
+
+                if (f1.password.value === "") {
+                    alert("비밀번호를 입력하세요.");
+                    f1.password.focus();
+                    return;
+                }
+
+
+                // Ajax 호출해서 로그인하기
+                $.ajax({
+                        url: "/user/loginProc",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: $("#f1").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                            if (json.result === 1) { // 로그인 성공
+                                alert(json.msg); // 메시지 띄우기
+                                location.href = "/home"; // 로그인 성공 페이지 이동
+
+                            } else { // 로그인 실패
+                                alert(json.msg); // 메시지 띄우기
+                                $("#id").focus(); // 아이디 입력 항목에 마우스 커서 이동
+                            }
+
+                        }
+                    }
+                )
+            })
+
+            // 회원아이디 중복 체크
+            function userIdExists(f2) {
+
+                if (f2.userId.value === "") {
+                    alert("아이디를 입력하세요.");
+                    f2.userId.focus();
+                    return;
+                }
+
+                // Ajax 호출해서 회원가입하기
+                $.ajax({
+                        url: "/user/getUserIdExists",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: {userId: f2.userId.value}, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // 호출이 성공했다면..
+                            if (json.existsYn === "Y") {
+                                alert("이미 가입된 아이디가 존재합니다.");
+                                f2.userId.focus();
+                            } else {
+                                alert("가입 가능한 아이디입니다.");
+                                userIdCheck = "N";
+                            }
+                        }
+                    }
+                )
+            }
+            // 이메일 중복 체크
+            function emailExists(f2) {
+                if (f2.email.value === "") {
+                    alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+
+                // Ajax 호출해서 회원가입하기
+                $.ajax({
+                        url: "/user/getEmailExists",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: {email : f2.email.value}, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // 호출이 성공했다면..
+
+                            if (json.existsYn === "Y") {
+                                alert("이미 가입된 이메일 주소가 존재합니다.");
+                                f2.email.focus();
+
+                            } else {
+                                alert("이메일로 인증번호가 발송되었습니다. \n받은 메일의 인증번호를 입력하기 바랍니다.");
+                                emailAuthNumber = json.authNumber;
+
+                            }
+
+                        }
+                    }
+                )
+            }
+            //회원가입 정보의 유효성 체크하기
+            function doSubmit(f2) {
+
+                if (f2.userId.value === "") {
+                    alert("아이디를 입력하세요.");
+                    f2.userId.focus();
+                    return;
+                }
+
+                if (userIdCheck !== "N") {
+                    alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
+                    f2.userId.focus();
+                    return;
+                }
+
+                if (f2.nickname.value === "") {
+                    alert("이름을 입력하세요.");
+                    f2.nickname.focus();
+                    return;
+                }
+
+                if (f2.pw.value === "") {
+                    alert("비밀번호를 입력하세요.");
+                    f2.pw.focus();
+                    return;
+                }
+
+                if (f2.pw2.value === "") {
+                    alert("비밀번호확인을 입력하세요.");
+                    f2.pw2.focus();
+                    return;
+                }
+
+                if (f2.pw.value !== f2.pw2.value) {
+                    alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                    f2.pw.focus();
+                    return;
+                }
+
+                if (f2.email.value === "") {
+                    alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+
+                if (f2.authNumber.value === "") {
+                    alert("이메일 인증번호를 입력하세요.");
+                    f2.authNumber.focus();
+                    return;
+                }
+
+                if (f2.authNumber.value != emailAuthNumber) {
+                    alert("이메일 인증번호가 일치하지 않습니다.");
+                    f2.authNumber.focus();
+                    return;
+                }
+
+                // Ajax 호출해서 회원가입하기
+                $.ajax({
+                        url: "/user/insertUserInfo",
+                        type: "post", // 전송방식은 Post
+                        dataType: "JSON", // 전송 결과는 JSON으로 받기
+                        data: $("#f2").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                        success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                            if (json.result === 1) { // 회원가입 성공
+                                alert(json.msg); // 메시지 띄우기
+                                location.href = "/user/login"; // 로그인 페이지 이동
+
+                            } else { // 회원가입 실패
+                                alert(json.msg); // 메시지 띄우기
+                            }
+
+                        }
+                    }
+                )
+            }
+        })
+    </script>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div class="sign-up-container">
+            <form id="f2" class="f2" style="width: 100%">
+                <h1>회원가입</h1>
+                <br>
+                <input id="userId" name="userId" type="text" placeholder="아이디">
+                <button type="button" id="btnUserId" class="form_btn3" style="width: 55%">아이디 중복</button>
+                <input id="email" name="email" type="email" placeholder="이메일">
+                <button type="button" id="btnEmail" class="form_btn3" style="width: 55%">인증</button>
+                <input id="authNumber" type="text" placeholder="인증번호">
+                <input id="pw" name="pw" type="password" placeholder="비밀번호">
+                <input id="pw2" type="password" placeholder="비밀번호 확인">
+                <input id="nickname" name="nickname" type="text" placeholder="별명">
+                <button type="button" id="btnSend" class="form_btn" style="width: 65%">회원가입</button>
+            </form>
+        </div>
+        <div class="sign-in-container">
+            <form id="f1" name="f1">
+                <h1>로그인</h1>
+                <br>
+                <input id="id" name="id" type="text" placeholder="아이디">
+                <input id="password" name="password" type="password" placeholder="비밀번호">
+                <button type="button" id="btnLogin" class="form_btn">로그인</button>
+                <div style="width: 140%; text-align: center;margin-top: 10%">
+                    <a href="/user/searchId" style="text-decoration: none;  color: blue">아이디/비밀번호 찾기</a>
+                </div>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay-left">
+                <h1>계정이 있으신가요?</h1>
+                <br>
+                <br>
+                <br>
+
+                <p>아래 버튼을 눌러 </p>
+
+                <p>로그인 창으로 이동하세요</p>
+                <br>
+
+                <button id="signIn" class="overlay_btn"> 로그인</button>
+            </div>
+            <div class="overlay-right">
+                <h1>계정이 없으신가요?</h1>
+                <br>
+                <br>
+                <br>
+
+                <p>아래 버튼을 눌러 </p>
+
+                <p>회원가입 창으로 이동하세요</p>
+                <br>
+
+                <button id="signUp" class="overlay_btn"> 회원가입</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="/js/login.js"></script>
+</body>
+</html>
+

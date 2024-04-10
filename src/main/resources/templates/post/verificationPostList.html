@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>TMI - 인증 게시물</title>
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="/assets/css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script type="text/javascript">
+        //상세보기 이동
+        function doDetail(postNumber) {
+            location.href = "/post/postInfo?postNumber=" + postNumber;
+        }
+        function goToNotice() {
+            window.location.href = "/post/postList?type=notice"; // 공지사항 페이지 URL로 변경해야 합니다.
+        }
+
+        function goToPost() {
+            window.location.href = "/post/postList"; // 일반게시글 페이지 URL로 변경해야 합니다.
+        }
+
+        function goToVerification() {
+            window.location.href = "/post/postList?type=verification"; // 인증게시글 페이지 URL로 변경해야 합니다.
+        }
+    </script>
+</head>
+
+<body>
+<!--::header part start::-->
+<header class="main_menu home_menu">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Header part end-->
+
+<!-- breadcrumb start-->
+<section class="breadcrumb" style="background-color: azure">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="breadcrumb_iner">
+                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
+                    <div class="breadcrumb_iner_item">
+                        <h2 class="fa-solid" style="font-family: BMJUA,serif; font-size: 36px; color: #222222">인증 게시판</h2>
+                        <p style="font-family: BMJUA,serif; font-size: 18px; color: #777777">관리자가 선정한 최고의 게시글!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb end-->
+
+<!-- navigation -->
+<div th:replace="customerNav.html"></div>
+<div class="card-body" style="display: flex">
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="notice" onclick="goToNotice()">공지사항</div>
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="post" onclick="goToPost()">일반게시글</div>
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="verification" onclick="goToVerification()">인증게시글</div>
+</div>
+<!-- ---------- -->
+
+<!--================Blog Area =================-->
+<section class="blog_area padding_top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mb-5 mb-lg-0">
+                <div class="blog_left_sidebar">
+                    <article class="blog_item" th:each="dto : ${rList}">
+                        <div class="blog_item_img">
+                            <img class="card-img rounded-0" th:src="${dto.image}" alt="">
+                            <a href="#" class="blog_item_date">
+                                <h3 th:text="${#strings.substring(dto.regDt, 5, 7)}"></h3>
+                                <p th:text="${#strings.substring(dto.regDt, 8, 10)}"></p>
+                            </a>
+                        </div>
+
+                        <div class="blog_details">
+                            <a class="d-inline-block" href="single-blog.html">
+                                <h2>[[${dto.title}]]</h2>
+                            </a>
+                            <p th:if="${dto.contents != null and #strings.length(dto.contents) > 20}"
+                               th:text="${#strings.substring(dto.contents, 0, 20)}"></p>
+                            <p th:if="${dto.contents == null or #strings.length(dto.contents) <= 20}"
+                               th:text="${#strings.substring(dto.contents, 0, dto.contents.length())}"></p>
+                            <ul class="blog-info-link">
+                                <li><a href="#"><i class="far fa-user"></i>[[${dto.customerId}]]</a></li>
+                                <li><a href="#"><i class="far fa-comments"></i> [[${dto.countComment}]]</a></li>
+                            </ul>
+                        </div>
+                    </article>
+                    <nav class="blog-pagination justify-content-center d-flex">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a href="#" class="page-link" aria-label="Previous">
+                                    <i class="ti-angle-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a href="#" class="page-link">1</a>
+                            </li>
+                            <li class="page-item active">
+                                <a href="#" class="page-link">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a href="#" class="page-link" aria-label="Next">
+                                    <i class="ti-angle-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="blog_right_sidebar">
+                    <aside class="single_sidebar_widget search_widget">
+                        <form action="#">
+                            <div class="form-group">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder='키워드로 검색' onfocus="this.placeholder = ''" onblur="this.placeholder = '키워드로 검색'">
+                                    <div class="input-group-append">
+                                        <button class="btn" type="button"><i class="ti-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="button rounded-0 primary-bg text-white w-100 btn_1" type="submit">검색</button>
+                        </form>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================Blog Area =================-->
+
+
+
+<!-- jquery plugins here-->
+<!-- jquery -->
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<!-- popper js -->
+<script src="/assets/js/popper.min.js"></script>
+<!-- bootstrap js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- easing js -->
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/swiper.min.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/masonry.pkgd.js"></script>
+<!-- particles js -->
+<script src="/assets/js/owl.carousel.min.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!-- slick js -->
+<script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<!-- custom js -->
+<script src="/assets/js/custom.js"></script>
+</body>
+
+</html>

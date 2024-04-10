@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>TMI - 게시판</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>aranoz</title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <!-- nice select CSS -->
+    <link rel="stylesheet" href="/assets/css/nice-select.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="/assets/css/slick.css">
+    <link rel="stylesheet" href="/assets/css/price_rangs.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+    <link rel="apple-touch-icon" href="/img/apple-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+    <link rel="stylesheet" href="/assets/css/notice/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/notice/templatemo.css">
+    <link rel="stylesheet" href="/assets/css/notice/css.css">
+
+    <!-- Load fonts style after rendering the layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="/assets/css/notice/fontawesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/assets/css/notice/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/assets/css/notice/all.min.css">
+    <script type="text/javascript">
+        //상세보기 이동
+        function doDetail(postNumber) {
+            location.href = "/post/postInfo?postNumber=" + postNumber;
+        }
+        function goToNotice() {
+            window.location.href = "/post/postList?type=notice"; // 공지사항 페이지 URL로 변경해야 합니다.
+        }
+
+        function goToPost() {
+            window.location.href = "/post/postList"; // 일반게시글 페이지 URL로 변경해야 합니다.
+        }
+
+        function goToVerification() {
+            window.location.href = "/post/postList?type=verification"; // 인증게시글 페이지 URL로 변경해야 합니다.
+        }
+    </script>
+</head>
+
+<body>
+<!--::header part start::-->
+<header class="main_menu home_menu">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Header part end-->
+
+<!-- breadcrumb start-->
+<section class="breadcrumb" style="background-color: azure">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="breadcrumb_iner">
+                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
+                    <div class="breadcrumb_iner_item">
+                        <h2 class="fa-solid" style="font-family: BMJUA,serif; font-size: 36px; color: #222222">공지사항</h2>
+                        <p style="font-family: BMJUA,serif; font-size: 18px; color: #777777">새로운 정보를 확인하세요!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb end-->
+
+<!-- navigation -->
+<div th:replace="customerNav.html"></div>
+<div class="card-body" style="display: flex">
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="notice" onclick="goToNotice()">공지사항</div>
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="post" onclick="goToPost()">일반게시글</div>
+    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="verification" onclick="goToVerification()">인증게시글</div>
+</div>
+<!-- ---------- -->
+
+<div class="board_wrap">
+    <div class="board_list_wrap">
+        <div class="board_list">
+            <div class="top">
+                <div class="title" style="width: 50%">제목</div>
+                <div class="writer" style="width: 15%">글쓴이</div>
+                <div class="date" style="width: 15%">작성일</div>
+                <div class="count" style="width: 15%">조회</div>
+            </div>
+            <div th:each="dto:${rList}">
+                <div class="title" th:attr="onclick='doDetail(\'' + ${dto.postNumber} + '\')'" style="width: 50%">[[${dto.title}]]</div>
+                <div class="writer" style="width: 15%">[[${dto.customerId}]]</div>
+                <div class="date" style="width: 15%">[[${dto.regDt}]]</div>
+                <div class="count" style="width: 15%">[[${dto.readCount}]]</div>
+            </div>
+        </div>
+        <br />
+        <!-- 페이지네이션 영역-->
+        <div style="display: flex">
+            <div class="mx-auto">
+                <ul class="pagination pagination-primary" id="pagination">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/templates/post/noticeList?page=1}">&laquo;</a>
+                    </li>
+                    <!-- 이전 페이지로 이동하는 링크 -->
+                    <li class="page-item" th:if="${currentPage > 1}">
+                        <a class="page-link" th:href="@{/templates/post/noticeList(page=${currentPage - 1})}">&lt;</a>
+                    </li>
+                    <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
+                        <a class="page-link" th:href="@{/templates/post/noticeList(page=${pageNumber})}" th:text="${pageNumber}"></a>
+                    </li>
+                    <!-- 다음 페이지로 이동하는 링크 -->
+                    <li class="page-item" th:if="${currentPage < totalPages}">
+                        <a class="page-link" th:href="@{/templates/post/noticeList(page=${currentPage + 1})}">&gt;</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/templates/post/noticeList(page=${totalPages})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="bt_wrap">
+            <a href="/post/postReg" class="on">등록</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Start Script -->
+<script src="/assets/js/notice/jquery-1.11.0.min.js"></script>
+<script src="/assets/js/notice/jquery-migrate-1.2.1.min.js"></script>
+<script src="/assets/js/notice/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/notice/templatemo.js"></script>
+<script src="/assets/js/notice/custom.js"></script>
+<!-- jquery plugins here-->
+<!--<script src="/assets/js/jquery-1.12.1.min.js"></script>-->
+<!-- popper js -->
+<script src="/assets/js/popper.min.js"></script>
+<!-- bootstrap js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- easing js -->
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/swiper.min.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/masonry.pkgd.js"></script>
+<!-- particles js -->
+<script src="/assets/js/owl.carousel.min.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!-- slick js -->
+<script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<script src="/assets/js/stellar.js"></script>
+<script src="/assets/js/price_rangs.js"></script>
+<!-- custom js -->
+<script src="/assets/js/custom.js"></script>
+<!-- End Script -->
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+</body>
+
+</html>

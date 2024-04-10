@@ -1,0 +1,66 @@
+@font-face {
+    font-family: 'BMJUA';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'BMJUA';
+    font-size: 130%;
+}
+
+div  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+section  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+h1  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+h2  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+h3  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+h4  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+ul  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+li  {
+    font-family: 'BMJUA';
+    font-size: 100%;
+}
+
+a  {
+    font-family: 'BMJUA';
+    font-size: 14px;
+}
+
+p {
+    font-family: 'BMJUA';
+    font-size: 15px;
+}
+
+i {
+    font-family: 'BMJUA';
+    font-size: 20px;
+}
