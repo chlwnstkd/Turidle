@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>aranoz</title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!--    리뷰 작성-->
+    <script>
+
+
+        $(document).ready(function() {
+            let f = document.getElementById("f");
+
+            console.log("goodsNumber : " + goodsNumber)
+            console.log("goodsName : " + goodsName)
+            console.log("traderId : " + traderId)
+            console.log("customerId : " + customerId)
+
+            $("#writeReview").on("click", function () {
+                writeReview(f)
+            })
+            $("#doBasket").on("click", function () {
+                doBasket()
+            })
+            $("#changeLike").on("click", function () {
+                changeLike()
+            })
+            function writeReview(f) {
+                if(customerId === "") {
+                    alert("로그인 하세요")
+                    location.href="/customer/login";
+                }
+                if(f.rating.rate == 0){
+                    f.rating.focus()
+                    return;
+                }
+
+                // 모든 체크된 별점을 가져오기
+                const checkedRatings = document.querySelectorAll("input[name='rating']:checked");
+
+                // 마지막으로 체크된 별점 값 가져오기
+                const selectedRating = checkedRatings.length > 0 ? checkedRatings[checkedRatings.length - 1].value : null;
+
+                var reviewContents = f.contents.value.trim();
+                console.log(selectedRating)
+                console.log(reviewContents)
+                $.ajax({
+                    url: "/review/insertReview",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: { rating : selectedRating,
+                        contents : reviewContents,
+                        traderId  : traderId,
+                        goodsName : goodsName,
+                        goodsNumber: goodsNumber,
+                    },
+                    success: function (json) {
+
+                        if (json.result === 1) {
+                            alert(json.msg);
+                            location.href = "/customer/single-product?goodsNumber=" + goodsNumber;
+
+                        } else {
+                            alert(json.msg);
+                        }
+
+                    }
+                })
+            }
+        })
+    </script>
+</head>
+
+<body>
+<!--================Product Description Area =================-->
+<section class="product_description_area">
+    <div class="container" >
+        <div class="tab-content" id="myTabContent" style="height: 80vh; text-align: center; background-image: url(/img/imogi.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="review_list" th:each="dto:${rDTO}">
+                            <div class="review_item">
+                                <div class="media">
+                                    <div class="d-flex">
+                                        <div style="white-space: pre-line" th:text="${dto.userId}">
+                                    </div>
+                                </div>
+                                <br>
+                                <div style="white-space: pre-line" th:text="${dto.contents}">
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Product Description Area =================-->
+
+<style>
+    .wrap{
+        max-width: 480px;
+        margin: 0 auto; /* 화면 가운데로 */
+        background-color: #fff;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+
+    }
+    .reviewform textarea{
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .rating .rate_radio {
+        position: relative;
+        display: inline-block;
+        z-index: 20;
+        opacity: 0.001;
+        width: 60px;
+        height: 60px;
+        background-color: #fff;
+        cursor: pointer;
+        vertical-align: top;
+        display: none;
+    }
+    .rating .rate_radio + label {
+        position: relative;
+        display: inline-block;
+        margin-left: -4px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-image: url('/assets/images/starrate.png');
+        background-repeat: no-repeat;
+        background-size: 60px 60px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+    .rating .rate_radio:checked + label {
+        background-color: #ff8;
+    }
+
+    .warning_msg {
+        display: none;
+        position: relative;
+        text-align: center;
+        background: #ffffff;
+        line-height: 26px;
+        width: 100%;
+        color: red;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+</style>
+<!-- jquery plugins here-->
+<!-- jquery -->
+<script src="/assets/js/jquery-1.12.1.min.js"></script>
+<!-- popper js -->
+<script src="/assets/js/popper.min.js"></script>
+<!-- bootstrap js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- easing js -->
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/lightslider.min.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/masonry.pkgd.js"></script>
+<!-- particles js -->
+<script src="/assets/js/owl.carousel.min.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!-- slick js -->
+<script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/swiper.jquery.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<script src="/assets/js/stellar.js"></script>
+<!-- custom js -->
+<script src="/assets/js/theme.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+
+</html>
