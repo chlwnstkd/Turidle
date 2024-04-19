@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="zxx">
 
 <head>
-    <meta charset="UTF-8">
-    <title>TMI - 게시글 수정하기</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/assets/css/global.css">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>aranoz</title>
+    <title></title>
+    <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="icon" href="/assets/images/favicon.png">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
@@ -18,8 +14,7 @@
     <link rel="stylesheet" href="/assets/css/animate.css">
     <!-- owl carousel CSS -->
     <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
-    <!-- nice select CSS -->
-    <link rel="stylesheet" href="/assets/css/nice-select.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/all.css">
     <!-- flaticon CSS -->
@@ -27,180 +22,204 @@
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/magnific-popup.css">
-    <!-- swiper CSS -->
-    <link rel="stylesheet" href="/assets/css/slick.css">
-    <link rel="stylesheet" href="/assets/css/price_rangs.css">
     <!-- style CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
 
-    <link rel="apple-touch-icon" href="/img/apple-icon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/assets/css/notice/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/notice/templatemo.css">
-    <link rel="stylesheet" href="/assets/css/notice/css.css">
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
 
-    <!-- Load fonts style after rendering the layout styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
-    <link rel="stylesheet" href="/assets/css/notice/fontawesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/assets/css/notice/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/assets/css/notice/all.min.css">
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
 
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
 
-    <script th:inline="javascript">
-        // HTML로딩이 완료되고, 실행됨
-        $(document).ready(function() {
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-            $("#btnSend").on("click", function() {
-                calBytes();
-                doSubmit(); // 공지사항 수정하기 실행
-            })
-        })
-
-        //글자 길이 바이트 단위로 체크하기(바이트값 전달)
-        function calBytes(str) {
-            let tcount = 0;
-            let tmpStr = String(str);
-            let strCnt = tmpStr.length;
-            let onechar;
-            for (let i = 0; i < strCnt; i++) {
-                onechar = tmpStr.charAt(i);
-                if (escape(onechar).length > 4) {
-                    tcount += 2;
-                } else {
-                    tcount += 1;
-                }
-            }
-            return tcount;
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
+    <style>
+        button {
+            font-family: "Dongle", sans-serif;
         }
 
-        function doSubmit() {
+    </style>
 
-            let f = document.getElementById("f"); // form 태그
-
-            if (f.title.value === "") {
-                alert("제목을 입력하시기 바랍니다.");
-                f.title.focus();
-                return;
-            }
-            if (calBytes(f.title.value) > 200) {
-                alert("최대 200Bytes까지 입력 가능합니다.");
-                f.title.focus();
-                return;
-            }
-            if (f.contents.value === "") {
-                alert("내용을 입력하시기 바랍니다.");
-                f.contents.focus();
-                return;
-            }
-            if (calBytes(f.contents.value) > 4000) {
-                alert("최대 4000Bytes까지 입력 가능합니다.");
-                f.contents.focus();
-                return;
-            }
-            var formData = new FormData($("#f")[0]);
-            $.ajax({
-                url: "/post/postUpdate",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(json) { // /notice/noticeUpdate 호출이 성공했다면..
-
-                    if (json.result === 1) { // 로그인 성공
-                        alert(json.msg); // 메시지 띄우기
-                        location.href = "/post/postList"; // 로그인 성공 페이지 이동
-
-                    } else { // 로그인 실패
-                        alert(json.msg); // 메시지 띄우기
-                    }
-
-                }
-            })
-
-        }
-    </script>
 </head>
 
-<body>
-<!--::header part start::-->
-<header class="main_menu home_menu">
+<body style=" background: #ebecf0;">
+<!--================Product Description Area =================-->
+<div th:replace="/header.html"></div>
+<section class="product_description_area">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-12">
-                <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
-<!-- Header part end-->
-
-<!-- breadcrumb start-->
-<section class="breadcrumb" style="background-color: azure">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="breadcrumb_iner">
-                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
-                    <div class="breadcrumb_iner_item">
-                        <h2>게시판</h2>
-                        <p>새로운 컨텐츠를 작성하세요!</p>
+        <div class="tab-content" id="myTabContent"
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
+                 style="width: 100%">
+                <div class="row" style="margin-top: 5%;display: grid">
+                    <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 80%">
+                        <div class="review_list">
+                            <form name="f" id="f">
+                                <div class="title">
+                                    <div class="title">
+                                        <dl>
+                                            <h1 class="hangle-h1">제목</h1>
+                                            <dd><input type="text" id="title" name="title" th:value="${rDTO.title}" placeholder="제목을 입력하세요">
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="info" style="margin-left: auto;margin-right: auto">
+                                        <h1 class="hangle-h1">내용</h1>
+                                        <div class="cont">
+                                            <textarea name="contents" th:text="${rDTO.contents}" placeholder="내용을 입력하세요"
+                                                      style="width: 100%; height:310px; border: none; outline: none; resize: none;background-color: transparent">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div style="text-align: center; justify-content : center;margin-top: 7%">
+                <button id="update" class="form_btn" type="button" style="font-size: 30px">수정</button>
+                <button id="cancle" class="form_btn" type="button" style="font-size: 30px">취소</button>
             </div>
         </div>
     </div>
 </section>
-<!-- breadcrumb end-->
+<!--================End Product Description Area =================-->
 
-<!-- navigation -->
-<div th:replace="customerNav.html"></div>
-<!-- ---------- -->
+<style>
 
-<form name="f" id="f">
-    <input type="hidden" name="postNumber" th:value="${rDTO.postNumber}" />
-    <div class="board_wrap">
-        <div class="board_write_wrap">
-            <div class="board_write">
-                <div class="title">
-                    <div class="title">
-                        <dl>
-                            <dt>제목</dt>
-                            <dd><input type="text" id="title" name="title" th:value="${rDTO.title}"></dd>
-                        </dl>
-                    </div>
-                    <div class="info">
-                        <div class="cont" th:if="${not #strings.isEmpty(rDTO.image)}">
-                            <img th:src="${rDTO.image}" class="d-block w-100" style="height:380px">
-                        </div>
-                        <input type="file" id="fileUpload" name="fileUpload" />
-                    </div>
-                    <div class="info">
-                        <div class="cont">
-                            <textarea name="contents" th:value="${rDTO.contents}" th:text="${rDTO.contents}"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bt_wrap">
-            <a id="btnSend" type="submit" onclick="calBytes(title);doSubmit();" class="on">수정</a>
-            <a href="/post/postList">취소</a>
-        </div>
-    </div>
-</form>
+    .hangle-h1 {
+        font-family: "Dongle", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 40px;
+        margin-bottom: 0px;
+        color: black
 
+    }
+    .cont {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 80%;
+        height: 340px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
 
-<!-- Start Script -->
-<script src="/assets/js/notice/jquery-1.11.0.min.js"></script>
-<script src="/assets/js/notice/jquery-migrate-1.2.1.min.js"></script>
-<script src="/assets/js/notice/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/notice/templatemo.js"></script>
-<script src="/assets/js/notice/custom.js"></script>
+    input {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 700px;
+        height: 50px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
+
+    .form_btn {
+        background-color: #ebecf0;
+        color: black;
+        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 3px 45px;
+        margin: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+    }
+
+    .wrap {
+        max-width: 480px;
+        margin: 0 auto;
+        background-color: #fff;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .reviewform textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .rating .rate_radio {
+        position: relative;
+        display: inline-block;
+        z-index: 20;
+        opacity: 0.001;
+        width: 60px;
+        height: 60px;
+        background-color: #fff;
+        cursor: pointer;
+        vertical-align: top;
+        display: none;
+    }
+
+    .rating .rate_radio + label {
+        position: relative;
+        display: inline-block;
+        margin-left: -4px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-image: url('/assets/images/starrate.png');
+        background-repeat: no-repeat;
+        background-size: 60px 60px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+
+    .rating .rate_radio:checked + label {
+        background-color: #ff8;
+    }
+
+    .warning_msg {
+        display: none;
+        position: relative;
+        text-align: center;
+        background: #ffffff;
+        line-height: 26px;
+        width: 100%;
+        color: red;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+</style>
 <!-- jquery plugins here-->
+<!-- jquery -->
 <script src="/assets/js/jquery-1.12.1.min.js"></script>
 <!-- popper js -->
 <script src="/assets/js/popper.min.js"></script>
@@ -209,7 +228,7 @@
 <!-- easing js -->
 <script src="/assets/js/jquery.magnific-popup.js"></script>
 <!-- swiper js -->
-<script src="/assets/js/swiper.min.js"></script>
+<script src="/assets/js/lightslider.min.js"></script>
 <!-- swiper js -->
 <script src="/assets/js/masonry.pkgd.js"></script>
 <!-- particles js -->
@@ -217,6 +236,7 @@
 <script src="/assets/js/jquery.nice-select.min.js"></script>
 <!-- slick js -->
 <script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/swiper.jquery.js"></script>
 <script src="/assets/js/jquery.counterup.min.js"></script>
 <script src="/assets/js/waypoints.min.js"></script>
 <script src="/assets/js/contact.js"></script>
@@ -225,14 +245,85 @@
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/js/mail-script.js"></script>
 <script src="/assets/js/stellar.js"></script>
-<script src="/assets/js/price_rangs.js"></script>
 <!-- custom js -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
-<script src="/assets/js/jquery-3.6.0.min.js"></script>
-<script>
-    document.getElementById("title").value = [[${rDTO.title}]];
+<script th:inline="javascript">
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+        // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+        $("#update").on("click", function () {
+            calBytes();
+            doSubmit(); // 공지사항 수정하기 실행
+        })
+        $("#cancle").on("click", function () {
+            location.href = "/post/postList"
+        })
+    })
+
+    //글자 길이 바이트 단위로 체크하기(바이트값 전달)
+    function calBytes(str) {
+        let tcount = 0;
+        let tmpStr = String(str);
+        let strCnt = tmpStr.length;
+        let onechar;
+        for (let i = 0; i < strCnt; i++) {
+            onechar = tmpStr.charAt(i);
+            if (escape(onechar).length > 4) {
+                tcount += 2;
+            } else {
+                tcount += 1;
+            }
+        }
+        return tcount;
+    }
+
+    function doSubmit() {
+
+        let f = document.getElementById("f"); // form 태그
+
+        if (f.title.value === "") {
+            alert("제목을 입력하시기 바랍니다.");
+            f.title.focus();
+            return;
+        }
+        if (calBytes(f.title.value) > 200) {
+            alert("최대 200Bytes까지 입력 가능합니다.");
+            f.title.focus();
+            return;
+        }
+        if (f.contents.value === "") {
+            alert("내용을 입력하시기 바랍니다.");
+            f.contents.focus();
+            return;
+        }
+        if (calBytes(f.contents.value) > 4000) {
+            alert("최대 4000Bytes까지 입력 가능합니다.");
+            f.contents.focus();
+            return;
+        }
+        var formData = new FormData($("#f")[0]);
+        $.ajax({
+            url: "/post/postUpdate",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                if (json.result === 1) { // 로그인 성공
+                    alert(json.msg); // 메시지 띄우기
+                    location.href = "/post/postList"; // 로그인 성공 페이지 이동
+
+                } else { // 로그인 실패
+                    alert(json.msg); // 메시지 띄우기
+                }
+
+            }
+        })
+
+    }
 </script>
-<!-- End Script -->
 </body>
 
 </html>

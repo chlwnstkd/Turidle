@@ -77,38 +77,8 @@
   </head>
 
   <body style=" background: #ebecf0;">
-    <!-- Navbar Start -->
-    <div class="container-fluid bg-light position-relative shadow">
-      <nav
-        class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0 px-lg-5"
-      >
-        <a href="" class="hangle-h4" style="width: 30%">
-            <img src="img/logo.png" style="width: 50%; height: auto;float:left;margin-right: 10%">
-          </a>
-        <button
-          type="button"
-          class="navbar-toggler"
-          data-toggle="collapse"
-          data-target="#navbarCollapse"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div
-          class="collapse navbar-collapse justify-content-between"
-          id="navbarCollapse"
-        >
-          <div class="navbar-nav font-weight-bold mx-auto py-0" style="padding-right: 45%" >
-            <a href="/home" class="nav-item nav-link active"> 홈</a>
-            <a href="about.html" class="nav-item nav-link">사투리 사전</a>
-            <a href="class.html" class="nav-item nav-link">사투리 번역</a>
-            <a href="/post/postList" class="nav-item nav-link">커뮤니티</a>
-              <a href="/user/userInfo" class="nav-item nav-link">내 정보</a>
-          </div>
-           
-        </div>
-      </nav>
-    </div>
-    <!-- Navbar End -->
+  <div th:replace="/header.html"></div>
+
 
     <!-- Header Start -->
     <div class="container-fluid bg-primary px-0 px-md-5 mb-5">

@@ -16,44 +16,28 @@
 
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
-
             // 회원정보 수정 페이지
             $("#btnUpdate").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-                location.href = "/user/userInfoUpdate";
-            })
-            $("#btnPw").on("click", function () {
-                location.href = "/user/newPassword";
 
-            })
-
-
-            $("#btnDelete").on("click", function () {
-                doDelete()
-
-            })
-
-        })
-
-        // 회원 탈퇴
-        function doDelete() {
-
-            if (confirm("정말로 탈퇴하시겠습니까?")) {
-
-                // Ajax 호출해서 회원정보 삭제하기
                 $.ajax({
-                        url: "/user/deleteUser",
-                        type: "post",
-                        dataType: "JSON",
-                    }
-                ).then(
+                    url: "/user/updateInfo",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                }).then(
                     function (json) {
-                        alert(json.msg);
-                        location.href = "/index"; // 인덱스 페이지로 이동
+                        if (json.result === 1) { // 수정 성공
+                            alert(json.msg); // 메시지 띄우기
+                            location.href = "/user/userInfo"; // 로그인 페이지 이동
+
+                        } else { // 수정 실패
+                            alert(json.msg); // 메시지 띄우기
+                        }
+
                     }
                 )
-            }
-        }
-
+            })
+        })
     </script>
     <style>
         .divTableCell {
@@ -61,10 +45,8 @@
             font-weight: 400;
             font-style: normal;
             font-size: 40px;
-            margin-bottom: 0px;
             color: black;
             background: #ebecf0;
-
         }
 
         .form_btn {
@@ -83,32 +65,44 @@
             font-weight: 400;
             font-style: normal;
         }
+        form input {
+            background: #eee;
+            padding: 16px;
+            margin: 8px 0;
+            width: 60%;
+            border: 0;
+            outline: none;
+            border-radius: 20px;
+            box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+        }
     </style>
 </head>
 <body>
 <div th:replace="/header.html"></div>
 <form id="f" name="f" style="height: 80vh; text-align: center; background-image: url(/img/userInfo.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
     <div style="width: 100vh;margin: auto;">
-        <div class="divTable minimalistBlack" style="margin-right: 20%;position: relative;padding-top: 20%;background-color:transparent;">
+        <div class="divTable minimalistBlack" style="margin-right: 20%;position: relative;padding-top: 15%;">
             <div class="divTableBody" style="margin-left: 40%;text-align: left">
-                <div class="divTableRow">
-                    <div class="divTableCell" style="margin-bottom: 10%;background-color:transparent;">아이디 : [[${rDTO.userId}]]</div>
+                <div class="divTableRow" style="margin-bottom: 3%">
+                    <div class="divTableCell" style="width: 20%;background-color:transparent;">아이디 :</div>
+                    <input type="text" id="userId" name="userId" th:value="${rDTO.userId}" disabled="">
                 </div>
-                <div class="divTableRow" style="margin-bottom: 5%">
-                    <div class="divTableCell" style="margin-bottom: 10%;background-color:transparent;">닉네임 : [[${rDTO.nickname}]]</div>
+                <div class="divTableRow" style="margin-bottom: 3%">
+                    <div class="divTableCell" style="background-color:transparent;">닉네임 :</div>
+                    <input type="text" id="nickname" name="nickname" th:value="${rDTO.nickname}">
                 </div>
                 <div class="divTableRow">
-                    <div class="divTableCell" style="background-color:transparent;">이메일 : [[${rDTO.email}]]</div>
+                    <div class="divTableCell" style="background-color:transparent;">이메일 :</div>
+                    <input type="text" id="email" name="email" th:value="${rDTO.email}">
                 </div>
             </div>
         </div>
-        <div style="margin: auto;padding-top: 10%; padding-left: 3%">
-            <button id="btnPw" class="form_btn" type="button">비밀번호 변경</button>
+        <div style="margin: auto;">
             <button id="btnUpdate" class="form_btn" type="button">정보 수정</button>
-            <button id="btnDelete" class="form_btn" type="button">회원 탈퇴</button>
         </div>
-    </div>
-</form>
+    </div></form>
+
+
 </body>
 </html>
 

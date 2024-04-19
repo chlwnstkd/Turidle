@@ -93,8 +93,8 @@ form input {
 .overlay_btn {
   background-color: #ebecf0;
   color: #ff;
-  box-shadow: -5px -5px 10px #ff6b3f, 5px 5px 8px #bf4b2b;
-      border-radius: 20px;
+  box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+  border-radius: 20px;
   border: none;
   outline: none;
   font-size: 12px;
@@ -132,7 +132,7 @@ form input {
   width: 50%;
   height: 100%;
   opacity: 0;
-  background-color: #7ac142;
+  background-color: #17A2B8;
   color: #fff;
   transition: all 0.5s;
 }
@@ -146,7 +146,7 @@ form input {
   right: 0;
   width: 50%;
   height: 100%;
-  background-color: #7ac142;
+  background-color: #17A2B8;
   color: #fff;
   transition: all 0.5s;
 }

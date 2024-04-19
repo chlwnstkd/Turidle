@@ -54,7 +54,7 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(pDTO.nickname());
 
-        if (existsYn.equals("N") && pDTO.nickname() == null || existsYn.equals("Y") && pDTO.nickname() != null) {
+        if (existsYn.equals("N") && pDTO.nickname().equals("") || existsYn.equals("Y") && !pDTO.nickname().equals("")) {
             authNumber = ThreadLocalRandom.current().nextInt(100000,1000000);
 
             String title = "이메일 중복 확인 인증번호 발송 메일";
@@ -77,6 +77,34 @@ public class UserInfoService implements IUserInfoService {
         return rDTO;
     }
 
+
+    @Override
+    public int updateUserInfo(UserInfoDTO pDTO) throws Exception {
+
+        int res = 0;
+
+        int success = userInfoMapper.updateUserInfo(pDTO);
+
+        if(success > 0) {
+            res = 1;
+        }
+
+        return res;
+    }
+
+    @Override
+    public int deleteUser(UserInfoDTO pDTO) throws Exception {
+
+        int res = 0;
+
+        int success = userInfoMapper.deleteUser(pDTO);
+
+        if(success > 0) {
+            res = 1;
+        }
+
+        return res;
+    }
 
     @Override
     public int insertUserInfo(UserInfoDTO pDTO) throws Exception {
@@ -141,6 +169,18 @@ public class UserInfoService implements IUserInfoService {
 
         return rMap;
     }
+    @Override
+    public Map<String, Object> getUserInfo(UserInfoDTO pDTO) throws Exception {
+        log.info(this.getClass().getName() + ".getUserInfo Start!");
+
+
+        Map<String, Object> rMap = userInfoMapper.getUserInfo(pDTO);
+
+        log.info(this.getClass().getName() + ".getUserInfo Start!");
+
+        return rMap;
+    }
+
 
     @Override
     public int newPasswordProc(UserInfoDTO pDTO) throws Exception {

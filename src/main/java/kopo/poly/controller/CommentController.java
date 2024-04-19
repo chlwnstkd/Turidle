@@ -6,6 +6,7 @@ import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.PostDTO;
 import kopo.poly.service.ICommentService;
+import kopo.poly.service.ILikeService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +24,16 @@ public class CommentController {
     private final ICommentService  commentService;
 
     // 댓글페이지 이동 및 조회 코드
-    @GetMapping(value = "/commentMng")
-    public String getCommentList(HttpSession session, ModelMap model, @RequestParam(defaultValue = "1") int page) throws Exception {
+    @GetMapping(value = "")
+    public String getCommentList(ModelMap model,
+                                 @RequestParam String postNumber,
+                                 @RequestParam(name = "page", defaultValue = "1") int page) throws Exception {
         log.info(this.getClass().getName() + ".getCommentList start!");
 
-        String id = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+        log.info("postNumber : " + postNumber);
+        log.info("page : " + page);
 
-        log.info("SS_USER : " + id);
-
-        CommentDTO pDTO = CommentDTO.builder().userId(id).build();
+        CommentDTO pDTO = CommentDTO.builder().postNumber(postNumber).build();
 
         List<Map<String, Object>> pList = Optional.ofNullable(commentService.getCommentList(pDTO)).orElseGet(ArrayList::new);
 
@@ -49,8 +51,10 @@ public class CommentController {
             rList.add(rDTO);
         }
 
+        /**페이징 시작 부분*/
+
         // 페이지당 보여줄 아이템 개수 정의
-        int itemsPerPage = 3;
+        int itemsPerPage = 5;
 
         // 페이지네이션을 위해 전체 아이템 개수 구하기
         int totalItems = rList.size();
@@ -63,11 +67,18 @@ public class CommentController {
         int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
         rList = rList.subList(fromIndex, toIndex);
 
-        model.addAttribute("rList", rList);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
 
         log.info(this.getClass().getName() + ".페이지 번호 : " + page);
+        log.info("rList : " + rList.toString() );
+
+        /**페이징 끝부분*/
+
+
+        model.addAttribute("rList", rList);
+        model.addAttribute("postNumber", postNumber);
+
         log.info(this.getClass().getName() + ".getCommentList End!");
 
         return "/post/comment";
@@ -119,7 +130,7 @@ public class CommentController {
 
         try {
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
-            String contents = CmmUtil.nvl(request.getParameter("contents"));
+            String contents = CmmUtil.nvl(request.getParameter("comment"));
             String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
 
             log.info("userId : " + userId);
@@ -143,6 +154,7 @@ public class CommentController {
         return MsgDTO.builder().msg(msg).result(res).build();
     }
 
+
     @ResponseBody
     @PostMapping(value = "/updateComment")
     public MsgDTO updateComment(HttpServletRequest request, HttpSession session) throws Exception {
@@ -158,13 +170,13 @@ public class CommentController {
         try {
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
             String contents = CmmUtil.nvl(request.getParameter("contents"));
-            String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
+            String commentNumber = CmmUtil.nvl(request.getParameter("commentNumber"));
 
             log.info("userId : " + userId);
-            log.info("postNumber : " + postNumber);
+            log.info("commentNumber : " + commentNumber);
             log.info("contents : " + contents);
 
-            pDTO = CommentDTO.builder().userId(userId).postNumber(postNumber).contents(contents).build();
+            pDTO = CommentDTO.builder().userId(userId).commentNumber(commentNumber).contents(contents).build();
 
             commentService.updateComment(pDTO);
 

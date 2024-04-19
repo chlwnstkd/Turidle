@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="zxx">
 
 <head>
-    <meta charset="UTF-8">
-    <title>TMI - 게시판 글보기</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/assets/css/global.css">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>aranoz</title>
+    <title></title>
+    <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="icon" href="/assets/images/favicon.png">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
@@ -17,8 +14,7 @@
     <link rel="stylesheet" href="/assets/css/animate.css">
     <!-- owl carousel CSS -->
     <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
-    <!-- nice select CSS -->
-    <link rel="stylesheet" href="/assets/css/nice-select.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/all.css">
     <!-- flaticon CSS -->
@@ -26,188 +22,263 @@
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/magnific-popup.css">
-    <!-- swiper CSS -->
-    <link rel="stylesheet" href="/assets/css/slick.css">
-    <link rel="stylesheet" href="/assets/css/price_rangs.css">
     <!-- style CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
 
-    <link rel="apple-touch-icon" href="/img/apple-icon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/assets/css/notice/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/notice/templatemo.css">
-    <link rel="stylesheet" href="/assets/css/notice/css.css">
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
 
-    <!-- Load fonts style after rendering the layout styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
-    <link rel="stylesheet" href="/assets/css/notice/fontawesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/assets/css/notice/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/assets/css/notice/all.min.css">
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
 
-    <script th:inline="javascript">
-        // Controller에서 받은 세션에 저장된 값
-        const ss_id = /*[[${session.SS_ID}]]*/ '';
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
 
-        // 공지사항 게시글 작성자 아이디
-        const id = /*[[${rDTO.customerId}]]*/ '';
-
-        // 현재 글번호, 자바에서 받을 변수들은 자바스크립트 변수로 저장하면 편함
-        const postNumber = /*[[${rDTO.postNumber}]]*/ '';
-
-        // HTML로딩이 완료되고, 실행됨
-        $(document).ready(function() {
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-            $("#btnEdit").on("click", function() {
-                doEdit(); // 공지사항 수정하기 실행
-            })
-
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-            $("#btnDelete").on("click", function() {
-                doDelete(); // 공지사항 수정하기 실행
-            })
-
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-            $("#btnList").on("click", function() {
-                location.href = "/post/postList"; // 공지사항 리스트 이동
-            })
-        })
-
-        //수정하기
-        function doEdit() {
-            if (ss_id === id) {
-                location.href = "/post/postEditInfo?postNumber=" + postNumber;
-
-            } else if (ss_id === "") {
-                alert("로그인 하시길 바랍니다.");
-
-            } else {
-                alert("본인이 작성한 글만 수정 가능합니다.");
-
-            }
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
+    <style>
+        button {
+            font-family: "Dongle", sans-serif;
         }
 
-        //삭제하기
-        function doDelete() {
-            if (ss_id === id) {
-                if (confirm("작성한 글을 삭제하시겠습니까?")) {
-                    $.ajax({
-                        url: "/post/postDelete",
-                        type: "post", // 전송방식은 Post
-                        dataType: "JSON", // 전송 결과는 JSON으로 받기
-                        data: {
-                            "postNumber": postNumber
-                        }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                        success: function(json) { // /notice/noticeUpdate 호출이 성공했다면..
+    </style>
 
-                            if (json.result === 1) { // 로그인 성공
-                                alert(json.msg); // 메시지 띄우기
-                                location.href = "/post/postList"; // 로그인 성공 페이지 이동
-
-                            } else { // 로그인 실패
-                                alert(json.msg); // 메시지 띄우기
-                            }
-
-                        }
-                    })
-                }
-
-            } else if (ss_id === "") {
-                alert("로그인 하시길 바랍니다.");
-
-            } else {
-                alert("본인이 작성한 글만 삭제 가능합니다.");
-            }
-        }
-    </script>
 </head>
 
-<body>
-<!--::header part start::-->
-<header class="main_menu home_menu">
+<body style=" background: #ebecf0;">
+<!--================Product Description Area =================-->
+<div th:replace="/header.html"></div>
+<section class="product_description_area">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-12">
-                <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
-<!-- Header part end-->
-
-<!-- breadcrumb start-->
-<section class="breadcrumb" style="background-color: azure">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="breadcrumb_iner">
-                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
-                    <div class="breadcrumb_iner_item">
-                        <h2>게시판</h2>
-                        <p>새로운 컨텐츠를 작성하세요!</p>
+        <div class="tab-content" id="myTabContent"
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
+                 style="width: 100%">
+                <div class="row" style="margin-top: 5%;display: grid">
+                    <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 80%">
+                        <div class="review_list">
+                            <form name="f" id="f">
+                                <div class="title">
+                                    <div class="title">
+                                        <dl>
+                                            <dd class="box"> [[${rDTO.title}]]
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="info" style="display: flex;  justify-content: center; margin-left: 10%">
+                                        <dl style="display: flex;">
+                                            <dt>작성일:</dt>
+                                            <dd>[[${rDTO.regDt}]] &nbsp; | &nbsp;</dd>
+                                        </dl>
+                                        <dl style="display: flex;">
+                                            <dt>조회:</dt>
+                                            <dd>[[${rDTO.readCount}]] &nbsp; | &nbsp;</dd>
+                                        </dl>
+                                        <dl style="display: flex;">
+                                            <dt>순번:</dt>
+                                            <dd name="seq">[[${rDTO.postNumber}]] &nbsp; | &nbsp;</dd>
+                                        </dl>
+                                        <dl style="display: flex;">
+                                            <dt>좋아요:</dt>
+                                            <dd name="seq">[[${likeCnt}]] &nbsp; | &nbsp;</dd>
+                                        </dl>
+                                        <dl style="display: flex;">
+                                            <dt>댓글 수:</dt>
+                                            <dd name="seq">[[${commentCnt}]]</dd>
+                                        </dl>
+                                        <div style="text-align: right; justify-content : right; margin-left: 10%">
+                                            <div class="dropdown" style="float: right;">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1"
+                                                    style="background-color: #17A2B8">
+                                                    <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                                           id="btnDelete" type="button">삭제하기</a></li>
+                                                    <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                                           id="btnEdit" type="button">수정하기</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info" style="margin-left: auto;margin-right: auto">
+                                        <div class="cont">
+                                            <textarea name="contents" readonly th:text="${rDTO.contents}" style="width: 100%; height:310px;
+                                            border: none; outline: none; resize: none; background-color: transparent"></textarea>
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div style="text-align: center; justify-content : center;margin-top: 10%">
+                <button id="btnList" class="form_btn" type="button" style="font-size: 30px">목록</button>
+                <button id="btnComment" class="form_btn" type="button" style="font-size: 30px">댓글</button>
+                <button id="btnLike" class="form_btn" type="button" style="font-size: 30px">좋아요</button>
             </div>
         </div>
     </div>
 </section>
-<!-- breadcrumb end-->
+<!--================End Product Description Area =================-->
 
-<!-- navigation -->
-<div th:replace="customerNav.html"></div>
-<!-- ---------- -->
+<style>
+    dt {
+        font-size: 120%
+    }
 
-<!--Main-->
-<form name="f" id="f">
-    <div class="board_wrap">
-        <div class="board_view_wrap">
-            <div class="board_view">
-                <div class="title">
-                    [[${rDTO.title}]]
-                </div>
-                <div class="info">
-                    <dl>
-                        <dt>작성일</dt>
-                        <dd>[[${rDTO.regDt}]]</dd>
-                    </dl>
-                    <dl>
-                        <dt>조회</dt>
-                        <dd>[[${rDTO.readCount}]]</dd>
-                    </dl>
-                    <dl>
-                        <dt>순번</dt>
-                        <dd name="seq">[[${rDTO.postNumber}]]</dd>
-                    </dl>
-                </div>
-                <div class="cont">
-                    <img th:src="@{${rDTO.image}}">
-                </div>
-                <div class="cont">
-                    [[${rDTO.contents}]]
-                </div>
-            </div>
-            <div class="bt_wrap">
-                <a href="/post/postList" class="on">목록</a>
-                <a id="btnEdit" onclick="doEdit()" type="button">수정</a>
-                <a id="btnDelete" onclick="doDelete()" type="button">삭제</a>
-            </div>
-        </div>
-    </div>
-</form>
+    dd {
+        font-size: 120%
+    }
+
+    .hangle-h1 {
+        font-family: "Dongle", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 40px;
+        margin-bottom: 0px;
+        color: black
+
+    }
+
+    .cont {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 80%;
+        height: 340px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
+
+    .box {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 700px;
+        height: 50px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
 
 
+    input {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 700px;
+        height: 50px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
 
-<!-- Start Script -->
-<script src="/assets/js/notice/jquery-1.11.0.min.js"></script>
-<script src="/assets/js/notice/jquery-migrate-1.2.1.min.js"></script>
-<script src="/assets/js/notice/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/notice/templatemo.js"></script>
-<script src="/assets/js/notice/custom.js"></script>
+    .form_btn {
+        background-color: #ebecf0;
+        color: black;
+        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 3px 45px;
+        margin: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+    }
+
+    .wrap {
+        max-width: 480px;
+        margin: 0 auto;
+        background-color: #fff;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .reviewform textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .rating .rate_radio {
+        position: relative;
+        display: inline-block;
+        z-index: 20;
+        opacity: 0.001;
+        width: 60px;
+        height: 60px;
+        background-color: #fff;
+        cursor: pointer;
+        vertical-align: top;
+        display: none;
+    }
+
+    .rating .rate_radio + label {
+        position: relative;
+        display: inline-block;
+        margin-left: -4px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-image: url('/assets/images/starrate.png');
+        background-repeat: no-repeat;
+        background-size: 60px 60px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+
+    .rating .rate_radio:checked + label {
+        background-color: #ff8;
+    }
+
+    .warning_msg {
+        display: none;
+        position: relative;
+        text-align: center;
+        background: #ffffff;
+        line-height: 26px;
+        width: 100%;
+        color: red;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+</style>
 <!-- jquery plugins here-->
-<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<!-- jquery -->
+<script src="/assets/js/jquery-1.12.1.min.js"></script>
 <!-- popper js -->
 <script src="/assets/js/popper.min.js"></script>
 <!-- bootstrap js -->
@@ -215,7 +286,7 @@
 <!-- easing js -->
 <script src="/assets/js/jquery.magnific-popup.js"></script>
 <!-- swiper js -->
-<script src="/assets/js/swiper.min.js"></script>
+<script src="/assets/js/lightslider.min.js"></script>
 <!-- swiper js -->
 <script src="/assets/js/masonry.pkgd.js"></script>
 <!-- particles js -->
@@ -223,6 +294,7 @@
 <script src="/assets/js/jquery.nice-select.min.js"></script>
 <!-- slick js -->
 <script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/swiper.jquery.js"></script>
 <script src="/assets/js/jquery.counterup.min.js"></script>
 <script src="/assets/js/waypoints.min.js"></script>
 <script src="/assets/js/contact.js"></script>
@@ -231,10 +303,112 @@
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/js/mail-script.js"></script>
 <script src="/assets/js/stellar.js"></script>
-<script src="/assets/js/price_rangs.js"></script>
 <!-- custom js -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
-<!-- End Script -->
+<script th:inline="javascript">
+    // Controller에서 받은 세션에 저장된 값
+    const ss_id = /*[[${session.SS_USER}]]*/ '';
+
+    // 공지사항 게시글 작성자 아이디
+    const id = /*[[${rDTO.regId}]]*/ '';
+
+    // 현재 글번호, 자바에서 받을 변수들은 자바스크립트 변수로 저장하면 편함
+    const postNumber = /*[[${rDTO.postNumber}]]*/ '';
+
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+        $("#btnEdit").on("click", function () {
+            doEdit();
+        })
+        $("#btnDelete").on("click", function () {
+            doDelete();
+        })
+        $("#btnList").on("click", function () {
+            location.href = "/post/postList";
+        })
+        $("#btnLike").on("click", function () {
+            doLike();
+        })
+        $("#btnComment").on("click", function () {
+            location.href = "/comment" + "?postNumber=" + postNumber
+        })
+    })
+
+    //수정하기
+    function doEdit() {
+        if (ss_id === id) {
+            location.href = "/post/postEditInfo?postNumber=" + postNumber;
+
+        } else if (ss_id === "") {
+            alert("로그인 하시길 바랍니다.");
+
+        } else {
+            alert("본인이 작성한 글만 수정 가능합니다.");
+
+        }
+    }
+
+    //좋아요
+    function doLike() {
+        if (ss_id === "") {
+            alert("로그인 하시길 바랍니다.");
+        } else {
+            $.ajax({
+                url: "/like/update",
+                type: "post", // 전송방식은 Post
+                dataType: "JSON", // 전송 결과는 JSON으로 받기
+                data: {
+                    "postNumber": postNumber
+                }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                    if (json.result === 1) { // 로그인 성공
+                        alert(json.msg); // 메시지 띄우기
+                        location.reload()
+
+                    } else { // 로그인 실패
+                        alert(json.msg); // 메시지 띄우기
+                    }
+
+                }
+            })
+        }
+    }
+
+    //삭제하기
+    function doDelete() {
+        if (ss_id === id) {
+            if (confirm("작성한 글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/post/postDelete",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: {
+                        "postNumber": postNumber
+                    }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                    success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
+
+                        if (json.result === 1) { // 로그인 성공
+                            alert(json.msg); // 메시지 띄우기
+                            location.href = "/post/postList"; // 로그인 성공 페이지 이동
+
+                        } else { // 로그인 실패
+                            alert(json.msg); // 메시지 띄우기
+                        }
+
+                    }
+                })
+            }
+
+        } else if (ss_id === "") {
+            alert("로그인 하시길 바랍니다.");
+
+        } else {
+            alert("본인이 작성한 글만 삭제 가능합니다.");
+        }
+    }
+</script>
 </body>
 
 </html>

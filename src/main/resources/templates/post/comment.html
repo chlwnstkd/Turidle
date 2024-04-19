@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>aranoz</title>
+    <title></title>
     <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="icon" href="/assets/images/favicon.png">
     <!-- Bootstrap CSS -->
@@ -26,118 +26,151 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
     <script src="/assets/js/jquery-3.6.0.min.js"></script>
-    <!--    리뷰 작성-->
-    <script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
-        $(document).ready(function () {
-            let f = document.getElementById("f");
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
 
-            console.log("goodsNumber : " + goodsNumber)
-            console.log("goodsName : " + goodsName)
-            console.log("traderId : " + traderId)
-            console.log("customerId : " + customerId)
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet" />
 
-            $("#writeReview").on("click", function () {
-                writeReview(f)
-            })
-            $("#doBasket").on("click", function () {
-                doBasket()
-            })
-            $("#changeLike").on("click", function () {
-                changeLike()
-            })
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet" />
 
-            function writeReview(f) {
-                if (customerId === "") {
-                    alert("로그인 하세요")
-                    location.href = "/customer/login";
-                }
-                if (f.rating.rate == 0) {
-                    f.rating.focus()
-                    return;
-                }
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+        button {
+            font-family: "Dongle", sans-serif;
+        }
 
-                // 모든 체크된 별점을 가져오기
-                const checkedRatings = document.querySelectorAll("input[name='rating']:checked");
+    </style>
 
-                // 마지막으로 체크된 별점 값 가져오기
-                const selectedRating = checkedRatings.length > 0 ? checkedRatings[checkedRatings.length - 1].value : null;
-
-                var reviewContents = f.contents.value.trim();
-                console.log(selectedRating)
-                console.log(reviewContents)
-                $.ajax({
-                    url: "/review/insertReview",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: {
-                        rating: selectedRating,
-                        contents: reviewContents,
-                        traderId: traderId,
-                        goodsName: goodsName,
-                        goodsNumber: goodsNumber,
-                    },
-                    success: function (json) {
-
-                        if (json.result === 1) {
-                            alert(json.msg);
-                            location.href = "/customer/single-product?goodsNumber=" + goodsNumber;
-
-                        } else {
-                            alert(json.msg);
-                        }
-
-                    }
-                })
-            }
-        })
-    </script>
 </head>
 
-<body>
+<body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
+<div th:replace="/header.html"></div>
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent"
-             style="height: 80vh; text-align: center; background-image: url(/img/imogi.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
-            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
-                <div class="row">
-                    <div class="col-lg-6">
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab" style="width: 100%">
+                <div class="row" style="margin-top: 5%;display: grid" >
+                    <!-- 페이지네이션 영역-->
+                    <div style="display: flex; margin-left: auto; margin-right: auto" >
+                        <div class="mx-auto">
+                            <ul class="pagination pagination-primary" id="pagination">
+                                <li class="page-item">
+                                    <a class="page-link" th:attr="onclick='pageMove(\'' + 1 + '\')'">&laquo;</a>
+                                </li>
+                                <!-- 이전 페이지로 이동하는 링크 -->
+                                <li class="page-item" th:if="${currentPage > 1}">
+                                    <a class="page-link" th:attr="onclick='pageMove(\'' + ${currentPage - 1} + '\')'"><</a>
+                                </li>
+                                <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                                <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                                    th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                    <a class="page-link" th:attr="onclick='pageMove(\'' + ${pageNumber} + '\')'"
+                                       th:text="${pageNumber}"></a>
+                                </li>
+                                <!-- 다음 페이지로 이동하는 링크 -->
+                                <li class="page-item" th:if="${currentPage < totalPages}">
+                                    <a class="page-link" th:attr="onclick='pageMove(\'' + ${currentPage + 1} + '\')'">></a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" th:onclick="pageMove('${totalPages}')">&raquo;</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- 페이지네이션 끝 -->
+                    <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 100%">
                         <div class="review_list" th:each="dto:${rList}">
-                            <div class="review_item">
-                                <div class="media">
-                                    <div class="d-flex">
-                                        <div style="white-space: pre-line" th:text="${dto.commentNumber}">
-                                        </div>
+                            <div class="review_item" style="text-align: center; margin-left: 15%;justify-content: center; max-width: 65%">
+                                <hr>
+                                <div class="media" style="display: block;">
+                                    <div class="dropdown" style="float: right;">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="background-color: #17A2B8">
+                                            <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                                   th:onclick="deleteComment([[${dto.commentNumber}]],[[${dto.userId}]])">삭제하기</a></li>
+                                            <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                                   th:onclick="updateComment([[${dto.commentNumber}]],[[${dto.userId}]],[[${dto.contents}]])">수정하기</a></li>
+                                        </ul>
                                     </div>
-                                    <br>
-                                    <div style="white-space: pre-line" th:text="${dto.contents}">
-                                    </div>
-                                    <hr>
+                                    <div class="d-flex" style="white-space: pre-line;font-size: 24px; float: left"
+                                         th:text="${dto.userId}"></div>
+                                    <br><br>
+                                    <div style="white-space: pre-line; float: left; font-size: 20px;"  th:text="${dto.contents}"></div>
                                 </div>
-                                <div>
-                                    <input type="text" id="comment" name="comment">
-                                    <button id="btnWrite" class="form_btn" type="button">작성</button>
-                                </div>
+                                <br>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div style="text-align: center; justify-content : center;margin-top: 7%">
+                <input type="text" id="comment" name="comment">
+                <button id="btnWrite" class="form_btn" type="button" style="font-size: 30px">작성</button>
+            </div>
         </div>
+    </div>
 </section>
 <!--================End Product Description Area =================-->
 
 <style>
+    input {
+        background: #eee;
+        padding: 16px;
+        margin: 8px 0;
+        width:700px;
+        height:50px;
+        font-size:20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
+    .form_btn {
+        background-color: #ebecf0;
+        color: black;
+        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 3px 45px;
+        margin: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+    }
     .wrap {
         max-width: 480px;
-        margin: 0 auto; /* 화면 가운데로 */
+        margin: 0 auto;
         background-color: #fff;
         height: 100%;
         padding: 20px;
         box-sizing: border-box;
-
     }
 
     .reviewform textarea {
@@ -220,6 +253,135 @@
 <!-- custom js -->
 <script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script th:inline="javascript">
+
+    const ss_id = /*[[${session.SS_USER}]]*/ '';
+    var changeWrite = "w";
+    var updateNumber = "";
+
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+        // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+        $("#btnWrite").on("click", function () {
+            doSubmit(); // 공지사항 수정하기 실행
+        });
+    });
+
+    function deleteComment(commentNumber, userId) {
+        let postNumber = /*[[${postNumber}]]*/ '';
+
+        if (ss_id === userId) {
+
+            $.ajax({
+                url: "/comment/deleteComment",
+                type: "POST",
+                dataType: "JSON",
+                data: {commentNumber: commentNumber},
+            }).then(function (json) {
+
+                if (json.result === 0) {
+                    alert(json.msg)
+                } else {
+                    location.href = "/comment?postNumber=" + postNumber;
+                }
+            });
+
+        } else if (ss_id === "") {
+            alert("로그인 하시길 바랍니다.");
+
+        } else {
+            alert("본인이 작성한 글만 삭제 가능합니다.");
+
+        }
+    }
+
+    function updateComment(commentNumber ,userId, contents) {
+
+        if (ss_id === userId) {
+
+            document.getElementById("comment").value = contents;
+            document.getElementById("btnWrite").innerHTML = "수정";
+            changeWrite = "c";
+            updateNumber = commentNumber;
+
+        } else if (ss_id === "") {
+            alert("로그인 하시길 바랍니다.");
+
+        } else {
+            alert("본인이 작성한 글만 수정 가능합니다.");
+        }
+    }
+
+    function doSubmit() {
+
+        let postNumber = /*[[${postNumber}]]*/ '';
+        let comment = document.getElementById("comment").value;
+
+        console.log(comment)
+
+        if (ss_id === "") {
+            alert("로그인 후 이용가능합니다.");
+            return;
+        }
+        if (comment === "") {
+            alert("내용을 입력하시기 바랍니다.");
+            return;
+        }
+        if (changeWrite === "c") {
+            $.ajax({
+                url: "/comment/updateComment",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    contents: comment,
+                    commentNumber: updateNumber
+                },
+            }).then(function () {
+                    changeWrite = "w"
+                    location.reload(true)
+                    updateNumber = "";
+                }
+            )
+        }else {
+
+            $.ajax({
+                url: "/comment/insertComment",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    comment: comment,
+                    postNumber: postNumber
+                },
+            }).then(function () {
+                location.reload(true);
+            });
+        }
+    }
+
+    // 페이지 이동
+    function pageMove(page) {
+
+        let postNumber = /*[[${postNumber}]]*/ '';
+
+        console.log(page)
+        $.ajax({
+            url: "/comment",
+            type: "get",
+            contentType: "application/json",
+            data: {
+                page: parseInt(page, 10),
+                postNumber : postNumber
+            },
+            success: function () {
+                location.href = "/comment?postNumber=" + postNumber + "&page=" + page
+            },
+            error: function (xhr, status, error) {
+                // 오류가 발생했을 때 수행할 동작
+            }
+        });
+
+    }
+</script>
 </body>
 
 </html>

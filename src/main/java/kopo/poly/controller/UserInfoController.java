@@ -3,6 +3,7 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.MailDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.UserInfoDTO;
@@ -33,14 +34,14 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".login Start!");
 
-        return "login";
+        return "/user/login";
     }
     @GetMapping(value = "searchId")
     public String searchId() {
 
         log.info(this.getClass().getName() + ".login Start!");
 
-        return "searchId";
+        return "/user/searchId";
     }
 
     @GetMapping(value = "newPassword")
@@ -48,15 +49,38 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".newPassword Start!");
 
-        return "newPassword";
+        return "/user/newPassword";
     }
 
     @GetMapping(value = "userInfo")
-    public String userInfo() {
+    public String userInfo(HttpSession session, ModelMap model) throws Exception {
 
-        log.info(this.getClass().getName() + ".newPassword Start!");
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
-        return "/user/userInfo";
+        String url = "/user/userInfo";
+        if (userId == null) {
+            url = "/index";
+        }
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                .orElseGet(HashMap::new);
+
+        log.info(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email"))));
+
+        UserInfoDTO rDTO = UserInfoDTO.builder(
+            ).userId(String.valueOf(rMap.get("userId"))
+            ).nickname(String.valueOf(rMap.get("nickname"))
+            ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+            ).regDt("regDt"
+            ).build();
+
+        session.setAttribute("NEW_PASSWORD", userId);
+
+        log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email());
+
+        model.addAttribute("rDTO", rDTO);
+        return url;
     }
 
 
@@ -274,12 +298,14 @@ public class UserInfoController {
      * <p>
      * 아이디, 이름, 이메일 일치하면, 비밀번호 재발급 화면 이동
      */
+    @ResponseBody
     @PostMapping(value = "newPasswordProc")
-    public String newPasswordProc(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
+    public MsgDTO newPasswordProc(HttpServletRequest request, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".user/newPasswordProc Start!");
 
         String msg = ""; // 웹에 보여줄 메시지
+        int res = 0;
 
         // 정상적인 접근인지 체크
         String newPassword = CmmUtil.nvl((String) session.getAttribute("NEW_PASSWORD"));
@@ -298,19 +324,79 @@ public class UserInfoController {
             session.setAttribute("NEW_PASSWORD", "");
             session.removeAttribute("NEW_PASSWORD");
 
+            res = 1;
             msg = "비밀번호가 재설정되었습니다.";
 
         } else { // 비정상 접근
             msg = "비정상 접근입니다.";
         }
 
-        model.addAttribute("msg", msg);
-
 
         log.info(this.getClass().getName() + ".user/newPasswordProc End!");
 
-        return "/index";
+        return MsgDTO.builder().msg(msg).result(res).build();
 
+    }
+
+    /**
+     * 아아디 찾기 로직 수행
+     */
+    @ResponseBody
+    @PostMapping(value = "deleteUser")
+    public MsgDTO deleteUser(HttpSession session) throws Exception {
+        log.info(this.getClass().getName() + ".user/deleteUser Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+
+        int res = 0;
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+
+
+        int success = Optional.ofNullable(userInfoService.deleteUser(pDTO))
+                .orElse(0);
+
+        String msg ="";
+
+        if(success != 0) {
+
+            msg = "삭제에 성공했습니다";
+
+            res = 1;
+
+        }
+
+        log.info(this.getClass().getName() + ".user/deleteUser End!");
+
+        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
+
+        return dto;
+
+    }
+
+    @GetMapping(value = "/userInfoUpdate")
+    public String userInfoUpdate(HttpSession session, ModelMap model) throws Exception{
+        log.info(this.getClass().getName() + ".userInfoUpdate start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+
+        log.info(userId);
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+
+        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                .orElseGet(HashMap::new);
+
+        UserInfoDTO rDTO = UserInfoDTO.builder(
+        ).userId(String.valueOf(rMap.get("userId"))
+        ).nickname(String.valueOf(rMap.get("nickname"))
+        ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+        ).build();
+
+        model.addAttribute("rDTO", rDTO);
+
+        log.info(this.getClass().getName() + ".userInfoUpdate start!");
+        return "/user/userInfoUpdate";
     }
     @ResponseBody
     @PostMapping(value = "loginOut")
@@ -319,14 +405,55 @@ public class UserInfoController {
 
         String msg;
 
-        session.setAttribute("SS_USER_ID", "");
-        session.removeAttribute("SS_USER_ID");
+        session.setAttribute("SS_USER", "");
+        session.removeAttribute("SS_USER");
 
         MsgDTO dto = MsgDTO.builder().result(1).msg("로그아웃하였습니다").build();
 
         log.info(this.getClass().getName() + ".loginOut End!");
 
         return dto;
+    }
 
+
+
+    @ResponseBody
+    @PostMapping(value = "updateInfo")
+    public MsgDTO updateInfo(HttpServletRequest request, HttpSession session) throws Exception {
+        log.info(this.getClass().getName() + ".updateInfo Start!");
+
+        // 성공이면 1, 실패면 0
+        int res = 0;
+        String msg = "";
+
+        try {
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+            String email = CmmUtil.nvl(request.getParameter("email"));
+            String nickname = CmmUtil.nvl(request.getParameter("nickname"));
+
+
+            log.info("userId : " + userId);
+            log.info("email : " + email);
+            log.info("nickname : " + nickname);
+
+            UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).email(EncryptUtil.encAES128CBC(email)).nickname(nickname).build();
+
+            res = userInfoService.updateUserInfo(pDTO);
+
+            log.info("res : " + res);
+
+            if (res == 1) {
+                msg = "수정되었습니다";
+            } else {
+                msg = "오류로 인해 수정에 실패하였습니다";
+            }
+        } catch (Exception e) {
+            msg = "실패하였습니다 : " + e;
+            log.info(e.toString());
+            e.printStackTrace();
+        } finally {
+            log.info(this.getClass().getName() + ".updateInfo End!");
+        }
+        return MsgDTO.builder().msg(msg).result(res).build();
     }
 }

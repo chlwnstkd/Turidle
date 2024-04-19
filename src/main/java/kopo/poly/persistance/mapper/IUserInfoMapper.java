@@ -32,4 +32,7 @@ public interface IUserInfoMapper {
     Map<String, Object> getUserId(UserInfoDTO pDTO) throws Exception;
 
     int updatePassword(UserInfoDTO pDTO) throws Exception;
+    int deleteUser(UserInfoDTO pDTO) throws Exception;
+    int updateUserInfo(UserInfoDTO pDTO) throws Exception; // 소비자 정보 수정
+
 }

@@ -1,5 +1,6 @@
 package kopo.poly.service.impl;
 
+import kopo.poly.dto.LikeDTO;
 import kopo.poly.dto.PostDTO;
 import kopo.poly.persistance.mapper.IPostMapper;
 import kopo.poly.service.IPostService;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,11 +20,11 @@ public class PostService implements IPostService {
 
     /* 게시글 목록 조회 코드 */
     @Override
-    public List<PostDTO> getPostList(String type) throws Exception {
+    public List<Map<String, Object>> getPostList() throws Exception {
 
         log.info(this.getClass().getName() + ".getPostList start!");
 
-        return postMapper.getPostList(type);
+        return postMapper.getPostList();
     }
 
     /* 게시글 정보 조회 코드 */
@@ -31,10 +33,20 @@ public class PostService implements IPostService {
     public PostDTO getPostInfo(PostDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".getPostInfo start!");
 
-            log.info("Update ReadCNT");
-            postMapper.updatePostReadCnt(pDTO);
+        log.info("Update ReadCNT");
+        postMapper.updatePostReadCnt(pDTO);
 
-        return postMapper.getPostInfo(pDTO);
+        Map<String, Object> rMap = postMapper.getPostInfo(pDTO);
+
+        PostDTO rDTO = PostDTO.builder().postNumber(String.valueOf(rMap.get("postNumber"))
+        ).contents(String.valueOf(rMap.get("contents"))
+        ).readCount(String.valueOf(rMap.get("readCount"))
+        ).regDt(String.valueOf(rMap.get("regDt"))
+        ).regId(String.valueOf(rMap.get("regId"))
+        ).title(String.valueOf(rMap.get("title"))
+        ).build();
+
+        return rDTO;
     }
 
     /* 게시글 정보 등록 코드 */
@@ -58,17 +70,5 @@ public class PostService implements IPostService {
     public void deletePostInfo(PostDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".deletePostInfo start!");
         postMapper.deletePostInfo(pDTO);
-    }
-
-    /* 게시글 번호 조회 코드 */
-    @Override
-    public int getPostNumber() throws Exception {
-        return 0;
-    }
-
-    /* 게시글 조회수 증가 코드 */
-    @Override
-    public void updatePostReadCnt(PostDTO pDTO) throws Exception {
-
     }
 }

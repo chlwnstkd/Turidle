@@ -12,6 +12,10 @@ public interface IUserInfoService {
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
 
     int getUserLogin(UserInfoDTO pDTO) throws Exception;
+    Map<String, Object> getUserInfo(UserInfoDTO pDTO) throws Exception;
     Map<String, Object> searchUserIdOrPasswordProc(UserInfoDTO pDTO) throws Exception;
     int newPasswordProc(UserInfoDTO pDTO) throws Exception;
+    int updateUserInfo(UserInfoDTO pDTO) throws Exception;
+    int deleteUser(UserInfoDTO pDTO) throws Exception;
+
 }

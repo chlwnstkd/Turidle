@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="zxx">
 
 <head>
-
-    <title>TMI - 게시판</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>aranoz</title>
+    <title></title>
     <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="icon" href="/assets/images/favicon.png">
     <!-- Bootstrap CSS -->
@@ -19,8 +14,7 @@
     <link rel="stylesheet" href="/assets/css/animate.css">
     <!-- owl carousel CSS -->
     <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
-    <!-- nice select CSS -->
-    <link rel="stylesheet" href="/assets/css/nice-select.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/all.css">
     <!-- flaticon CSS -->
@@ -28,142 +22,288 @@
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
     <!-- font awesome CSS -->
     <link rel="stylesheet" href="/assets/css/magnific-popup.css">
-    <!-- swiper CSS -->
-    <link rel="stylesheet" href="/assets/css/slick.css">
-    <link rel="stylesheet" href="/assets/css/price_rangs.css">
     <!-- style CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
 
-    <link rel="apple-touch-icon" href="/img/apple-icon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/assets/css/notice/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/notice/templatemo.css">
-    <link rel="stylesheet" href="/assets/css/notice/css.css">
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
 
-    <!-- Load fonts style after rendering the layout styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
-    <link rel="stylesheet" href="/assets/css/notice/fontawesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/assets/css/notice/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/assets/css/notice/all.min.css">
-    <script type="text/javascript">
-        //상세보기 이동
-        function doDetail(postNumber) {
-            location.href = "/post/postInfo?postNumber=" + postNumber;
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
+    <style>
+        button {
+            font-family: "Dongle", sans-serif;
         }
-        function goToNotice() {
-            window.location.href = "/post/postList?type=notice"; // 공지사항 페이지 URL로 변경해야 합니다.
-        }
 
-        function goToPost() {
-            window.location.href = "/post/postList"; // 일반게시글 페이지 URL로 변경해야 합니다.
-        }
+    </style>
 
-        function goToVerification() {
-            window.location.href = "/post/postList?type=verification"; // 인증게시글 페이지 URL로 변경해야 합니다.
-        }
-    </script>
 </head>
 
-<body>
-<!--::header part start::-->
-<header class="main_menu home_menu">
+<body style=" background: #ebecf0;">
+<!--================Product Description Area =================-->
+<div th:replace="/header.html"></div>
+<section class="product_description_area">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-12">
-                <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="navbar-brand" href="/customer/customerIndex"><img src="/assets/images/bird/logo2.png" alt="logo" style="width: 100px" , height="50px"></a>
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
-<!-- Header part end-->
-
-<!-- breadcrumb start-->
-<section class="breadcrumb" style="background-color: azure">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="breadcrumb_iner">
-                    <img src="/assets/images/bird/bird1.png" style="width: 400px">
-                    <div class="breadcrumb_iner_item">
-                        <h2 class="fa-solid" style="font-family: BMJUA,serif; font-size: 36px; color: #222222">게시판</h2>
-                        <p style="font-family: BMJUA,serif; font-size: 18px; color: #777777">새로운 컨텐츠를 작성하세요!</p>
+        <div class="tab-content" id="myTabContent"
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
+                 style="width: 100%">
+                <div class="row" style="margin-top: 5%;display: grid">
+                    <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 80%">
+                        <div class="review_list" style="width: 95%">
+                            <form name="f" id="f">
+                                <div class="board_list">
+                                    <div class="top">
+                                        <div class="title">제목</div>
+                                        <div class="writer">글쓴이</div>
+                                        <div class="date">작성일</div>
+                                        <div class="count">조회</div>
+                                    </div>
+                                    <div th:each="dto:${rList}" class="content_row" th:attr="onclick='doDetail(\'' + ${dto.postNumber} + '\')'">
+                                        <div class="title">[[${dto.title}]]</div>
+                                        <div class="writer">[[${dto.regId}]]</div>
+                                        <div class="date">[[${dto.regDt}]]</div>
+                                        <div class="count">[[${dto.readCount}]]</div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <!-- 페이지네이션 영역-->
+                                <div style="display: flex">
+                                    <div class="mx-auto" style="padding-left: 5%">
+                                        <ul class="pagination pagination-primary" id="pagination">
+                                            <li class="page-item">
+                                                <a class="page-link" th:href="@{/post/postList?page=1}">&laquo;</a>
+                                            </li>
+                                            <!-- 이전 페이지로 이동하는 링크 -->
+                                            <li class="page-item" th:if="${currentPage > 1}">
+                                                <a class="page-link" th:href="@{/post/postList(page=${currentPage - 1})}">&lt;</a>
+                                            </li>
+                                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                                <a class="page-link" th:href="@{/post/postList(page=${pageNumber})}" th:text="${pageNumber}"></a>
+                                            </li>
+                                            <!-- 다음 페이지로 이동하는 링크 -->
+                                            <li class="page-item" th:if="${currentPage < totalPages}">
+                                                <a class="page-link" th:href="@{/post/postList(page=${currentPage + 1})}">&gt;</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" th:href="@{/post/postList(page=${totalPages})}">&raquo;</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div style="text-align: center; justify-content : center;margin-top: 10%">
+                <button id="btnList" class="form_btn" type="button" style="font-size: 30px">글쓰기</button>
             </div>
         </div>
     </div>
 </section>
-<!-- breadcrumb end-->
+<!--================End Product Description Area =================-->
+<style>
+    .board_list {
+        display: flex;
+        flex-direction: column;
+        height: 50vh;
+    }
 
-<!-- navigation -->
-<div th:replace="customerNav.html"></div>
-<!-- ---------- -->
-<div class="card-body" style="display: flex">
-    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="notice" onclick="goToNotice()">공지사항</div>
-    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="post" onclick="goToPost()">일반게시글</div>
-    <div class="btn btn-outline-secondary" style="flex: 1; margin-left: 30px; margin-right: 30px" id="verification" onclick="goToVerification()">인증게시글</div>
-</div>
-<div class="board_wrap">
-    <div class="board_list_wrap">
-        <div class="board_list">
-            <div class="top">
-                <div class="title" style="width: 50%">제목</div>
-                <div class="writer" style="width: 15%">글쓴이</div>
-                <div class="date" style="width: 15%">작성일</div>
-                <div class="count" style="width: 15%">조회</div>
-            </div>
-            <div th:each="dto:${rList}">
-                <div class="title" th:attr="onclick='doDetail(\'' + ${dto.postNumber} + '\')'" style="width: 50%">[[${dto.title}]]</div>
-                <div class="writer" style="width: 15%">[[${dto.customerId}]]</div>
-                <div class="date" style="width: 15%">[[${dto.regDt}]]</div>
-                <div class="count" style="width: 15%">[[${dto.readCount}]]</div>
-            </div>
-        </div>
-        <br />
-        <!-- 페이지네이션 영역-->
-        <div style="display: flex">
-            <div class="mx-auto">
-                <ul class="pagination pagination-primary" id="pagination">
-                    <li class="page-item">
-                        <a class="page-link" th:href="@{/templates/post/postList?page=1}">&laquo;</a>
-                    </li>
-                    <!-- 이전 페이지로 이동하는 링크 -->
-                    <li class="page-item" th:if="${currentPage > 1}">
-                        <a class="page-link" th:href="@{/templates/post/postList(page=${currentPage - 1})}">&lt;</a>
-                    </li>
-                    <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
-                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
-                        <a class="page-link" th:href="@{/templates/post/postList(page=${pageNumber})}" th:text="${pageNumber}"></a>
-                    </li>
-                    <!-- 다음 페이지로 이동하는 링크 -->
-                    <li class="page-item" th:if="${currentPage < totalPages}">
-                        <a class="page-link" th:href="@{/templates/post/postList(page=${currentPage + 1})}">&gt;</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" th:href="@{/templates/post/postList(page=${totalPages})}">&raquo;</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="bt_wrap">
-            <a href="/post/postReg" class="on">글쓰기</a>
-        </div>
-    </div>
-</div>
+    .top {
+        display: flex;
+        flex-direction: row;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .top > div {
+        padding: 8px;
+        text-align: center;
+    }
+
+    .title {
+        width: 50%;
+    }
+
+    .writer,
+    .date,
+    .count {
+        width: 15%;
+    }
+
+    .content_row {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .content_row > div {
+        padding: 8px;
+        text-align: center;
+    }
+</style>
+<style>
+    dt {
+        font-size: 120%
+    }
+
+    dd {
+        font-size: 120%
+    }
+
+    .hangle-h1 {
+        font-family: "Dongle", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 40px;
+        margin-bottom: 0px;
+        color: black
+
+    }
+
+    .cont {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 80%;
+        height: 340px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
+
+    .box {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 700px;
+        height: 50px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
 
 
-<!-- Start Script -->
-<script src="/assets/js/notice/jquery-1.11.0.min.js"></script>
-<script src="/assets/js/notice/jquery-migrate-1.2.1.min.js"></script>
-<script src="/assets/js/notice/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/notice/templatemo.js"></script>
-<script src="/assets/js/notice/custom.js"></script>
+    input {
+        background: #eee;
+        padding: 16px;
+        margin: auto;
+        width: 700px;
+        height: 50px;
+        font-size: 20px;
+        border: 0;
+        outline: none;
+        border-radius: 20px;
+        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    }
+
+    .form_btn {
+        background-color: #ebecf0;
+        color: black;
+        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 3px 45px;
+        margin: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+    }
+
+    .wrap {
+        max-width: 480px;
+        margin: 0 auto;
+        background-color: #fff;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .reviewform textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .rating .rate_radio {
+        position: relative;
+        display: inline-block;
+        z-index: 20;
+        opacity: 0.001;
+        width: 60px;
+        height: 60px;
+        background-color: #fff;
+        cursor: pointer;
+        vertical-align: top;
+        display: none;
+    }
+
+    .rating .rate_radio + label {
+        position: relative;
+        display: inline-block;
+        margin-left: -4px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-image: url('/assets/images/starrate.png');
+        background-repeat: no-repeat;
+        background-size: 60px 60px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+
+    .rating .rate_radio:checked + label {
+        background-color: #ff8;
+    }
+
+    .warning_msg {
+        display: none;
+        position: relative;
+        text-align: center;
+        background: #ffffff;
+        line-height: 26px;
+        width: 100%;
+        color: red;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0;
+    }
+</style>
 <!-- jquery plugins here-->
-<!--<script src="/assets/js/jquery-1.12.1.min.js"></script>-->
+<!-- jquery -->
+<script src="/assets/js/jquery-1.12.1.min.js"></script>
 <!-- popper js -->
 <script src="/assets/js/popper.min.js"></script>
 <!-- bootstrap js -->
@@ -171,7 +311,7 @@
 <!-- easing js -->
 <script src="/assets/js/jquery.magnific-popup.js"></script>
 <!-- swiper js -->
-<script src="/assets/js/swiper.min.js"></script>
+<script src="/assets/js/lightslider.min.js"></script>
 <!-- swiper js -->
 <script src="/assets/js/masonry.pkgd.js"></script>
 <!-- particles js -->
@@ -179,6 +319,7 @@
 <script src="/assets/js/jquery.nice-select.min.js"></script>
 <!-- slick js -->
 <script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/swiper.jquery.js"></script>
 <script src="/assets/js/jquery.counterup.min.js"></script>
 <script src="/assets/js/waypoints.min.js"></script>
 <script src="/assets/js/contact.js"></script>
@@ -187,11 +328,22 @@
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="/assets/js/mail-script.js"></script>
 <script src="/assets/js/stellar.js"></script>
-<script src="/assets/js/price_rangs.js"></script>
 <!-- custom js -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
-<!-- End Script -->
-<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+        //상세보기 이동
+        window.doDetail = function (postNumber) {
+            location.href = "/post/postInfo?postNumber=" + postNumber;
+        };
+        $("#btnList").on("click", function () {
+            location.href = "/post/postReg";
+        })
+    })
+
+</script>
 </body>
 
 </html>

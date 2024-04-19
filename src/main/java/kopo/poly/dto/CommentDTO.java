@@ -1,16 +1,18 @@
 package kopo.poly.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
-public class CommentDTO {
-    private String commentNumber;
-    private String postNumber;
-    private String customerId;
-    private String regDt;
-    private String contents;
+@Builder
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+public record CommentDTO (
+         String commentNumber,
+         String userId,
+         String postNumber,
+         String regDt,
+         String contents
+){
 }

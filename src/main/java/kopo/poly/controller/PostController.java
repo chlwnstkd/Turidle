@@ -1,8 +1,13 @@
 package kopo.poly.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.CommentDTO;
+import kopo.poly.dto.LikeDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.PostDTO;
-import kopo.poly.service.IFileService;
+import kopo.poly.service.ICommentService;
+import kopo.poly.service.ILikeService;
 import kopo.poly.service.IPostService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -27,7 +30,8 @@ import java.util.Optional;
 @Controller
 public class PostController {
     private final IPostService postService;
-    private final IFileService fileService;
+    private final ILikeService likeService;
+    private  final ICommentService commentService;
 
     //GET 방식은 데이터 조회, POST 방식에서 새로운 데이터 추가.
 
@@ -39,14 +43,26 @@ public class PostController {
         log.info(this.getClass().getName() + ".postList Start!");
 
 
-        String type = CmmUtil.nvl(request.getParameter("type"));
+        List<Map<String, Object>> pList = postService.getPostList();
+        if (pList == null) pList = new ArrayList<>();
 
-        List<PostDTO> rList = postService.getPostList(type);
-        if (rList == null) rList = new ArrayList<>();
+        log.info(pList.toString());
 
-        log.info(rList.toString());
+        List<PostDTO> rList = new ArrayList<>();
+
+        for (Map<String, Object> rMap : pList) {
+            PostDTO rDTO = PostDTO.builder().postNumber(String.valueOf(rMap.get("postNumber"))
+            ).readCount(String.valueOf(rMap.get("readCount"))
+            ).regDt(String.valueOf(rMap.get("regDt"))
+            ).regId(String.valueOf(rMap.get("regId"))
+            ).title(String.valueOf(rMap.get("title"))
+            ).build();
+
+            rList.add(rDTO);
+        }
+
         // 페이지당 보여줄 아이템 개수 정의
-        int itemsPerPage = 3;
+        int itemsPerPage = 10;
 
         // 페이지네이션을 위해 전체 아이템 개수 구하기
         int totalItems = rList.size();
@@ -57,6 +73,11 @@ public class PostController {
         // 현재 페이지에 해당하는 아이템들만 선택하여 rList에 할당
         int fromIndex = (page - 1) * itemsPerPage;
         int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
+
+        log.info(fromIndex + "");
+        log.info(toIndex + "");
+        log.info(itemsPerPage + "");
+
         rList = rList.subList(fromIndex, toIndex);
 
         model.addAttribute("rList", rList);
@@ -66,12 +87,7 @@ public class PostController {
         log.info(this.getClass().getName() + ".페이지 번호 : " + page);
 
         log.info(this.getClass().getName() + ".postList End!");
-        if(type.equals("notice")) {
-            return "/post/noticeList";
-        }
-        if(type.equals("verification")) {
-            return "/post/verificationPostList";
-        }
+
         return "/post/postList";
     }
 
@@ -89,33 +105,22 @@ public class PostController {
     // 구현완료(11/10)
     @ResponseBody
     @PostMapping(value = "/postInsert")
-    public MsgDTO postInsert(HttpServletRequest request, HttpSession session, @RequestParam(value = "fileUpload") MultipartFile mf) {
+    public MsgDTO postInsert(HttpServletRequest request, HttpSession session) {
         log.info(this.getClass().getName() + ".postInsert Start!");
         String msg = "";
         int res = 0;
-        MsgDTO dto = null;
 
         try {
-            String customer_id = CmmUtil.nvl((String) session.getAttribute("SS_ID"));
+            String regId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
             String title = CmmUtil.nvl(request.getParameter("title"));
             String contents = CmmUtil.nvl(request.getParameter("contents"));
-            String type = "Post";
-            log.info("session customer_id : " + customer_id);
+
+            log.info("regId : " + regId);
             log.info("title : " + title);
             log.info("contents : " + contents);
 
-            PostDTO pDTO = new PostDTO();
-            pDTO.setCustomerId(customer_id);
-            pDTO.setTitle(title);
-            pDTO.setContents(contents);
-            if (!mf.isEmpty()) {
-                String image = mf.getOriginalFilename();
-                String fileName = image;
-                String folderName = type + "/" + LocalDate.now() + "/";
-                fileService.upload(fileName, folderName, mf);
-                pDTO.setImage(fileService.getFileURL(folderName, fileName));
-                log.info(pDTO.getImage());
-            }
+            PostDTO pDTO = PostDTO.builder().regId(regId).title(title).contents(contents).build();
+
             postService.insertPostInfo(pDTO);
             msg = "등록되었습니다.";
             res = 1;
@@ -126,17 +131,14 @@ public class PostController {
             log.info(e.toString());
             e.printStackTrace();
         } finally {
-            dto = new MsgDTO();
-            dto.setMsg(msg);
-            dto.setResult(res);
-            log.info(dto.toString());
+
             log.info(this.getClass().getName() + ".postInsert End!");
         }
 
-        return dto;
+        return  MsgDTO.builder().msg(msg).result(res).build();
     }
 
-    // 게시글 상세보기 코드
+    // 게시글 상세보기 코드   찬우형의 보물                                                                                                                                                                                                                   내 이름은 준 상 초이! 탐정이죠
     // 구현완료(11/13)
     @GetMapping(value = "/postInfo")
     public String postInfo(HttpServletRequest request, ModelMap model) throws Exception {
@@ -145,13 +147,21 @@ public class PostController {
 
         log.info("postNumber : " + postNumber);
 
-        PostDTO pDTO = new PostDTO();
-        pDTO.setPostNumber(postNumber);
+        PostDTO pDTO = PostDTO.builder().postNumber(postNumber).build();
+
+        LikeDTO lDTO = LikeDTO.builder().postNumber(postNumber).build();
+
+        CommentDTO cDTO = CommentDTO.builder().postNumber(postNumber).build();
+
+        int likeCnt = likeService.getLikeCount(lDTO);
+        int commentCnt = commentService.getCommentCount(cDTO);
 
         PostDTO rDTO = Optional.ofNullable(postService.getPostInfo(pDTO))
-                .orElseGet(PostDTO::new);
+                .orElseGet(() -> PostDTO.builder().build());
 
         model.addAttribute("rDTO", rDTO);
+        model.addAttribute("likeCnt", likeCnt);
+        model.addAttribute("commentCnt", commentCnt);
 
         log.info(this.getClass().getName() + ".postInfo End!");
 
@@ -168,12 +178,10 @@ public class PostController {
 
         log.info("postNumber : " + postNumber);
 
-        PostDTO pDTO = new PostDTO();
-        pDTO.setPostNumber(postNumber);
+        PostDTO pDTO = PostDTO.builder().postNumber(postNumber).build();
 
-        PostDTO rDTO = Optional.ofNullable(postService.getPostInfo(pDTO)).orElseGet(PostDTO::new);
+        PostDTO rDTO = Optional.ofNullable(postService.getPostInfo(pDTO)).orElseGet(() -> PostDTO.builder().build());
 
-        log.info(rDTO.toString());
         model.addAttribute("rDTO", rDTO);
 
         log.info(this.getClass().getName() + ".postEditInfo End!");
@@ -185,39 +193,25 @@ public class PostController {
     // 구현완료(11/13)
     @ResponseBody
     @PostMapping(value = "/postUpdate")
-    public MsgDTO postUpdate(HttpSession session, HttpServletRequest request, @RequestParam(value = "fileUpload") MultipartFile mf) {
+    public MsgDTO postUpdate(HttpSession session, HttpServletRequest request) {
 
         log.info(this.getClass().getName() + ".postUpdate Start!");
 
         String msg = "";
-        int res = 1;
-        MsgDTO dto = null;
+        int res = 0;
 
         try {
-            String customer_id = CmmUtil.nvl((String) session.getAttribute("SS_CUSTOMER_ID"));
+            String regId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
             String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
             String title = CmmUtil.nvl(request.getParameter("title"));
             String contents = CmmUtil.nvl(request.getParameter("contents"));
 
-            log.info("customer_id : " + customer_id);
+            log.info("regId : " + regId);
             log.info("postNumber : " + postNumber);
             log.info("title : " + title);
             log.info("contents : " + contents);
 
-            PostDTO pDTO = new PostDTO();
-            pDTO.setCustomerId(customer_id);
-            pDTO.setPostNumber(postNumber);
-            pDTO.setTitle(title);
-            pDTO.setContents(contents);
-            pDTO.setImage("");
-            if (!mf.isEmpty()) {
-                String image = mf.getOriginalFilename();
-                String fileName = image;
-                String folderName = "Post" + "/" + pDTO.getPostNumber() + "/";
-                fileService.upload(fileName, folderName, mf);
-                pDTO.setImage(fileService.getFileURL(folderName, fileName));
-                log.info(pDTO.getImage());
-            }
+            PostDTO pDTO = PostDTO.builder().regId(regId).postNumber(postNumber).title(title).contents(contents).build();
 
             postService.updatePostInfo(pDTO);
 
@@ -228,13 +222,10 @@ public class PostController {
             log.info(e.toString());
             e.printStackTrace();
         } finally {
-            dto = new MsgDTO();
-            dto.setMsg(msg);
-            dto.setResult(res);
             log.info(this.getClass().getName() + ".postInsert End!");
         }
 
-        return dto;
+        return MsgDTO.builder().msg(msg).result(res).build();
     }
 
     // 게시글 삭제로직 코드
@@ -247,18 +238,16 @@ public class PostController {
 
         String msg = "";
         int res = 0;
-        MsgDTO dto = null;
 
         try {
-            String customer_id = CmmUtil.nvl((String) session.getAttribute("SS_ID"));
+            String regId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
             String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
 
-            log.info("customer_id : " + customer_id);
+            log.info("regId : " + regId);
             log.info("postNumber : " + postNumber);
 
-            PostDTO pDTO = new PostDTO();
-            pDTO.setCustomerId(customer_id);
-            pDTO.setPostNumber(postNumber);
+            PostDTO pDTO = PostDTO.builder().regId(regId).postNumber(postNumber).build();
+
             postService.deletePostInfo(pDTO);
 
             msg = "삭제되었습니다.";
@@ -268,13 +257,10 @@ public class PostController {
             log.info(e.toString());
             e.printStackTrace();
         } finally {
-            dto = new MsgDTO();
-            dto.setResult(res);
-            dto.setMsg(msg);
             log.info(this.getClass().getName() + ".postInsert End!");
         }
 
-        return dto;
+        return MsgDTO.builder().msg(msg).result(res).build();
     }
 }
 

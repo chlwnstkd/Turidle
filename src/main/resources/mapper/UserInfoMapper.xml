@@ -10,7 +10,6 @@
         <result column="PASSWORD" property="password"/>
         <result column="EMAIL" property="email"/>
         <result column="REG_DT" property="regDt"/>
-
     </resultMap>
 
     <!--  userId가 존재하는지 확인  -->
@@ -21,11 +20,19 @@
     </select>
 
     <select id="getUserInfo" parameterType="UserInfoDTO" resultMap="userResult">
-        SELECT USER_ID, NICKNAME, PASSWORD, EMAIL, REG_DT
+        SELECT USER_ID, NICKNAME, EMAIL, REG_DT
         FROM USER_INFO
         WHERE USER_ID = #{userId}
-        AND NICKNAME = #{nickname}
     </select>
+
+    <update id="updateUserInfo" parameterType="UserInfoDTO">
+        UPDATE USER_INFO
+        SET USER_ID = #{userId},
+            NICKNAME = #{nickname},
+            EMAIL = #{email}
+        WHERE USER_ID = #{userId}
+    </update>
+
 
     <select id="getLogin" parameterType="UserInfoDTO" resultMap="userResult">
         SELECT USER_ID, NICKNAME, PASSWORD, EMAIL, REG_DT
@@ -44,17 +51,18 @@
         AND NICKNAME = #{nickname}
         AND EMAIL = #{email}
     </select>
+
+    <delete id="deleteUser" parameterType="UserInfoDTO">
+        DELETE FROM USER_INFO
+        WHERE USER_ID = #{userId}
+    </delete>
+
+
     <update id ="updatePassword" parameterType="UserInfoDTO">
         UPDATE  USER_INFO
         SET PASSWORD = #{password}
         WHERE USER_ID = #{userId}
     </update>
-    <select id="getLoginInfo" resultType="UserInfoDTO">
-        SELECT USER_ID, USER_NAME, PASSWORD, EMAIL, ADDR1, ADDR2,
-               REG_ID, REG_DT, CHG_ID, CHG_DT, USER_SEQ
-        FROM USER_INFO
-        WHERE USER_ID = #{userId}
-    </select>
 
     <!-- 회원 가입 전 이메일 중복체크하기 -->
     <select id="getEmailExists" parameterType="UserInfoDTO" resultType="String">
