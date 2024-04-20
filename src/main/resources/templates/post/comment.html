@@ -131,6 +131,7 @@
                 <button id="btnWrite" class="form_btn" type="button" style="font-size: 30px">작성</button>
             </div>
         </div>
+        <button id="btnList" class="form_btn" type="button" style="font-size: 30px">목록</button>
     </div>
 </section>
 <!--================End Product Description Area =================-->
@@ -265,6 +266,9 @@
         $("#btnWrite").on("click", function () {
             doSubmit(); // 공지사항 수정하기 실행
         });
+        $("#btnList").on("click", function () {
+            location.href = "/post/postList";
+        })
     });
 
     function deleteComment(commentNumber, userId) {
