@@ -53,7 +53,7 @@ public class PostController {
         for (Map<String, Object> rMap : pList) {
             PostDTO rDTO = PostDTO.builder().postNumber(String.valueOf(rMap.get("postNumber"))
             ).readCount(String.valueOf(rMap.get("readCount"))
-            ).regDt(String.valueOf(rMap.get("regDt"))
+            ).regDt(String.valueOf(rMap.get("nickname"))
             ).regId(String.valueOf(rMap.get("regId"))
             ).title(String.valueOf(rMap.get("title"))
             ).build();

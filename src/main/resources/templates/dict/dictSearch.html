@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title></title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
+    <style>
+        button {
+            font-family: "Dongle", sans-serif;
+        }
+
+    </style>
+
+</head>
+
+<body style=" background: #ebecf0;">
+<!--================Product Description Area =================-->
+<div th:replace="/header.html"></div>
+<section class="product_description_area">
+    <div class="container">
+        <div class="tab-content" id="myTabContent"
+             style="height: 93vh; text-align: center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
+                 style="height:30% ;background-image: url(/img/search.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+                <div style="padding-top: 2%; margin-left: 5%; font-size: 80px; color: white">
+                    투리들
+                </div>
+                <div style="padding-top: 2%; margin-right: 10%">
+                    <input type="text" id="text" style="border: none; background: transparent; width: 60%;height: 50px;
+                        margin-left: 13%; font-size: 30px;">
+                    <input type="button" id="btnSearch" class="img-button">
+                </div>
+            </div>
+            <div style="padding-top: 3%; margin-right: 40%;">
+                <a href="/dict/dictDetail" style="color: black; text-decoration: none;;font-size: 30px;">-자세히 검색하기</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Product Description Area =================-->
+<style>
+    input.img-button {
+        background: url("/img/zoom.png");
+        border: none;
+        width: 10%;
+        cursor: pointer;
+        margin-top: 25px;
+    }
+
+    .top > div {
+        padding: 8px;
+        text-align: center;
+    }
+
+
+    .content_row > div {
+        padding: 8px;
+        text-align: center;
+    }
+</style>
+<style>
+    dt {
+        font-size: 120%
+    }
+
+    dd {
+        font-size: 120%
+    }
+
+    .reviewform textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .rating .rate_radio {
+        position: relative;
+        display: inline-block;
+        z-index: 20;
+        opacity: 0.001;
+        width: 60px;
+        height: 60px;
+        background-color: #fff;
+        cursor: pointer;
+        vertical-align: top;
+        display: none;
+    }
+
+    .rating .rate_radio + label {
+        position: relative;
+        display: inline-block;
+        margin-left: -4px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-image: url('/assets/images/starrate.png');
+        background-repeat: no-repeat;
+        background-size: 60px 60px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+
+    .rating .rate_radio:checked + label {
+        background-color: #ff8;
+    }
+</style>
+<!-- jquery plugins here-->
+<!-- jquery -->
+<script src="/assets/js/jquery-1.12.1.min.js"></script>
+<!-- popper js -->
+<script src="/assets/js/popper.min.js"></script>
+<!-- bootstrap js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- easing js -->
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/lightslider.min.js"></script>
+<!-- swiper js -->
+<script src="/assets/js/masonry.pkgd.js"></script>
+<!-- particles js -->
+<script src="/assets/js/owl.carousel.min.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!-- slick js -->
+<script src="/assets/js/slick.min.js"></script>
+<script src="/assets/js/swiper.jquery.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<script src="/assets/js/stellar.js"></script>
+<!-- custom js -->
+<script src="/assets/js/theme.js"></script>
+<script src="/assets/js/custom.js"></script>
+<script type="text/javascript">
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+
+        $("#btnSearch").on("click", function () {
+            search()
+        })
+        function search() {
+            var text = document.getElementById("text").value
+
+            if ( text < 0) {
+                alert("검색할 단어를 검색하여야 합니다");
+                return;
+            }
+            location.href="/dict/dictList?text=" + text
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -63,7 +63,7 @@
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
-<div th:replace="/header.html"></div>
+<div th:replace="~{/header.html}"></div>
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent"
@@ -72,58 +72,40 @@
                  style="width: 100%">
                 <div class="row" style="margin-top: 5%;display: grid">
                     <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 80%">
-                        <div class="review_list">
+                        <div class="review_list" style="width: 95%">
                             <form name="f" id="f">
-                                <div class="title">
-                                    <div class="title">
-                                        <dl>
-                                            <dd class="box"> [[${rDTO.title}]]
-                                            </dd>
-                                        </dl>
+                                <div class="board_list">
+
+                                    <div th:each="dto:${rList}" class="content_row" th:attr="onclick='doDetail(\'' + ${dto.targetCode} + '\')'">
+                                        <div class="word">[[${dto.word}]]</div>
+                                        <div class="pos">[ [[${dto.pos}]] ]</div>
+                                        <div class="definition">[[${dto.definition}]]</div>
                                     </div>
-                                    <div class="info" style="display: flex;  justify-content: center; margin-left: 10%">
-                                        <dl style="display: flex;">
-                                            <dt>작성일:</dt>
-                                            <dd>[[${rDTO.regDt}]] &nbsp; | &nbsp;</dd>
-                                        </dl>
-                                        <dl style="display: flex;">
-                                            <dt>조회:</dt>
-                                            <dd>[[${rDTO.readCount}]] &nbsp; | &nbsp;</dd>
-                                        </dl>
-                                        <dl style="display: flex;">
-                                            <dt>작성자:</dt>
-                                            <dd name="seq">[[${rDTO.regId}]] &nbsp; | &nbsp;</dd>
-                                        </dl>
-                                        <dl style="display: flex;">
-                                            <dt>좋아요:</dt>
-                                            <dd name="seq">[[${likeCnt}]] &nbsp; | &nbsp;</dd>
-                                        </dl>
-                                        <dl style="display: flex;">
-                                            <dt>댓글 수:</dt>
-                                            <dd name="seq">[[${commentCnt}]]</dd>
-                                        </dl>
-                                        <div style="text-align: right; justify-content : right; margin-left: 10%">
-                                            <div class="dropdown" style="float: right;">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                        id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1"
-                                                    style="background-color: #17A2B8">
-                                                    <li><a class="dropdown-item" style="background-color: #17A2B8"
-                                                           id="btnDelete" type="button">삭제하기</a></li>
-                                                    <li><a class="dropdown-item" style="background-color: #17A2B8"
-                                                           id="btnEdit" type="button">수정하기</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="info" style="margin-left: auto;margin-right: auto">
-                                        <div class="cont">
-                                            <textarea name="contents" readonly th:text="${rDTO.contents}" style="width: 100%; height:310px;
-                                            border: none; outline: none; resize: none; background-color: transparent"></textarea>
-                                            </textarea>
-                                        </div>
+                                </div>
+                                <br/>
+                                <!-- 페이지네이션 영역-->
+                                <div style="display: flex">
+                                    <div class="mx-auto" style="padding-left: 5%">
+                                        <ul class="pagination pagination-primary" id="pagination">
+                                            <li class="page-item">
+                                                <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>
+                                            </li>
+                                            <!-- 이전 페이지로 이동하는 링크 -->
+                                            <li class="page-item" th:if="${currentPage > 1}">
+                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage - 1}, text=${text}) }">&lt;</a>
+                                            </li>
+                                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                                <a class="page-link" th:href="@{/dict/dictList(page=${pageNumber}, text=${text})}" th:text="${pageNumber}"></a>
+                                            </li>
+                                            <!-- 다음 페이지로 이동하는 링크 -->
+                                            <li class="page-item" th:if="${currentPage < totalPages}">
+                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage + 1}), text=${text}}">&gt;</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" th:href="@{/dict/dictList(page=${totalPages}), text=${text}}">&raquo;</a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </form>
@@ -131,16 +113,51 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: center; justify-content : center;margin-top: 10%">
-                <button id="btnList" class="form_btn" type="button" style="font-size: 30px">목록</button>
-                <button id="btnComment" class="form_btn" type="button" style="font-size: 30px">댓글</button>
-                <button id="btnLike" class="form_btn" type="button" style="font-size: 30px">좋아요</button>
-            </div>
         </div>
     </div>
 </section>
 <!--================End Product Description Area =================-->
+<style>
+    .board_list {
+        display: flex;
+        flex-direction: column;
+        height: 50vh;
+    }
 
+    .top {
+        display: flex;
+        flex-direction: row;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .top > div {
+        padding: 8px;
+        text-align: center;
+    }
+
+    .word {
+        width: 15%;
+    }
+
+    .pos{
+        width: 15%;
+    }
+    .definition {
+        width: 60%;
+    }
+
+    .content_row {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .content_row > div {
+        padding: 8px;
+        text-align: center;
+    }
+</style>
 <style>
     dt {
         font-size: 120%
@@ -306,108 +323,18 @@
 <!-- custom js -->
 <script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
-<script th:inline="javascript">
-    // Controller에서 받은 세션에 저장된 값
-    const ss_id = /*[[${session.SS_USER}]]*/ '';
-
-    // 공지사항 게시글 작성자 아이디
-    const id = /*[[${rDTO.regId}]]*/ '';
-
-    // 현재 글번호, 자바에서 받을 변수들은 자바스크립트 변수로 저장하면 편함
-    const postNumber = /*[[${rDTO.postNumber}]]*/ '';
-
+<script type="text/javascript">
     // HTML로딩이 완료되고, 실행됨
     $(document).ready(function () {
-        $("#btnEdit").on("click", function () {
-            doEdit();
-        })
-        $("#btnDelete").on("click", function () {
-            doDelete();
-        })
+        //상세보기 이동
+        window.doDetail = function (targetCode) {
+            location.href = "/dict/dictInfo?targetCode=" + targetCode;
+        };
         $("#btnList").on("click", function () {
-            location.href = "/post/postList";
-        })
-        $("#btnLike").on("click", function () {
-            doLike();
-        })
-        $("#btnComment").on("click", function () {
-            location.href = "/comment" + "?postNumber=" + postNumber
+            location.href = "/dict/dictReg";
         })
     })
 
-    //수정하기
-    function doEdit() {
-        if (ss_id === id) {
-            location.href = "/post/postEditInfo?postNumber=" + postNumber;
-
-        } else if (ss_id === "") {
-            alert("로그인 하시길 바랍니다.");
-
-        } else {
-            alert("본인이 작성한 글만 수정 가능합니다.");
-
-        }
-    }
-
-    //좋아요
-    function doLike() {
-        if (ss_id === "") {
-            alert("로그인 하시길 바랍니다.");
-        } else {
-            $.ajax({
-                url: "/like/update",
-                type: "post", // 전송방식은 Post
-                dataType: "JSON", // 전송 결과는 JSON으로 받기
-                data: {
-                    "postNumber": postNumber
-                }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
-
-                    if (json.result === 1) { // 로그인 성공
-                        alert(json.msg); // 메시지 띄우기
-                        location.reload()
-
-                    } else { // 로그인 실패
-                        alert(json.msg); // 메시지 띄우기
-                    }
-
-                }
-            })
-        }
-    }
-
-    //삭제하기
-    function doDelete() {
-        if (ss_id === id) {
-            if (confirm("작성한 글을 삭제하시겠습니까?")) {
-                $.ajax({
-                    url: "/post/postDelete",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: {
-                        "postNumber": postNumber
-                    }, // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
-
-                        if (json.result === 1) { // 로그인 성공
-                            alert(json.msg); // 메시지 띄우기
-                            location.href = "/post/postList"; // 로그인 성공 페이지 이동
-
-                        } else { // 로그인 실패
-                            alert(json.msg); // 메시지 띄우기
-                        }
-
-                    }
-                })
-            }
-
-        } else if (ss_id === "") {
-            alert("로그인 하시길 바랍니다.");
-
-        } else {
-            alert("본인이 작성한 글만 삭제 가능합니다.");
-        }
-    }
 </script>
 </body>
 

@@ -42,7 +42,7 @@ public class CommentController {
         for (Map<String, Object> rMap : pList) {
             CommentDTO rDTO = CommentDTO.builder(
             ).commentNumber(String.valueOf(rMap.get("commentNumber"))
-            ).userId(String.valueOf(rMap.get("userId"))
+            ).userId(String.valueOf(rMap.get("nickname"))
             ).regDt(String.valueOf(rMap.get("regDt"))
             ).postNumber(String.valueOf(rMap.get("postNumber"))
             ).contents(String.valueOf(rMap.get("contents"))

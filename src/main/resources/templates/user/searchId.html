@@ -123,10 +123,23 @@
 
         })
     </script>
+    <style>
+        body {
+            background-image: url(/img/index.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 화면의 높이를 전체로 채우기 위해 설정 */
+            margin: 0; /* body 요소의 기본 마진 제거 */
+        }
+    </style>
 </head>
 
 <body>
-<div class="wrapper">
+<div class="wrapper" style="background-color: transparent !important;">
     <div class="container">
         <div class="sign-up-container">
             <form id="f2" name="f2">

@@ -11,13 +11,15 @@
         <result column="READ_COUNT" property="readCount"/>
         <result column="REG_ID" property="regId"/>
         <result column="REG_DT" property="regDt"/>
+        <result column="NICKNAME" property="nickname"/>
     </resultMap>
     
     <!-- 게시판 목록 조회 쿼리 -->
     <select id="getPostList" resultMap="postResult">
         SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID,
-        DATE_FORMAT(REG_DT, '%Y/%m/%d') AS REG_DT
+        DATE_FORMAT(POST.REG_DT, '%Y/%m/%d') AS REG_DT, NICKNAME
         FROM POST
+        INNER JOIN USER_INFO ON USER_ID = REG_ID
         ORDER BY POST_NUMBER DESC;
     </select>
 
@@ -33,9 +35,10 @@
 
     <!-- 게시글 정보 조회 쿼리 -->
     <select id="getPostInfo" resultMap="postResult">
-        SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID, CONTENTS,
-               DATE_FORMAT(REG_DT, '%Y/%m/%d') AS REG_DT
+        SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID,
+               DATE_FORMAT(POST.REG_DT, '%Y/%m/%d') AS REG_DT, NICKNAME
         FROM POST
+                 INNER JOIN USER_INFO ON USER_ID = REG_ID
         WHERE POST_NUMBER = #{postNumber}
     </select>
 

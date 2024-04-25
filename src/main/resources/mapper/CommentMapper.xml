@@ -11,15 +11,18 @@
         <result column="POST_NUMBER" property="postNumber"/>
         <result column="REG_DT" property="regDt"/>
         <result column="CONTENTS" property="contents"/>
+        <result column="NICKNAME" property="nickname"/>
     </resultMap>
     <!-- 댓글 목록 조회 쿼리 -->
     <select id="getCommentList" parameterType="CommentDTO" resultMap="commentResult">
         SELECT COMMENT_NUMBER,
-               USER_ID,
+               COMMENT.USER_ID,
                POST_NUMBER,
-               REG_DT,
-               CONTENTS
+               COMMENT.REG_DT,
+               CONTENTS,
+               NICKNAME
         FROM  COMMENT
+        INNER JOIN USER_INFO ON USER_INFO.USER_ID = COMMENT.USER_ID
         WHERE POST_NUMBER = #{postNumber}
         ORDER BY COMMENT_NUMBER ASC
     </select>
@@ -30,11 +33,13 @@
     </select>
     <select id="getComment" parameterType="java.lang.String" resultMap="commentResult">
         SELECT COMMENT_NUMBER,
-               USER_ID,
+               COMMENT.USER_ID,
                POST_NUMBER,
                REG_DT,
-               CONTENTS
+               CONTENTS,
+               NICKNAME
         FROM  COMMENT
+        INNER JOIN USER_INFO ON USER_INFO.USER_ID = COMMENT.USER_ID
         WHERE COMMENT_NUMBER = #{commentNumber}
     </select>
     <!-- 댓글 삭제 쿼리 -->
