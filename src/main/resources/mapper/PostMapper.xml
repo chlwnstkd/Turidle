@@ -35,7 +35,7 @@
 
     <!-- 게시글 정보 조회 쿼리 -->
     <select id="getPostInfo" resultMap="postResult">
-        SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID,
+        SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID,CONTENTS,
                DATE_FORMAT(POST.REG_DT, '%Y/%m/%d') AS REG_DT, NICKNAME
         FROM POST
                  INNER JOIN USER_INFO ON USER_ID = REG_ID

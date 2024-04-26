@@ -11,6 +11,7 @@ import lombok.ToString;
 public record CommentDTO (
          String commentNumber,
          String userId,
+         String nickname,
          String postNumber,
          String regDt,
          String contents

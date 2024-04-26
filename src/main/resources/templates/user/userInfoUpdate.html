@@ -12,6 +12,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        let userId = /*[[${session.SS_USER}]]*/ '';
+
+        console.log(userId)
+
+        if(userId === null) {
+            alert("로그인 후 이용 가능합니다")
+            location.href="/user/login";
+        }
+    </script>
     <script type="text/javascript">
 
         // HTML로딩이 완료되고, 실행됨
@@ -85,7 +95,7 @@
             <div class="divTableBody" style="margin-left: 40%;text-align: left">
                 <div class="divTableRow" style="margin-bottom: 3%">
                     <div class="divTableCell" style="width: 20%;background-color:transparent;">아이디 :</div>
-                    <input type="text" id="userId" name="userId" th:value="${rDTO.userId}" disabled="">
+                    <input type="text" id="userId" name="userId" th:value="${rDTO.userId}" readonly>
                 </div>
                 <div class="divTableRow" style="margin-bottom: 3%">
                     <div class="divTableCell" style="background-color:transparent;">닉네임 :</div>
@@ -93,7 +103,7 @@
                 </div>
                 <div class="divTableRow">
                     <div class="divTableCell" style="background-color:transparent;">이메일 :</div>
-                    <input type="text" id="email" name="email" th:value="${rDTO.email}">
+                    <input type="text" id="email" name="email" th:value="${rDTO.email}" readonly>
                 </div>
             </div>
         </div>

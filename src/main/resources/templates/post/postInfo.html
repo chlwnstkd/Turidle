@@ -59,18 +59,152 @@
 
     </style>
 
+    <script th:inline="javascript">
+
+        const ss_id = /*[[${session.SS_USER}]]*/ '';
+        var changeWrite = "w";
+        var updateNumber = "";
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            $("#btnWrite").on("click", function () {
+                doSubmit(); // 공지사항 수정하기 실행
+            });
+            $("#btnList").on("click", function () {
+                location.href = "/post/postList";
+            })
+        });
+
+        function deleteComment(commentNumber, userId) {
+            let postNumber = /*[[${postNumber}]]*/ '';
+
+            if (ss_id === userId) {
+
+                $.ajax({
+                    url: "/comment/deleteComment",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {commentNumber: commentNumber,
+                            postNumber : postNumber},
+                }).then(function (json) {
+
+                    if (json.result === 0) {
+                        alert(json.msg)
+                    } else {
+                        location.href = "/post/postInfo?postNumber=" + postNumber;
+                    }
+                });
+
+            } else if (ss_id === "") {
+                alert("로그인 하시길 바랍니다.");
+
+            } else {
+                alert("본인이 작성한 글만 삭제 가능합니다.");
+
+            }
+        }
+
+        function updateComment(commentNumber ,userId, contents) {
+
+            if (ss_id === userId) {
+
+                document.getElementById("comment").value = contents;
+                document.getElementById("btnWrite").innerHTML = "수정";
+                changeWrite = "c";
+                updateNumber = commentNumber;
+
+            } else if (ss_id === "") {
+                alert("로그인 하시길 바랍니다.");
+
+            } else {
+                alert("본인이 작성한 글만 수정 가능합니다.");
+            }
+        }
+
+        function doSubmit() {
+
+            let postNumber = /*[[${postNumber}]]*/ '';
+            let comment = document.getElementById("comment").value;
+
+            console.log(comment)
+
+            if (ss_id === "") {
+                alert("로그인 후 이용가능합니다.");
+                return;
+            }
+            if (comment === "") {
+                alert("내용을 입력하시기 바랍니다.");
+                return;
+            }
+            if (changeWrite === "c") {
+                $.ajax({
+                    url: "/comment/updateComment",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        contents: comment,
+                        commentNumber: updateNumber,
+                        postNumber : postNumber
+                    },
+                }).then(function () {
+                        changeWrite = "w"
+                        location.reload(true)
+                        updateNumber = "";
+                    }
+                )
+            }else {
+
+                $.ajax({
+                    url: "/comment/insertComment",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        comment: comment,
+                        postNumber: postNumber
+                    },
+                }).then(function () {
+                    location.reload(true);
+                });
+            }
+        }
+
+        // 페이지 이동
+        function pageMove(page) {
+
+            let postNumber = /*[[${postNumber}]]*/ '';
+
+            console.log(page)
+            $.ajax({
+                url: "/comment",
+                type: "get",
+                contentType: "application/json",
+                data: {
+                    page: parseInt(page, 10),
+                    postNumber : postNumber
+                },
+                success: function () {
+                    location.href = "/post/postInfo?postNumber=" + postNumber + "&page=" + page;
+                },
+                error: function (xhr, status, error) {
+                    // 오류가 발생했을 때 수행할 동작
+                }
+            });
+
+        }
+    </script>
 </head>
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
 <div th:replace="/header.html"></div>
-<section class="product_description_area">
+<section class="product_description_area" style="margin-top: -150px !important;">
     <div class="container">
         <div class="tab-content" id="myTabContent"
-             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+             style="height: 200vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
             <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
                  style="width: 100%">
-                <div class="row" style="margin-top: 5%;display: grid">
+                <div class="row" style="margin-top: 20%;display: grid">
                     <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 80%">
                         <div class="review_list">
                             <form name="f" id="f">
@@ -96,19 +230,19 @@
                                         </dl>
                                         <dl style="display: flex;">
                                             <dt>좋아요:</dt>
-                                            <dd name="seq">[[${likeCnt}]] &nbsp; | &nbsp;</dd>
+                                            <dd name="like">[[${likeCnt}]] &nbsp; | &nbsp;</dd>
                                         </dl>
                                         <dl style="display: flex;">
                                             <dt>댓글 수:</dt>
-                                            <dd name="seq">[[${commentCnt}]]</dd>
+                                            <dd name="comment">[[${commentCnt}]]</dd>
                                         </dl>
                                         <div style="text-align: right; justify-content : right; margin-left: 10%">
                                             <div class="dropdown" style="float: right;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                        id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                        id="dropdownMenuButton2" data-bs-toggle="dropdown"
                                                         aria-expanded="false">
                                                 </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1"
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2"
                                                     style="background-color: #17A2B8">
                                                     <li><a class="dropdown-item" style="background-color: #17A2B8"
                                                            id="btnDelete" type="button">삭제하기</a></li>
@@ -130,11 +264,71 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div style="text-align: center; justify-content : center;margin-top: 10%">
-                <button id="btnList" class="form_btn" type="button" style="font-size: 30px">목록</button>
-                <button id="btnComment" class="form_btn" type="button" style="font-size: 30px">댓글</button>
-                <button id="btnLike" class="form_btn" type="button" style="font-size: 30px">좋아요</button>
+                <div style="text-align: center; justify-content : center;margin-top: 5%">
+                    <button id="btnList" class="form_btn" type="button" style="font-size: 30px">목록</button>
+                    <button id="btnLike" class="form_btn" type="button" style="font-size: 30px">좋아요</button>
+                </div>
+                <br>
+                <Hr>
+                <div class="hangle-h1">댓글</div>
+                <div class="col-lg-6" style="height: 50vh;margin-left: auto; margin-right: auto;max-width: 100%">
+                    <div class="review_list" th:each="dto:${rList}">
+                        <div class="review_item" style="text-align: center; margin-left: 15%;justify-content: center; max-width: 65%">
+                            <hr>
+                            <div class="media" style="display: block;">
+                                <div class="dropdown" style="float: right;">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="background-color: #17A2B8">
+                                        <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                               th:onclick="deleteComment([[${dto.commentNumber}]],[[${dto.userId}]])">삭제하기</a></li>
+                                        <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                               th:onclick="updateComment([[${dto.commentNumber}]],[[${dto.userId}]],[[${dto.contents}]])">수정하기</a></li>
+                                    </ul>
+                                </div>
+                                <div class="d-flex" style="white-space: pre-line;font-size: 24px; float: left"
+                                     th:text="${dto.nickname}"></div>
+                                <br><br>
+                                <div style="white-space: pre-line; float: left; font-size: 20px;"  th:text="${dto.contents}"></div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <!-- 페이지네이션 영역-->
+                <div style="display: flex; margin-left: auto; margin-right: auto" >
+                    <div class="mx-auto">
+                        <ul class="pagination pagination-primary" id="pagination">
+                            <li class="page-item">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + 1 + '\')'">&laquo;</a>
+                            </li>
+                            <!-- 이전 페이지로 이동하는 링크 -->
+                            <li class="page-item" th:if="${currentPage > 1}">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + ${currentPage - 1} + '\')'"><</a>
+                            </li>
+                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                                th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + ${pageNumber} + '\')'"
+                                   th:text="${pageNumber}"></a>
+                            </li>
+                            <!-- 다음 페이지로 이동하는 링크 -->
+                            <li class="page-item" th:if="${currentPage < totalPages}">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + ${currentPage + 1} + '\')'">></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:onclick="pageMove('${totalPages}')">&raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- 페이지네이션 끝 -->
+                <div style="text-align: center; justify-content : center;">
+                    <input type="text" id="comment" name="comment">
+                    <button id="btnWrite" class="form_btn" type="button" style="font-size: 30px">작성</button>
+                </div>
             </div>
         </div>
     </div>

@@ -23,8 +23,6 @@ public class LikeController {
 
     private final ILikeService likeService;
 
-    // 게시글 삭제로직 코드
-    // 구현완료(11/13)
     @ResponseBody
     @PostMapping(value = "/update")
     public MsgDTO postLike(HttpSession session, HttpServletRequest request) {

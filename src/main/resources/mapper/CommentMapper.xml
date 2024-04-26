@@ -41,19 +41,21 @@
         FROM  COMMENT
         INNER JOIN USER_INFO ON USER_INFO.USER_ID = COMMENT.USER_ID
         WHERE COMMENT_NUMBER = #{commentNumber}
+        AND POST_NUMBER = #{postNumber}
     </select>
     <!-- 댓글 삭제 쿼리 -->
     <delete id="deleteComment" parameterType="CommentDTO">
         DELETE
         FROM COMMENT
         WHERE COMMENT_NUMBER = #{commentNumber}
+          AND POST_NUMBER = #{postNumber}
     </delete>
     <!-- 댓글 등록 쿼리 -->
     <insert id="insertComment" parameterType="CommentDTO">
         INSERT INTO COMMENT
         (COMMENT_NUMBER, USER_ID, POST_NUMBER, REG_DT, CONTENTS)
         VALUES (
-                       (SELECT IFNULL(MAX(A.COMMENT_NUMBER),0)+1 FROM COMMENT A),
+                       (SELECT IFNULL(MAX(A.COMMENT_NUMBER),0)+1 FROM COMMENT A WHERE A.POST_NUMBER = #{postNumber}),
                        #{userId}, #{postNumber},NOW(), #{contents}
                )
     </insert>
@@ -62,7 +64,8 @@
                         CONTENTS = #{contents},
                         REG_DT = NOW()
         WHERE
-            COMMENT_NUMBER = #{commentNumber}
+        WHERE COMMENT_NUMBER = #{commentNumber}
+          AND POST_NUMBER = #{postNumber}
     </update>
 
 

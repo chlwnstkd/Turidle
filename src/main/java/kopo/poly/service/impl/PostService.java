@@ -38,11 +38,13 @@ public class PostService implements IPostService {
 
         Map<String, Object> rMap = postMapper.getPostInfo(pDTO);
 
+        log.info(String.valueOf(rMap.get("contents")));
+
         PostDTO rDTO = PostDTO.builder().postNumber(String.valueOf(rMap.get("postNumber"))
         ).contents(String.valueOf(rMap.get("contents"))
         ).readCount(String.valueOf(rMap.get("readCount"))
-        ).regDt(String.valueOf(rMap.get("nickname"))
-        ).regId(String.valueOf(rMap.get("regId"))
+        ).regDt(String.valueOf(rMap.get("regDt"))
+        ).regId(String.valueOf(rMap.get("nickname"))
         ).title(String.valueOf(rMap.get("title"))
         ).build();
 

@@ -7,5 +7,6 @@ import java.util.Map;
 
 public interface IDictService {
     List<DictDTO> getDictList(String text) throws Exception; // 사전 검색 조회
+    DictDTO getDictInfo(String text) throws Exception; // 사전 상세 조회
 
 }

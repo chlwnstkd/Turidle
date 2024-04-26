@@ -12,10 +12,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+   <script th:inline="javascript">
+       let userId = /*[[${session.SS_USER}]]*/ '';
+
+       console.log(userId)
+
+       if(userId === null) {
+           alert("로그인 후 이용 가능합니다")
+           location.href="/user/login";
+       }
+   </script>
     <script type="text/javascript">
 
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
+
 
             // 회원정보 수정 페이지
             $("#btnUpdate").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)

@@ -76,4 +76,26 @@ public class DictController {
 
         return "/dict/dictList";
     }
+    @GetMapping("/dictInfo")
+    public String dictInfo(ModelMap model, HttpServletRequest request)
+            throws Exception {
+        log.info(this.getClass().getName() + ".dictInfo Start!");
+
+        String targetCode = CmmUtil.nvl(request.getParameter("targetCode"));
+        String word = CmmUtil.nvl(request.getParameter("word"));
+
+        log.info("targetCode : " + targetCode);
+
+        DictDTO rDTO = dictService.getDictInfo(targetCode);
+
+        rDTO = rDTO.toBuilder().word(word).build();
+
+        log.info(rDTO.toString());
+
+        model.addAttribute("rDTO", rDTO);
+
+        log.info(this.getClass().getName() + ".dictList End!");
+
+        return "/dict/dictInfo";
+    }
 }

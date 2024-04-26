@@ -11,6 +11,10 @@ public record DictDTO(
         String definition, // 설명
         String cat,// 전문분야
         String pos, // 품사
-        String targetCode // 식별자
+        String targetCode, // 식별자
+        String region, // 지역
+        String relationWord, // 비슷한 말
+        String example, // 예시
+        String original // 원본
 ) {
 }

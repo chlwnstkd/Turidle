@@ -57,29 +57,27 @@ public class UserInfoController {
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
+        log.info(userId);
+
         String url = "/user/userInfo";
-        if (userId == null) {
-            url = "/index";
-        }
+        if(!userId.equals("")) {
+            UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+            Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                    .orElseGet(HashMap::new);
 
-        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
-        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
-                .orElseGet(HashMap::new);
-
-        log.info(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email"))));
-
-        UserInfoDTO rDTO = UserInfoDTO.builder(
+            UserInfoDTO rDTO = UserInfoDTO.builder(
             ).userId(String.valueOf(rMap.get("userId"))
             ).nickname(String.valueOf(rMap.get("nickname"))
             ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
             ).regDt("regDt"
             ).build();
 
-        session.setAttribute("NEW_PASSWORD", userId);
+            session.setAttribute("NEW_PASSWORD", userId);
 
-        log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email());
+            log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email());
 
-        model.addAttribute("rDTO", rDTO);
+            model.addAttribute("rDTO", rDTO);
+        }
         return url;
     }
 
@@ -324,6 +322,9 @@ public class UserInfoController {
             session.setAttribute("NEW_PASSWORD", "");
             session.removeAttribute("NEW_PASSWORD");
 
+            session.setAttribute("SS_USER", "");
+            session.removeAttribute("SS_USER");
+
             res = 1;
             msg = "비밀번호가 재설정되었습니다.";
 
@@ -363,6 +364,9 @@ public class UserInfoController {
             msg = "삭제에 성공했습니다";
 
             res = 1;
+
+            session.setAttribute("SS_USER", "");
+            session.removeAttribute("SS_USER");
 
         }
 

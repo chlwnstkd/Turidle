@@ -2,13 +2,11 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.CommentDTO;
-import kopo.poly.dto.LikeDTO;
-import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.PostDTO;
+import kopo.poly.dto.*;
 import kopo.poly.service.ICommentService;
 import kopo.poly.service.ILikeService;
 import kopo.poly.service.IPostService;
+import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +15,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -32,6 +27,8 @@ public class PostController {
     private final IPostService postService;
     private final ILikeService likeService;
     private  final ICommentService commentService;
+    private final IUserInfoService userInfoService;
+
 
     //GET 방식은 데이터 조회, POST 방식에서 새로운 데이터 추가.
 
@@ -53,8 +50,8 @@ public class PostController {
         for (Map<String, Object> rMap : pList) {
             PostDTO rDTO = PostDTO.builder().postNumber(String.valueOf(rMap.get("postNumber"))
             ).readCount(String.valueOf(rMap.get("readCount"))
-            ).regDt(String.valueOf(rMap.get("nickname"))
-            ).regId(String.valueOf(rMap.get("regId"))
+            ).regDt(String.valueOf(rMap.get("regDt"))
+            ).regId(String.valueOf(rMap.get("nickname"))
             ).title(String.valueOf(rMap.get("title"))
             ).build();
 
@@ -102,7 +99,6 @@ public class PostController {
     }
 
     // 게시글 등록 로직코드
-    // 구현완료(11/10)
     @ResponseBody
     @PostMapping(value = "/postInsert")
     public MsgDTO postInsert(HttpServletRequest request, HttpSession session) {
@@ -141,7 +137,7 @@ public class PostController {
     // 게시글 상세보기 코드   찬우형의 보물                                                                                                                                                                                                                   내 이름은 준 상 초이! 탐정이죠
     // 구현완료(11/13)
     @GetMapping(value = "/postInfo")
-    public String postInfo(HttpServletRequest request, ModelMap model) throws Exception {
+    public String postInfo(HttpServletRequest request, ModelMap model,  @RequestParam(name = "page", defaultValue = "1") int page) throws Exception {
         log.info(this.getClass().getName() + ".postInfo Start!");
         String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
 
@@ -159,9 +155,67 @@ public class PostController {
         PostDTO rDTO = Optional.ofNullable(postService.getPostInfo(pDTO))
                 .orElseGet(() -> PostDTO.builder().build());
 
+        log.info(rDTO.toString());
+
         model.addAttribute("rDTO", rDTO);
         model.addAttribute("likeCnt", likeCnt);
         model.addAttribute("commentCnt", commentCnt);
+
+        log.info("postNumber : " + postNumber);
+        log.info("page : " + page);
+
+        CommentDTO pDTO2 = CommentDTO.builder().postNumber(postNumber).build();
+
+        List<Map<String, Object>> pList = Optional.ofNullable(commentService.getCommentList(pDTO2)).orElseGet(ArrayList::new);
+
+        List<CommentDTO> rList = new ArrayList<>();
+
+        for (Map<String, Object> rMap : pList) {
+
+            UserInfoDTO pDTO1 = UserInfoDTO.builder().userId(String.valueOf(rMap.get("userId"))).build();
+
+            Map<String, Object> pMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO1))
+                    .orElseGet(HashMap::new);
+
+            CommentDTO DTO = CommentDTO.builder(
+            ).commentNumber(String.valueOf(rMap.get("commentNumber"))
+            ).nickname(String.valueOf(pMap.get("nickname"))
+            ).userId(String.valueOf(rMap.get("userId"))
+            ).regDt(String.valueOf(rMap.get("regDt"))
+            ).postNumber(String.valueOf(rMap.get("postNumber"))
+            ).contents(String.valueOf(rMap.get("contents"))
+            ).build();
+
+            rList.add(DTO);
+        }
+
+        /**페이징 시작 부분*/
+
+        // 페이지당 보여줄 아이템 개수 정의
+        int itemsPerPage = 4;
+
+        // 페이지네이션을 위해 전체 아이템 개수 구하기
+        int totalItems = rList.size();
+
+        // 전체 페이지 개수 계산
+        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+
+        // 현재 페이지에 해당하는 아이템들만 선택하여 rList에 할당
+        int fromIndex = (page - 1) * itemsPerPage;
+        int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
+        rList = rList.subList(fromIndex, toIndex);
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        log.info(this.getClass().getName() + ".페이지 번호 : " + page);
+        log.info("rList : " + rList.toString() );
+
+        /**페이징 끝부분*/
+
+
+        model.addAttribute("rList", rList);
+        model.addAttribute("postNumber", postNumber);
 
         log.info(this.getClass().getName() + ".postInfo End!");
 

@@ -88,7 +88,8 @@
 <div th:replace="~{/header.html}"></div>
 <section class="product_description_area">
     <div class="container">
-        <div class="tab-pane fade show active" id="search" role="tabpanel" aria-labelledby="review-tab" style="height:30% ;background-image: url(/img/search.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+        <div class="tab-pane fade show active" id="search" role="tabpanel" aria-labelledby="review-tab"
+             style="height:30% ;background-image: url(/img/search.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
             <div style="padding-top: 15%; margin-right: 15%">
                 <input type="text" id="text" style="border: none; background: transparent; width: 65%;height: 50px;
                         margin-left: 23%; font-size: 50px;margin-bottom: 1%;">
@@ -96,7 +97,7 @@
             </div>
         </div>
         <div class="tab-content" id="myTabContent"
-             style="height: 93vh;padding-top: 200px !important;  text-align: center; background-image: url(/img/dialect.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+             style="height: 100vh;padding-top: 200px !important;  text-align: left; background-image: url(/img/dialect.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
             <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
                  style="margin-top: -5%; width: 100%">
                 <div class="row" style="margin-top: 5%;display: grid">
@@ -104,39 +105,33 @@
                         <div class="review_list" style="width: 95%">
                             <form name="f" id="f">
                                 <div class="board_list">
+                                    <div class="word" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span th:text="${rDTO.word}"></span>
+                                        <input type="button" class="img-button2" id="btnUpdate">
+                                    </div>
 
-                                    <div th:each="dto:${rList}" class="content_row">
-                                        <div class="word" th:attr="onclick='doDetail(\'' + ${dto.targetCode} + '\', \'' + ${dto.word} + '\')'">[[${dto.word}]]</div>
-                                        <div class="pos">[ [[${dto.pos}]] ]</div>
-                                        <div class="definition">[[${dto.definition}]]</div>
+
+                                    <div class="def">
+                                        <div class="basic">
+                                            <div class="definition">[ [[${rDTO.pos}]] ]</div>
+                                            <div class="definition">뜻 : [[${rDTO.definition}]]</div>
+                                        </div>
+                                        <div class="region">
+                                            <div class="definition" id="region">지역 : [[${rDTO.region}]]</div>
+                                        </div>
+                                        <div class="relation">
+                                            <div class="definition" id="relationWord">비슷한 말 : [[${rDTO.relationWord}]]</div>
+                                        </div>
+                                        <div class="example" id="example">
+                                            <hr>
+                                            <div>예시</div>
+                                            <div class="definition">표준 : [[${rDTO.original}]]</div>
+                                            <div class="definition">방언 : [[${rDTO.example}]]</div>
+                                            <hr>
+                                        </div>
                                     </div>
                                 </div>
                                 <br/>
-                                <!-- 페이지네이션 영역-->
-                                <div style="display: flex">
-                                    <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination">
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>
-                                            </li>
-                                            <!-- 이전 페이지로 이동하는 링크 -->
-                                            <li class="page-item" th:if="${currentPage > 1}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage - 1}, text=${text}) }">&lt;</a>
-                                            </li>
-                                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
-                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${pageNumber}, text=${text})}" th:text="${pageNumber}"></a>
-                                            </li>
-                                            <!-- 다음 페이지로 이동하는 링크 -->
-                                            <li class="page-item" th:if="${currentPage < totalPages}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage + 1}), text=${text}}">&gt;</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${totalPages}), text=${text}}">&raquo;</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -147,39 +142,52 @@
 </section>
 <!--================End Product Description Area =================-->
 <style>
+    input.img-button2 {
+        background: url("/img/basket.png") no-repeat !important;
+        background-size: cover;
+        background-position: 50% 50%;
+        width: 185px;
+        height: 185px;
+        border: none;
+    }
+    hr {
+        border: 0;
+        height: 3px;
+        background: #ccc;
+    }
+    .word {
+        font-size: 50px;
+    }
+
+    .def {
+        font-size: 30px;
+    }
+
+    .basic {
+
+    }
+
+    .region {
+
+    }
+
+    .relation {
+
+    }
+
+    .example {
+
+    }
+
     .board_list {
         display: flex;
         flex-direction: column;
         height: 50vh;
     }
 
-    .top {
-        display: flex;
-        flex-direction: row;
-        font-weight: bold;
-        border-bottom: 1px solid #ddd;
-    }
-
     .top > div {
         padding: 8px;
         text-align: center;
-    }
-
-    .word {
-        width: 15%;
-    }
-
-    .pos{
-        width: 15%;
-    }
-    .definition {
-        width: 60%;
-    }
-
-    .content_row {
-        display: flex;
-        flex-direction: row;
-        border-bottom: 1px solid #ddd;
     }
 
     .content_row > div {
@@ -194,68 +202,6 @@
 
     dd {
         font-size: 120%
-    }
-
-    .hangle-h1 {
-        font-family: "Dongle", sans-serif;
-        font-weight: 400;
-        font-style: normal;
-        font-size: 40px;
-        margin-bottom: 0px;
-        color: black
-
-    }
-
-    .cont {
-        background: #eee;
-        padding: 16px;
-        margin: auto;
-        width: 80%;
-        height: 340px;
-        font-size: 20px;
-        border: 0;
-        outline: none;
-        border-radius: 20px;
-        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
-    }
-
-    .box {
-        background: #eee;
-        padding: 16px;
-        margin: auto;
-        width: 700px;
-        height: 50px;
-        font-size: 20px;
-        border: 0;
-        outline: none;
-        border-radius: 20px;
-        box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
-    }
-
-    .form_btn {
-        background-color: #ebecf0;
-        color: black;
-        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
-        border-radius: 20px;
-        border: none;
-        outline: none;
-        font-size: 12px;
-        font-weight: bold;
-        padding: 3px 45px;
-        margin: 14px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: transform 80ms ease-in;
-    }
-
-    .wrap {
-        max-width: 480px;
-        margin: 0 auto;
-        background-color: #fff;
-        height: 100%;
-        padding: 20px;
-        box-sizing: border-box;
     }
 
     .reviewform textarea {
@@ -295,18 +241,7 @@
         background-color: #ff8;
     }
 
-    .warning_msg {
-        display: none;
-        position: relative;
-        text-align: center;
-        background: #ffffff;
-        line-height: 26px;
-        width: 100%;
-        color: red;
-        padding: 10px;
-        box-sizing: border-box;
-        border: 1px solid #e0e0e0;
-    }
+
 </style>
 <!-- jquery plugins here-->
 <!-- jquery -->
@@ -338,28 +273,74 @@
 <!-- custom js -->
 <script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script th:inline="javascript">
+    // 페이지가 로드될 때 실행되는 함수
+    window.onload = function() {
+        // 지역 정보 요소 가져오기
+        var regionElement = document.getElementById("region");
+        var relationWordElement = document.getElementById("relationWord");
+        var exampleElement = document.getElementById("example");
+
+        var region = /*[[${rDTO.region}]]*/ '';
+        var relationWord = /*[[${rDTO.relationWord}]]*/ '';
+        var example = /*[[${rDTO.example}]]*/ '';
+
+
+        // 지역 정보가 없으면 해당 요소 숨기기
+        if (region === "") {
+            regionElement.style.display = "none";
+        }
+        if (relationWord === "") {
+            relationWordElement.style.display = "none";
+        }
+        if (example === "") {
+            exampleElement.style.display = "none";
+        }
+    };
+    $(document).ready(function () {
+        $("#btnUpdate").on("click", function () {
+            update()
+        })
+        function update() {
+            var targetCode = /*[[${rDTO.targetCode}]]*/ '';
+
+            $.ajax({
+                url: "/basket/update",
+                type: "POST",
+                data: {targetCode: targetCode},
+                success: function (json) {
+
+                    if (json.result === 1) {
+                        alert(json.msg); // 메시지 띄우기
+
+                    } else { // 로그인 실패
+                        alert(json.msg); // 메시지 띄우기
+                    }
+
+                }
+            })
+        }
+    })
+</script>
 <script type="text/javascript">
     // HTML로딩이 완료되고, 실행됨
     $(document).ready(function () {
-        //상세보기 이동
-        window.doDetail = function (targetCode, word) {
-            console.log(targetCode)
-            location.href = "/dict/dictInfo?targetCode=" + targetCode + "&word=" + word;
-        };
+
         $("#btnSearch").on("click", function () {
             search()
         })
+
         function search() {
             var text = document.getElementById("text").value
 
-            if ( text < 0) {
+            if (text < 0) {
                 alert("검색할 단어를 검색하여야 합니다");
                 return;
             }
-            location.href="/dict/dictList?text=" + text
+            location.href = "/dict/dictList?text=" + text
         }
-    })
 
+    })
 
 
 </script>

@@ -67,7 +67,7 @@
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent"
-             style="height: 93vh; text-align: center; background-image: url(/img/imoji.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji2.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
             <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
                  style="width: 100%">
                 <div class="row" style="margin-top: 5%;display: grid">
@@ -280,6 +280,8 @@
 
     function doSubmit() {
 
+        let postNumber = /*[[${rDTO.postNumber}]]*/ '';
+
         let f = document.getElementById("f"); // form 태그
 
         if (f.title.value === "") {
@@ -303,6 +305,8 @@
             return;
         }
         var formData = new FormData($("#f")[0]);
+        formData.append("postNumber", postNumber);
+
         $.ajax({
             url: "/post/postUpdate",
             type: "POST",

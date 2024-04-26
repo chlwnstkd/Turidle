@@ -1,5 +1,6 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.DictDTO;
 import kopo.poly.service.IDictService;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -65,5 +67,69 @@ public class DictService implements IDictService {
         log.info(rList.toString());
 
         return rList;
+    }
+    @Override
+    public DictDTO getDictInfo(String targetCode) throws Exception {
+
+        String url = "https://opendict.korean.go.kr/api/view?certkey_no=6503&key=" + key +
+                "&target_type=view&req_type=json&method=target_code&q=" + targetCode;
+
+        Map<String, String> headers = new HashMap<>();
+
+        DictDTO rDTO = DictDTO.builder().build();
+
+        String json = NetworkUtil.get(url, headers);
+
+        Map<String, Object> pMap = new ObjectMapper().readValue(json, LinkedHashMap.class);
+
+        try {
+            // JSON 문자열을 자바 객체로 변환합니다.
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(json);
+
+            String senseDefinition = "";
+            String regionInfo = "";
+            String relationWord = "";
+            String exampleTranslation = "";
+            String exampleExample = "";
+            String  pos = "";
+
+            JsonNode channelNode = rootNode.path("channel");
+            if (!channelNode.isMissingNode()) {
+                JsonNode itemNode = channelNode.path("item");
+                if (!itemNode.isMissingNode()) {
+                    JsonNode senseInfoNode = itemNode.path("senseInfo");
+                    if (!senseInfoNode.isMissingNode()) {
+                        senseDefinition = senseInfoNode.path("definition").asText("");
+                        regionInfo = senseInfoNode.path("region_info").path(0).asText("");
+                        relationWord = senseInfoNode.path("relation_info").path(0).path("word").asText("");
+                        exampleTranslation = senseInfoNode.path("example_info").path(0).path("translation").asText("");
+                        exampleExample = senseInfoNode.path("example_info").path(0).path("example").asText("");
+                        pos = senseInfoNode.path("pos").asText("");
+                    }
+                }
+            }
+
+            if(!relationWord.equals("")) {
+                int length = relationWord.length();
+                relationWord = relationWord.substring(0, length - 3);
+
+            }
+            rDTO = rDTO.toBuilder().definition(senseDefinition
+            ).region(regionInfo
+            ).relationWord(relationWord
+            ).example(exampleExample
+            ).original(exampleTranslation
+            ).pos(pos
+            ).targetCode(targetCode
+            ).build();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.info(rDTO.toString());
+
+        return rDTO;
     }
 }
