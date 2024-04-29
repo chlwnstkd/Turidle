@@ -8,6 +8,9 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record BasketDTO(
         String userId,
-        String targetCode
+        String word,
+        String targetCode,
+        String definition,
+        String pos
 ) {
 }
