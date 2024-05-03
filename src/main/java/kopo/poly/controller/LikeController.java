@@ -41,15 +41,22 @@ public class LikeController {
 
             LikeDTO pDTO = LikeDTO.builder().userId(userId).postNumber(postNumber).build();
 
-            if(likeService.getLike(pDTO) == 1) {
-                likeService.deleteLike(pDTO);
-                msg = "좋아요를 취소히였습니다";
-                res = 1;
-            } else {
-                likeService.insertLike(pDTO);
-                msg = "좋아요를 추가되었습니다";
-                res = 1;
+            if (userId.equals("")) {
+                msg = "로그인 후 이용 가능 합니다";
+                res = 2;
+            }else{
+                if(likeService.getLike(pDTO) == 1) {
+                    likeService.deleteLike(pDTO);
+                    msg = "좋아요를 취소히였습니다";
+                    res = 1;
+                } else {
+                    likeService.insertLike(pDTO);
+                    msg = "좋아요를 추가되었습니다";
+                    res = 1;
+                }
             }
+
+
 
         } catch (Exception e) {
             msg = "실패하였습니다. : " + e.getMessage();
