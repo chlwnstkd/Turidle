@@ -33,10 +33,15 @@ public class ChatGPTController {
 
         log.info(this.getClass().getName() + ".prompt Start!");
 
-        String content = CmmUtil.nvl(request.getParameter("content"));
+        String content = CmmUtil.nvl(request.getParameter("contents"));
+        String before = CmmUtil.nvl(request.getParameter("before"));
+        String after = CmmUtil.nvl(request.getParameter("after"));
 
+        String text = before +  " : " +  content + "\n" + after + ":" ;
 
-        ChatRequestMsgDTO pDTO = ChatRequestMsgDTO.builder().role("system").content(content).build();
+//        String text = content + "\n 이게 " + before + "인데 " + after + "로 바궈줘";
+
+        ChatRequestMsgDTO pDTO = ChatRequestMsgDTO.builder().role("system").content(text).build();
 
 
         List<ChatRequestMsgDTO> rList = new ArrayList<>();
