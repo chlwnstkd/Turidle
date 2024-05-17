@@ -1,20 +1,20 @@
 package kopo.poly.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.PostDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IUserInfoService;
+import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequestMapping(value = "/admin")
 @Slf4j
@@ -25,7 +25,7 @@ public class AdminController {
 
     @GetMapping(value = "/main")
     public String main(ModelMap model, @RequestParam(defaultValue = "1") int page)
-        throws Exception{
+            throws Exception {
 
         log.info(this.getClass().getName() + ".main Start!");
 
@@ -74,6 +74,7 @@ public class AdminController {
 
         return "admin/main";
     }
+
     @GetMapping(value = "/chat")
     public String chat() {
 
@@ -81,11 +82,85 @@ public class AdminController {
 
         return "admin/chat";
     }
+
     @GetMapping(value = "/userInfo")
-    public String userInfo() {
+    public String userInfo(HttpServletRequest request, ModelMap model) throws Exception {
 
         log.info(this.getClass().getName() + ".userInfo Start!");
 
+        String userId = CmmUtil.nvl((String) request.getParameter("userId"));
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                .orElseGet(HashMap::new);
+
+        UserInfoDTO rDTO = UserInfoDTO.builder(
+        ).userId(String.valueOf(rMap.get("userId"))
+        ).nickname(String.valueOf(rMap.get("nickname"))
+        ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+        ).regDt(String.valueOf(rMap.get("regDt"))
+        ).build();
+
+        log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email() + "/" + rDTO.regDt());
+
+        model.addAttribute("rDTO", rDTO);
+
         return "admin/userInfo";
+    }
+    @ResponseBody
+    @PostMapping(value = "searchUser")
+    public MsgDTO searchUser(HttpServletRequest request) throws Exception {
+
+        log.info(this.getClass().getName() + ".searchUser Start!");
+
+        String userId = CmmUtil.nvl((String) request.getParameter("userId"));
+        int res = 0;
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                .orElseGet(HashMap::new);
+
+        if(String.valueOf(rMap.get("userId")).equals("null")) {
+            res = 1;
+        }
+
+        MsgDTO dto = MsgDTO.builder().result(res).build();
+
+        return dto;
+
+    }
+
+    @ResponseBody
+    @PostMapping(value = "deleteUser")
+    public MsgDTO deleteUser(HttpServletRequest request) throws Exception {
+        log.info(this.getClass().getName() + ".deleteUser Start!");
+
+        String userId = CmmUtil.nvl(request.getParameter("userId"));
+
+        log.info("userId : " + userId);
+
+        int res = 0;
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+
+        int success = Optional.ofNullable(userInfoService.deleteUser(pDTO))
+                .orElse(0);
+
+        String msg ="";
+
+        if(success != 0) {
+
+            msg = "탈퇴시켰습니다";
+
+            res = 1;
+
+        }
+
+        log.info(this.getClass().getName() + ".deleteUser End!");
+
+        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
+
+        return dto;
+
     }
 }
