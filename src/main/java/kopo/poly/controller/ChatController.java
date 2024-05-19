@@ -34,19 +34,6 @@ public class ChatController {
     private final IChatService chatService;
 
     /**
-     * 채팅창 입장 전
-     */
-    @GetMapping(value = "intro")
-    public String intro() {
-
-        log.info(this.getClass().getName() + ".intro Start!");
-
-        log.info(this.getClass().getName() + ".intro Ends!");
-
-        return "/chat/intro";
-    }
-
-    /**
      * 채팅창 접속
      */
     @GetMapping(value = "chatroom")
@@ -57,6 +44,8 @@ public class ChatController {
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
         UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
+        log.info("userId : " + userId);
+
         Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO)).orElseGet(HashMap::new);
 
         UserInfoDTO rDTO = UserInfoDTO.builder(
@@ -66,10 +55,10 @@ public class ChatController {
         ).regDt(String.valueOf(rMap.get("regDt"))
         ).build();
 
-        String roomName = EncryptUtil.encHashSHA256(userId);
+        log.info("rDTO : " + rDTO);
 
-        model.addAttribute("roomName", roomName);
-        model.addAttribute("pDTO", rDTO);
+        model.addAttribute("roomName", userId);
+        model.addAttribute("rDTO", rDTO);
 
         log.info(this.getClass().getName() + ".chatroom End!");
 
@@ -81,16 +70,32 @@ public class ChatController {
      */
     @RequestMapping(value = "saveMessage")
     @ResponseBody
-    public int saveMessage(@Valid @RequestBody ChatDTO pDTO) throws Exception{
+    public int saveMessage(HttpServletRequest request) throws Exception{
 
         log.info(this.getClass().getName() + ".saveMessage Start!");
 
+        int res = 0;
+
+        String name = CmmUtil.nvl(request.getParameter("name"));
+        String msg = CmmUtil.nvl(request.getParameter("msg"));
+        String userId = CmmUtil.nvl(request.getParameter("userId"));
+        String roomName = CmmUtil.nvl(request.getParameter("roomName"));
+
+        ChatDTO pDTO = ChatDTO.builder(
+        ).userId(userId
+        ).name(name
+        ).roomName(roomName
+        ).date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss")
+        ).msg(msg).build();
+
         log.info("pDTO : " + pDTO);
-
-        pDTO = pDTO.toBuilder().date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss")).build();
-
-        int res = chatService.saveMessage(pDTO);
-
+        if (userId.equals("admin")) {
+            int res1 = chatService.saveMessage(pDTO);
+            int res2 = chatService.deleteUser(userId);
+            res = res1 * res2;
+        } else {
+            res = chatService.saveMessage(pDTO);
+        }
         log.info(this.getClass().getName() + ".saveMessage Ends!");
 
         return res;
