@@ -18,6 +18,7 @@
             if (ws !== undefined && ws.readyState !== WebSocket.CLOSED) {
                 console.log("WebSocket is already opened.");
                 return;
+
             }
 
             // 접속 URL 예 : ws://localhost:10000/ws/테스트방/별명
@@ -34,7 +35,6 @@
             ws.onmessage = function (msg) {
                 // 웹소켓으로부터 받은 데이터를 JSON 구조로 변환하기
                 let data = JSON.parse(msg.data);
-                console.log(data)
                 if (data.name === userName) { // 내가 발송한 채팅 메시지는 파란색 글씩
                     $("#chat").append("<div>");
                     $("#chat").append("<span style='color: blue'><b>[보낸 사람] : </b></span>");
