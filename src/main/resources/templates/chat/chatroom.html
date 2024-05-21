@@ -2,9 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title >채팅방 입장</title>
-    <link rel="stylesheet" href="/css/table.css"/>
+    <title>채팅방 입장</title>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/images/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/lightslider.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap"
+            rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
     <script th:inline="javascript">
         /*<![CDATA[*/
         let data = {}; // 전송 데이터(JSON)
@@ -35,27 +80,30 @@
                 // 웹소켓으로부터 받은 데이터를 JSON 구조로 변환하기
                 let data = JSON.parse(msg.data);
                 console.log(data)
-                if (data.name === userName) { // 내가 발송한 채팅 메시지는 파란색 글씩
-                    $("#chat").append("<div>");
-                    $("#chat").append("<span style='color: blue'><b>[보낸 사람] : </b></span>");
-                    $("#chat").append("<span style='color: blue'> 나 </span>");
-                    $("#chat").append("<span style='color: blue'><b>[발송 메시지] : </b></span>");
-                    $("#chat").append("<span style='color: blue'>" + data.msg + " </span>");
-                    $("#chat").append("<span style='color: blue'><b>[발송시간] : </b></span>");
-                    $("#chat").append("<span style='color: blue'>" + data.date + " </span>");
-                    $("#chat").append("</div>");
+                if (data.name === userName) {
+                    $("#chat").append("<div class='message-wrapper reverse'>" +
+                        "<div class='message-box-wrapper'>" +
+                        "<span style='color: black; font-size: 10pt'><strong>" + data.name + "</strong></span>" +
+                        "<div class='message-box'>" +
+                        data.msg +
+                        "</div>" +
+                        "<span style='color: black'>" + data.date + "</span>" +
+                        "</div>" +
+                        "</div>")
 
                 } else {
-                    $("#chat").append("<div>"); // 그 외 채팅참여자들이 발송한 채팅 메시지는 검정색
-                    $("#chat").append("<span><b>[보낸 사람] : </b></span>");
-                    $("#chat").append("<span>" + data.name + " </span>");
-                    $("#chat").append("<span><b>[수신 메시지] : </b></span>");
-                    $("#chat").append("<span>" + data.msg + " </span>");
-                    $("#chat").append("<span><b>[발송시간] : </b></span>");
-                    $("#chat").append("<span>" + data.date + " </span>");
-                    $("#chat").append("</div>");
-
+                    $("#chat").append("<div class='message-wrapper'>" +
+                        "<div class='message-box-wrapper'>" +
+                        "<span style='color: black; font-size: 10pt'><strong>" + data.name + "</strong></span>" +
+                        "<div class='message-box'>" +
+                        data.msg +
+                        "</div>" +
+                        "<span style='color: black'>" + data.date + "</span>" +
+                        "</div>" +
+                        "</div>")
                 }
+                let mySpace = document.getElementById("chat");
+                mySpace.scrollTop = mySpace.scrollHeight;
             }
 
             $("#btnSend").on("click", function () {
@@ -72,10 +120,10 @@
                     url: "/chat/saveMessage",
                     type: "POST",
                     data: {
-                        name : data.name,
-                        msg : data.msg,
-                        userId : data.userId,
-                        roomName : data.roomName
+                        name: data.name,
+                        msg: data.msg,
+                        userId: data.userId,
+                        roomName: data.roomName
                     },
                     success: function (json) {
                         if (json === 1) {
@@ -92,33 +140,603 @@
         });
         /*]]>*/
     </script>
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap");
+
+
+        .position-relative{
+            position: fixed !important;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        input::placeholder{
+            color: #2a2a2a;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--app-bg);
+            font-family: 'DM Sans', sans-serif;
+            --text-dark: #1a2f45;
+            --text-light: #445e78;
+            --chat-box-dark: #1b243b;
+            --chat-box-light: #fff;
+            --button-text: #fff;
+            --toggle-ball: #fff;
+            --list-item-active: #e5effb;
+            --number-bg: #6895A3;
+            --message-box-1: #fff;
+            --message-box-2: #1a233b;
+            --chat-input: #060415;
+            --border-light: #8187a2;
+            --info-box-color-1: #004dfc;
+            --info-box-color-2: #00ba9d;
+            --info-box-color-3: #715fc2;
+            --info-box-color-4: #ff562d;
+            --info-icon-bg-1: #b1c7fc;
+            --info-icon-bg-2: #c6f0ea;
+            --info-icon-bg-3: #d9d3ff;
+            --info-icon-bg-4: #ffe1d4;
+            --app-bg: #060415;
+            --box-color: #12172d;
+            --box-border: #477eff;
+            --button-bg: #477eff;
+            --text-dark: rgba(255, 255, 255, 1);
+            --text-light: rgba(255, 255, 255, .6);
+            --info-box-1: rgba(160, 186, 242, 0.5);
+            --info-box-2: rgba(168, 240, 229, 0.55);
+            --info-box-3: rgba(194, 168, 240, 0.34);
+            --info-box-4: rgba(240, 185, 168, 0.34);
+            --toggle-bg: #477eff;
+            --toggle-bg-off: #6895a3;
+            --message-box-2: #477eff;
+            --message-box-1: #576c99;
+            --logo-path-1: #477eff;
+            --logo-path-2: #576c99;
+            --box-shadow: rgba(18, 23, 45, .6) 0px 8px 24px;
+            --scrollbar-thumb: linear-gradient(to bottom, rgba(43, 88, 118, .8), rgba(78, 67, 118, .8));
+        }
+
+        /* Toggle Button */
+        .switch-status input {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-status input:checked + label {
+            background-color: var(--toggle-bg);
+        }
+
+        .switch-status input:checked + label:before {
+            left: 12px;
+        }
+
+        .switch-status input:checked ~ .toggle-offline {
+            display: none;
+        }
+
+        .switch-status input:checked ~ .toggle-online {
+            display: inline-block;
+        }
+
+        .label-toggle {
+            background-color: var(--toggle-bg-off);
+            border-radius: 24px;
+            width: 24px;
+            height: 14px;
+            display: inline-block;
+            margin-right: 4px;
+            position: relative;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .label-toggle:before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            left: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background-color: var(--toggle-ball);
+            transition: all 0.2s ease;
+        }
+
+        .toggle-text {
+            font-size: 12px;
+            line-height: 16px;
+        }
+
+        /* Chat List */
+        .chat-list {
+            padding: 0;
+            list-style: none;
+            height: 0;
+            overflow: hidden;
+            transition: .4s ease-in;
+            display: none;
+            opacity: 0;
+        }
+
+        .chat-list.active {
+            display: block;
+            height: auto;
+            opacity: 1;
+        }
+
+        .chat-list-item {
+            transition: .2s;
+            padding: 8px 14px;
+            margin: 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .chat-list-item.active {
+            background-color: var(--box-color);
+        }
+
+        .chat-list-item.active span {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .chat-list-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+
+        .chat-list-item:hover {
+            background-color: var(--box-color);
+        }
+
+        .chat-list-name {
+            display: inline-block;
+            font-size: 14px;
+            line-height: 16px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .chat-list-header {
+            font-weight: 700;
+            line-height: 24px;
+            font-size: 16px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        .chat-list-header .c-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--button-bg);
+            color: #fff;
+            font-weight: 500;
+            font-size: 12px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .list-header-arrow {
+            margin-left: auto;
+            transform: rotate(180deg);
+            transition: .2s ease;
+        }
+
+        .chat-list-header.active .list-header-arrow {
+            transform: rotate(0deg);
+        }
+
+        /* App Main */
+        .app-main {
+            flex: 3;
+            height: 100%;
+            background-color: var(--box-color);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            transition: .2s;
+        }
+
+        .app-main-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--box-color);
+            border: 1px solid var(--box-border);
+        }
+
+        /* Chat Wrapper */
+        .chat-wrapper {
+            overflow: auto;
+        }
+
+        .chat-input {
+            border: none;
+            outline: none;
+            height: 32px;
+            flex: 1;
+            margin-right: 4px;
+            background-color: var(--chat-input);
+            color: var(--text-dark);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            border-radius: 6px;
+            padding: 12px;
+            background-color: var(--chat-input);
+        }
+
+        .input-wrapper {
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            font-size: 12px;
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 0 6px 0 12px;
+            justify-content: space-between;
+            margin: 0 8px;
+            background-color: var(--chat-input);
+        }
+
+        .emoji-btn {
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 4px;
+            color: #ffca3e;
+        }
+
+        .chat-send-btn {
+            height: 32px;
+            color: #fff;
+            background-color: var(--button-bg);
+            border: none;
+            border-radius: 4px;
+            padding: 0 32px 0 10px;
+            font-size: 12px;
+            background-position: center right 8px;
+            background-repeat: no-repeat;
+            background-size: 14px;
+            line-height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs/%3E%3Cpath fill='%23fff' d='M481.508 210.336L68.414 38.926c-17.403-7.222-37.064-4.045-51.309 8.287C2.86 59.547-3.098 78.551 1.558 96.808L38.327 241h180.026c8.284 0 15.001 6.716 15.001 15.001 0 8.284-6.716 15.001-15.001 15.001H38.327L1.558 415.193c-4.656 18.258 1.301 37.262 15.547 49.595 14.274 12.357 33.937 15.495 51.31 8.287l413.094-171.409C500.317 293.862 512 276.364 512 256.001s-11.683-37.862-30.492-45.665z'/%3E%3C/svg%3E");
+        }
+
+        .chat-attachment-btn {
+            border: none;
+            padding: 0;
+            background-color: transparent;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+        }
+
+        /* Messages */
+        .message-wrapper {
+            display: flex;
+            align-items: flex-start;
+            padding-bottom: 20px;
+        }
+
+        .message-wrapper.reverse {
+            justify-content: flex-end;
+        }
+
+        .message-wrapper.reverse .message-box {
+            background-color: var(--message-box-2);
+            color: #fff;
+        }
+
+        .message-wrapper.reverse .message-box-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .message-wrapper.reverse .message-pp {
+            order: 2;
+        }
+
+        .message-pp {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .message-box {
+            background-color: var(--message-box-1);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 16px;
+            width: auto;
+            max-width: 80%;
+            color: var(--text-dark);
+        }
+
+        .message-box-wrapper {
+            margin: 0 12px;
+        }
+
+        .message-box-wrapper span {
+            font-size: 10px;
+            line-height: 16px;
+            color: var(--text-light);
+            opacity: 0.6;
+        }
+
+        /* App Right */
+        .app-right {
+            flex-basis: 320px;
+            flex-shrink: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-left: 24px;
+            transition: .2s;
+            overflow: auto;
+        }
+
+        .app-right .app-profile-box img {
+            margin-bottom: 16px;
+        }
+
+        .app-profile-box-title {
+            width: 100%;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .app-profile-box-title svg {
+            width: 16px;
+            margin-right: 6px;
+        }
+
+        .archive-btn {
+            color: #fff;
+            height: 32px;
+            margin-top: 16px;
+            border-radius: 4px;
+            background-color: var(--button-bg);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            border: none;
+            padding: 0 10px;
+            box-shadow: rgba(255, 255, 255, 0.1) 0px 8px 24px;
+            transition: all 0.2s ease;
+        }
+
+        .app-profile-box {
+            border-radius: 10px;
+            background-color: var(--box-color);
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--box-border);
+        }
+
+        .profile-desc {
+            font-size: 12px;
+            line-height: 16px;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            height: 28px;
+            color: var(--button-bg);
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            border-radius: 4px;
+            padding: 0 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            background-color: var(--button-bg);
+            color: #fff;
+        }
+
+        .app-profile-box span {
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .app-profile-box p {
+            font-size: 12px;
+            line-height: 16px;
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+
+        /* Settings */
+        .settings-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--box-color);
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--box-border);
+        }
+
+        .settings-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .settings-header .arrow-icon {
+            margin-left: auto;
+            transform: rotate(180deg);
+            transition: .2s ease;
+        }
+
+        .settings-header.active .arrow-icon {
+            transform: rotate(0deg);
+        }
+
+        .settings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: none;
+            opacity: 0;
+            transition: .4s ease-in;
+        }
+
+        .settings-list.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .settings-list-item {
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-dark);
+            font-weight: 500;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .settings-list-item:hover {
+            color: var(--button-bg);
+        }
+
+        .settings-list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .app-wrapper {
+                flex-direction: column;
+            }
+
+            .app-left,
+            .app-right {
+                margin: 0;
+                flex-basis: auto;
+            }
+
+            .app-main {
+                margin: 0;
+            }
+
+            .app-right {
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-wrapper {
+                padding: 16px;
+            }
+
+            .chat-list-item img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .chat-list-item {
+                padding: 8px;
+            }
+
+            .message-box {
+                font-size: 10px;
+            }
+
+            .chat-input {
+                font-size: 10px;
+            }
+
+            .chat-send-btn {
+                font-size: 10px;
+                padding: 0 24px 0 8px;
+                background-size: 12px;
+            }
+
+            .archive-btn {
+                font-size: 12px;
+                padding: 0 8px;
+            }
+        }
+
+
+    </style>
 </head>
 <body>
-<hr/>
-<br/><br/>
-<div class="divTable minimalistBlack">
-    <div class="divTableHeading">
-        <div class="divTableRow">
-            <div class="divTableHead">대화 내용</div>
-        </div>
-    </div>
-    <div class="divTableBody">
-        <div class="divTableRow">
-            <div class="divTableCell" id="chat"></div>
-        </div>
-    </div>
-</div>
-<br/><br/>
-<div class="divTable minimalistBlack">
-    <div class="divTableBody">
-        <div class="divTableRow">
-            <div class="divTableCell">전달할 메시지</div>
-            <div class="divTableCell">
-                <input type="text" id="msg">
-                <button id="btnSend">메시지 전송</button>
+<div th:replace="~{/header.html}" style="position: fixed !important;"></div>
+<section class="product_description_area" style="margin-top:175px; width: 100vh;position: fixed">
+
+    <div class="app-container" style="height: 80vh" >
+        <div class="app-main" style="background-color: powderblue">
+            <div class="chat-wrapper" id="chat" >
+            </div>
+
+            <div class="chat-input-wrapper" style="background-color: aliceblue; margin-top: 1%">
+                <div class="input-wrapper" style="background-color: aliceblue">
+                    <input type="text" id="msg" class="chat-input" placeholder="Enter your message here"
+                           style="background-color: aliceblue; color: black">
+                </div>
+                <button id="btnSend" class="chat-send-btn"></button>
             </div>
         </div>
     </div>
-</div>
+</section>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap">
 </body>
 </html>

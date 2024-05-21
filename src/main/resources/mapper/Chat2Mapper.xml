@@ -8,6 +8,7 @@
     <delete id="deleteUser" parameterType="java.lang.String">
         DELETE FROM CHAT
         WHERE USER_ID = #{userId}
+        OR    USER_ID = #{roomName}
     </delete>
 
     <insert id="insertUser" parameterType="java.lang.String">

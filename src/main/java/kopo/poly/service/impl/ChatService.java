@@ -60,10 +60,10 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public int deleteUser(String userId) throws Exception {
+    public int deleteUser(String roomName, String userId) throws Exception {
 
         log.info(this.getClass().getName() + ".getChatList start!");
 
-        return chat2Mapper.deleteUser(userId);
+        return chat2Mapper.deleteUser(roomName, userId);
     }
 }

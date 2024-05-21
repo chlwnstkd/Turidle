@@ -81,6 +81,8 @@ public class ChatController {
         String userId = CmmUtil.nvl(request.getParameter("userId"));
         String roomName = CmmUtil.nvl(request.getParameter("roomName"));
 
+        log.info("userId : " + userId);
+
         ChatDTO pDTO = ChatDTO.builder(
         ).userId(userId
         ).name(name
@@ -91,7 +93,7 @@ public class ChatController {
         log.info("pDTO : " + pDTO);
         if (userId.equals("admin")) {
             int res1 = chatService.saveMessage(pDTO);
-            int res2 = chatService.deleteUser(userId);
+            int res2 = chatService.deleteUser(roomName, userId);
             res = res1 * res2;
         } else {
             res = chatService.saveMessage(pDTO);

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard - NiceAdmin Bootstrap Template</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/admin/img/favicon.png" rel="icon">
+    <link href="/admin/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/admin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/admin/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/admin/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="/admin/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/admin/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/admin/vendor/simple-datatables/style.css" rel="stylesheet">
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Template Main CSS File -->
+    <link href="/admin/css/style.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+</head>
+<script type="text/javascript">
+
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+
+        $(".btnSearch").on("click", function () {
+           doSearch()
+        })
+
+    })
+    function doSearch() {
+        let userId = document.getElementById("userId").value;
+        console.log(userId)
+
+        $.ajax({
+            url: "/admin/searchUser",
+            type: "POST",
+            data: {userId : userId},
+            success: function (json) {
+
+                if (json.result === 1) {
+
+                    alert("회원정보가 없습니다"); // 메시지 띄우기
+
+                }else {
+                    location.href="/admin/userInfo?userId=" + userId;
+                }
+
+
+            }
+        })
+    }
+
+
+</script>
+
+
+<body>
+<!-- ======= Header ======= -->
+<header data-brackets-id="2462" id="header" class="header fixed-top d-flex align-items-center">
+    <div class="head" data-brackets-id="2528" style="margin: auto;display: flex;">
+        <div data-brackets-id="2463" class="d-flex align-items-center justify-content-between"
+             style="height:  100%; width: 80%">
+            <a data-brackets-id="2464" href="/admin/main" class="logo d-flex align-items-center">
+                <img data-brackets-id="2465" src="/admin/img/logo.png" alt="" style="height: 100%">
+            </a>
+        </div><!-- End Logo -->
+
+        <div data-brackets-id="2466" class="search-bar" style="float: right;margin: auto;">
+            <form data-brackets-id="2467" class="search-form d-flex align-items-center" action="#">
+                <input id="userId" data-brackets-id="2468" type="text" name="query" placeholder="Search"
+                       title="Enter search keyword">
+                <button data-brackets-id="2469" class="btnSearch" type="button" title="Search"><i data-brackets-id="2470"
+                                                                                class="bi bi-search"></i></button>
+            </form>
+        </div><!-- End Search Bar -->
+
+        <nav data-brackets-id="2471" class="header-nav ms-auto" style="margin: auto">
+            <ul data-brackets-id="2472" class="d-flex align-items-center">
+
+                <li data-brackets-id="2473" class="nav-item d-block d-lg-none">
+                    <a data-brackets-id="2474" class="nav-link nav-icon search-bar-toggle " href="#">
+                        <i data-brackets-id="2475" class="bi bi-search"></i>
+                    </a>
+                </li><!-- End Search Icon-->
+
+            </ul>
+        </nav><!-- End Icons Navigation -->
+            <a href="/admin/chatList" class="nav-item nav-link">
+                <img src="/img/chat.png" style="width: 50px">
+            </a>
+    </div>
+</header>
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="/admin/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/admin/vendor/chart.js/chart.umd.js"></script>
+<script src="/admin/vendor/echarts/echarts.min.js"></script>
+<script src="/admin/vendor/quill/quill.js"></script>
+<script src="/admin/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="/admin/vendor/tinymce/tinymce.min.js"></script>
+<script src="/admin/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/admin/js/main.js"></script>
+
+</body>
+
+</html>
