@@ -69,14 +69,14 @@ public class UserInfoController {
             ).userId(String.valueOf(rMap.get("userId"))
             ).nickname(String.valueOf(rMap.get("nickname"))
             ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
-            ).regDt("regDt"
+            ).regDt(String.valueOf(rMap.get("regDt"))
             ).build();
-
-            session.setAttribute("NEW_PASSWORD", userId);
 
             log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email());
 
             model.addAttribute("rDTO", rDTO);
+        }else{
+            url = "/index";
         }
         return url;
     }
@@ -185,24 +185,31 @@ public class UserInfoController {
         log.info("userId : " + userId);
         log.info("password : " + password);
 
-        UserInfoDTO pDTO = UserInfoDTO.builder()
-                .userId(userId)
-                .password(EncryptUtil.encHashSHA256(password))
-                .build();
+        MsgDTO dto;
 
-        int res = userInfoService.getUserLogin(pDTO);
 
-        log.info("회원가입 결과(res) : " + res);
-
-        if (res == 1) {
-            msg = "로그인이 성공했습니다";
+        if (userId.equals("admin") && password.equals("1234")) {
+            dto = MsgDTO.builder().result(2).msg("관리자 페이지에 로그인합니다").build();
             session.setAttribute("SS_USER", userId);
-        } else {
-            msg = "아이디와 비밀번호가 올바르지 않습니다";
+        }else {
+            UserInfoDTO pDTO = UserInfoDTO.builder()
+                    .userId(userId)
+                    .password(EncryptUtil.encHashSHA256(password))
+                    .build();
+
+            int res = userInfoService.getUserLogin(pDTO);
+
+            log.info("회원가입 결과(res) : " + res);
+
+            if (res == 1) {
+                msg = "로그인이 성공했습니다";
+                session.setAttribute("SS_USER", userId);
+            } else {
+                msg = "아이디와 비밀번호가 올바르지 않습니다";
+            }
+
+            dto = MsgDTO.builder().result(res).msg(msg).build();
         }
-
-        MsgDTO dto = MsgDTO.builder().result(res).msg(msg).build();
-
         log.info(this.getClass().getName() + ".loginProc End!");
 
         return dto;
@@ -339,9 +346,7 @@ public class UserInfoController {
 
     }
 
-    /**
-     * 아아디 찾기 로직 수행
-     */
+
     @ResponseBody
     @PostMapping(value = "deleteUser")
     public MsgDTO deleteUser(HttpSession session) throws Exception {
@@ -361,7 +366,7 @@ public class UserInfoController {
 
         if(success != 0) {
 
-            msg = "삭제에 성공했습니다";
+            msg = "탈퇴되었습니다";
 
             res = 1;
 

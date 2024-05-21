@@ -35,7 +35,7 @@ public class PostController {
     // 게시글 목록 조회 및 페이지 이동 코드
     // 구현완료(11/13)
     @GetMapping(value = "/postList")
-    public String postList(ModelMap model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request)
+    public String postList(ModelMap model, @RequestParam(defaultValue = "1") int page)
             throws Exception {
         log.info(this.getClass().getName() + ".postList Start!");
 

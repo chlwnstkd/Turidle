@@ -80,6 +80,50 @@
         }
 
     </style>
+    <script type="text/javascript">
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            $("#btnTrans").on("click", function () {
+                doTrans(); // 공지사항 수정하기 실행
+            })
+            $("#btnCopy").on("click", function () {
+                doCopy(); // 공지사항 수정하기 실행
+            })
+        })
+
+        function doTrans() {
+            document.getElementById("result").value = "방언을 번역하는 중입니다";
+            let contents = document.getElementById("contents").value;
+            let before = document.getElementById("before").value;
+            let after = document.getElementById("after").value;
+
+            $.ajax({
+                url: "/clova/prompt",
+                type: "POST",
+                data: {contents: contents,
+                        before: before,
+                        after: after},
+                success: function (json) {
+
+                    console.log(json)
+
+                    document.getElementById("result").value = json;
+
+                }
+            })
+        }
+        function doCopy() {
+
+            let result = document.getElementById("result");
+
+            result.select(); // 텍스트 영역 내용 선택
+            document.execCommand("copy"); // 복사 명령 실행
+            alert("복사하였습니다 (복사한 단어 : " + result.value + ")");
+
+        }
+    </script>
 
 </head>
 
@@ -93,24 +137,42 @@
                 <div class="row" style="margin-top: 5%;">
                     <div class="col-lg-6" style="display: flex;margin-top: 4%;height: 51vh;max-width: 80%">
                         <div class="review_list" style="width: 100%;margin-right: 10%;margin-left: 10%;">
-                            <select name="likeLanguage" id="1" class="pl" style="width: 420px !important; height: 95px !important; border: none;font-size: 35px">
+                            <select name="likeLanguage" id="before" class="pl" style="width: 420px !important; height: 95px !important;outline: none; border: none;font-size: 35px">
                                 <option value="0" selected="">번역할 지역</option>
-                                <option value="python"></option>
-                                <option value="java">Java</option>
-                                <option value="javascript">Javascript</option>
-                                <option value="c#">C#</option>
-                                <option value="c/c++">C/C++</option>
+                                <option value="서울 말">표준말</option>
+                                <option value="강원도 말">강원도</option>
+                                <option value="경상도 말">경상도</option>
+                                <option value="전라도 밀">전라도</option>
+                                <option value="제주도 말">제주도</option>
+                                <option value="충청도 말">충청도</option>
                             </select>
+                            <div class="review_list" style="width: 100%;margin-right: 10%; height: 45%; margin-top: 3%">
+                                <textarea name="contents" id="contents" placeholder="내용을 입력하세요" style="width: 100%;height: 95%;
+                                            border: none; outline: none; resize: none; background-color: transparent; font-size: 30px"></textarea>
+                                </textarea>
+                            </div>
+                            <div class="review_list" style="width: 100%;margin-right: 10%;height: 10%;">
+                                <button type="button" id="btnTrans" style="width: 100%;height: 95%;border: none;background-color: transparent;outline: none"></button>
+                            </div>
                         </div>
                         <div class="review_list" style="width: 95%" >
-                            <select name="likeLanguage" id="2" class="pl" style="width: 420px !important; height: 95px !important; border: none; font-size: 35px">
+                            <select name="likeLanguage" id="after" class="pl" style="width: 420px !important; height: 95px !important;outline: none; border: none; font-size: 35px">
                                 <option value="0" selected="">번역될 지역</option>
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="javascript">Javascript</option>
-                                <option value="c#">C#</option>
-                                <option value="c/c++">C/C++</option>
+                                <option value="표준말">표준말</option>
+                                <option value="강원도방원">강원도</option>
+                                <option value="경상도방원">경상도</option>
+                                <option value="전라도방원">전라도</option>
+                                <option value="제주도방원">제주도</option>
+                                <option value="충청도방원">충청도</option>
                             </select>
+                            <div class="review_list" style="width: 100%;margin-right: 10%; height: 45%; margin-top: 3%">
+                                <textarea name="contents" id="result" style="width: 100%;height: 95%;
+                                            border: none; outline: none; resize: none; background-color: transparent; font-size: 30px" readonly></textarea>
+                                </textarea>
+                            </div>
+                            <div class="review_list" style="width: 100%;margin-right: 10%;height: 10%;">
+                                <button type="button" id="btnCopy" style="width: 100%;height: 95%;border: none;background-color: transparent;outline: none"></button>
+                            </div>
                         </div>
                     </div>
                 </div>

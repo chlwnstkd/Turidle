@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard - NiceAdmin Bootstrap Template</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/admin/img/favicon.png" rel="icon">
+    <link href="/admin/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/admin/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/admin/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/admin/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="/admin/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/admin/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/admin/vendor/simple-datatables/style.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/admin/css/style.css" rel="stylesheet">
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+
+</head>
+<script type="text/javascript">
+
+    // HTML로딩이 완료되고, 실행됨
+    $(document).ready(function () {
+
+        $("#btnDelete").on("click", function () {
+            doDelete()
+
+        })
+
+    })
+
+    // 회원 탈퇴
+    function doDelete() {
+
+        if (confirm("정말로 탈퇴시키겠습니까?")) {
+
+            let userId = document.getElementById("userId").innerText;
+
+            console.log(document.getElementById("userId"))
+            console.log(userId);
+
+            // Ajax 호출해서 회원정보 삭제하기
+            $.ajax({
+                    url: "/admin/deleteUser",
+                    type: "post",
+                    dataType: "JSON",
+                    data : {
+                        userId : userId
+                    }
+                }
+            ).then(
+                function (json) {
+                    alert(json.msg);
+                    location.href = "/admin/main"; // 인덱스 페이지로 이동
+                }
+            )
+        }
+    }
+
+</script>
+<body>
+<div th:replace="~{/admin/header.html}"></div>
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>유저 상세 정보</h1>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-8" style="width: 100%; height: 100%">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card top-selling overflow-auto">
+                            <div class="card-body pb-0">
+                                <h5 class="card-title"></h5>
+                                <table class="table table-borderless">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>아이디</td>
+                                        <td id="userId">[[${rDTO.userId}]]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>이메일</td>
+                                        <td>[[${rDTO.email}]]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>닉네임</td>
+                                        <td>[[${rDTO.nickname}]]]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>등록일</td>
+                                        <td>[[${rDTO.regDt}]]</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div style="margin: auto;">
+                                    <button id="btnDelete" class="form_btn" type="button">회원 탈퇴</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="/admin/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/admin/vendor/chart.js/chart.umd.js"></script>
+<script src="/admin/vendor/echarts/echarts.min.js"></script>
+<script src="/admin/vendor/quill/quill.js"></script>
+<script src="/admin/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="/admin/vendor/tinymce/tinymce.min.js"></script>
+<script src="/admin/vendor/php-email-form/validate.js"></script>
+<!-- Font Awesome -->
+<link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+        rel="stylesheet"
+/>
+<script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
+
+<link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+<!-- Template Main JS File -->
+<script src="/admin/js/main.js"></script>
+<style>
+    .form_btn {
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        padding: 15px 15px;
+        margin: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 80ms ease-in;
+        box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+        font-family: "Dongle", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+</style>
+
+</body>
+
+</html>

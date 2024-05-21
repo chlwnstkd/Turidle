@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,6 +25,14 @@ public class UserInfoService implements IUserInfoService {
     private final IUserInfoMapper userInfoMapper;
 
     private final IMailService mailService;
+
+    @Override
+    public List<Map<String, Object>> getUserList() throws Exception {
+
+        log.info(this.getClass().getName() + ".getUserList start!");
+
+        return userInfoMapper.getUserList();
+    }
 
     @Override
     public String getUserExists(UserInfoDTO pDTO) throws Exception {

@@ -10,6 +10,11 @@ import java.util.Objects;
 @Mapper
 public interface IUserInfoMapper {
 
+
+    List<Map<String, Object>> getUserList() throws Exception;
+    List<Map<String, Object>> getChatList() throws Exception;
+
+
     //회원 가입하기(회원정보 등록하기)
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
 

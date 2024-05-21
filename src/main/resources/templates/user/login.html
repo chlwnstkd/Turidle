@@ -56,6 +56,10 @@
                                 alert(json.msg); // 메시지 띄우기
                                 location.href = "/home"; // 로그인 성공 페이지 이동
 
+                            } else if (json.result === 2){
+                                alert(json.msg); // 메시지 띄우기
+                                location.href = "/admin/main"; // 로그인 페이지 이동
+
                             } else { // 로그인 실패
                                 alert(json.msg); // 메시지 띄우기
                                 $("#id").focus(); // 아이디 입력 항목에 마우스 커서 이동
@@ -192,7 +196,7 @@
                                 alert(json.msg); // 메시지 띄우기
                                 location.href = "/user/login"; // 로그인 페이지 이동
 
-                            } else { // 회원가입 실패
+                            }else { // 회원가입 실패
                                 alert(json.msg); // 메시지 띄우기
                             }
 

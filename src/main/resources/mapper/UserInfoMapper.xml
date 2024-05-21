@@ -12,6 +12,12 @@
         <result column="REG_DT" property="regDt"/>
     </resultMap>
 
+    <select id="getUserList" resultMap="userResult">
+        SELECT USER_ID, NICKNAME, EMAIL, REG_DT
+        FROM USER_INFO
+        ORDER BY REG_DT DESC;
+    </select>
+
     <!--  userId가 존재하는지 확인  -->
     <select id="getUserIdExists" parameterType="UserInfoDTO" resultType="String">
         SELECT CASE WHEN COUNT(1) = 0 THEN 'N' ELSE 'Y' END AS existsYn
@@ -81,4 +87,15 @@
                   #{userId}, #{nickname}, #{password}, #{email}, #{regDt}
               )
     </insert>
+
+    <select id="getChatList" resultMap="userResult">
+        SELECT UI.USER_ID as USER_ID, UI.NICKNAME as NICKNAME, UI.EMAIL as EMAIL, UI.REG_DT as REG_DT
+        FROM USER_INFO UI
+                 JOIN (
+            SELECT USER_ID, MAX(DATE) AS LAST_CHAT_DATE
+            FROM CHAT
+            GROUP BY USER_ID
+        ) C ON UI.USER_ID = C.USER_ID
+        ORDER BY C.LAST_CHAT_DATE DESC;
+    </select>
 </mapper>
