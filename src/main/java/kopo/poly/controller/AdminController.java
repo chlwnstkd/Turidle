@@ -39,14 +39,16 @@ public class AdminController {
         List<UserInfoDTO> rList = new ArrayList<>();
 
         for (Map<String, Object> rMap : pList) {
-            UserInfoDTO rDTO = UserInfoDTO.builder(
-            ).userId(String.valueOf(rMap.get("userId"))
-            ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
-            ).nickname(String.valueOf(rMap.get("nickname"))
-            ).regDt(String.valueOf(rMap.get("regDt"))
-            ).build();
+            if(!String.valueOf(rMap.get("userId")).equals("admin")) {
+                UserInfoDTO rDTO = UserInfoDTO.builder(
+                ).userId(String.valueOf(rMap.get("userId"))
+                ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+                ).nickname(String.valueOf(rMap.get("nickname"))
+                ).regDt(String.valueOf(rMap.get("regDt"))
+                ).build();
 
-            rList.add(rDTO);
+                rList.add(rDTO);
+            }
         }
 
         // 페이지당 보여줄 아이템 개수 정의

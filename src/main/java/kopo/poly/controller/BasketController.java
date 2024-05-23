@@ -87,7 +87,7 @@ public class BasketController {
 
         log.info(this.getClass().getName() + ".basket End!");
 
-        return "/basket/basket";
+        return "basket/basket";
     }
     @ResponseBody
     @PostMapping(value = "/update")
