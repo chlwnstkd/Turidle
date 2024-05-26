@@ -31,7 +31,7 @@ public class DictController {
 
         log.info(this.getClass().getName() + ".search Start!");
 
-        return "/dict/dictSearch";
+        return "dict/dictSearch";
     }
 
     @GetMapping("/dictList")
@@ -74,7 +74,7 @@ public class DictController {
 
         log.info(this.getClass().getName() + ".dictList End!");
 
-        return "/dict/dictList";
+        return "dict/dictList";
     }
     @GetMapping("/dictInfo")
     public String dictInfo(ModelMap model, HttpServletRequest request)
@@ -96,6 +96,6 @@ public class DictController {
 
         log.info(this.getClass().getName() + ".dictList End!");
 
-        return "/dict/dictInfo";
+        return "dict/dictInfo";
     }
 }
