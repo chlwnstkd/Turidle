@@ -80,6 +80,19 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            let rList = /*[[${rList}]]*/ '';
+            console.log(rList)
+
+            if(rList == "") {
+                alert("검색하신 단어와 일치하는 단어가 존재하지 않습니다")
+                location.href="/dict/dictSearch"
+            }
+        })
+
+
+    </script>
 
 </head>
 
