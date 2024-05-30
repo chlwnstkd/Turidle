@@ -42,24 +42,37 @@ public class ChatController {
         log.info(this.getClass().getName() + ".chatroom Start!");
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
-        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
-        log.info("userId : " + userId);
+        try {
+            UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
-        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO)).orElseGet(HashMap::new);
+            log.info("userId : " + userId);
 
-        UserInfoDTO rDTO = UserInfoDTO.builder(
-        ).userId(String.valueOf(rMap.get("userId"))
-        ).nickname(String.valueOf(rMap.get("nickname"))
-        ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
-        ).regDt(String.valueOf(rMap.get("regDt"))
-        ).build();
+            Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO)).orElseGet(HashMap::new);
 
-        log.info("rDTO : " + rDTO);
+            String email = String.valueOf(rMap.get("email"));
 
-        model.addAttribute("roomName", userId);
-        model.addAttribute("rDTO", rDTO);
+            if (email.equals("null")) {
+                email = "";
+            }else {
+                email = EncryptUtil.decAES128CBC(email);
+            }
 
+            UserInfoDTO rDTO = UserInfoDTO.builder(
+            ).userId(String.valueOf(rMap.get("userId"))
+            ).nickname(String.valueOf(rMap.get("nickname"))
+            ).email(email
+            ).regDt(String.valueOf(rMap.get("regDt"))
+            ).build();
+
+            log.info("rDTO : " + rDTO);
+
+            model.addAttribute("roomName", userId);
+            model.addAttribute("rDTO", rDTO);
+        } catch (Exception e) {
+            log.info(e.toString());
+            e.printStackTrace();
+        }
         log.info(this.getClass().getName() + ".chatroom End!");
 
         return "chat/chatroom";

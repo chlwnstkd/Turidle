@@ -51,6 +51,18 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="/css/style.css" rel="stylesheet"/>
     <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
+    <script th:inline="javascript">
         /*<![CDATA[*/
         let data = {}; // 전송 데이터(JSON)
         let ws; // 웹소켓 객체
@@ -115,6 +127,11 @@
                 let chatMsg = JSON.stringify(data); // 데이터 구조를 JSON 형태로 변경하기
 
                 console.log(chatMsg)
+
+                if (data.msg === "" || data.msg === undefined) {
+                    alert("전송할 메시지를 입력하세요.");
+                    return;
+                }
 
                 $.ajax({
                     url: "/chat/saveMessage",
