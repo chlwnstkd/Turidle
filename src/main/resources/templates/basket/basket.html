@@ -80,6 +80,18 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
 
 </head>
 
@@ -115,25 +127,25 @@
                                 <!-- 페이지네이션 영역-->
                                 <div style="display: flex">
                                     <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination">
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>
-                                            </li>
+                                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
+<!--                                            <li class="page-item">-->
+<!--                                                <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>-->
+<!--                                            </li>-->
                                             <!-- 이전 페이지로 이동하는 링크 -->
                                             <li class="page-item" th:if="${currentPage > 1}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage - 1}, text=${text}) }">&lt;</a>
+                                                <a class="page-link" th:href="@{/dict/dictList(text=${text})}">&lt;</a>
                                             </li>
                                             <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
-                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${pageNumber}, text=${text})}" th:text="${pageNumber}"></a>
-                                            </li>
+<!--                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">-->
+<!--                                                <a class="page-link" th:href="@{/dict/dictList(page=${pageNumber}, text=${text})}" th:text="${pageNumber}"></a>-->
+<!--                                            </li>-->
                                             <!-- 다음 페이지로 이동하는 링크 -->
                                             <li class="page-item" th:if="${currentPage < totalPages}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage + 1}), text=${text}}">&gt;</a>
+                                                <a class="page-link" th:href="@{/dict/dictList(text=${text})}">&gt;</a>
                                             </li>
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${totalPages}), text=${text}}">&raquo;</a>
-                                            </li>
+<!--                                            <li class="page-item">-->
+<!--                                                <a class="page-link" th:href="@{/dict/dictList(text=${text})}">&raquo;</a>-->
+<!--                                            </li>-->
                                         </ul>
                                     </div>
                                 </div>
@@ -345,7 +357,9 @@
         //상세보기 이동
         window.doDetail = function (targetCode, word) {
             console.log(targetCode)
-            location.href = "/dict/dictInfo?targetCode=" + targetCode + "&word=" + word;
+
+            let encodedString = encodeString(word);
+            location.href = "/dict/dictInfo?targetCode=" + targetCode + "&word=" + encodedString;
         };
         $("#btnSearch").on("click", function () {
             search()
@@ -357,11 +371,17 @@
                 alert("검색할 단어를 검색하여야 합니다");
                 return;
             }
-            location.href="/basket?text=" + text
+
+            let encodedString = encodeString(text);
+            location.href="/basket?text=" + encodedString
         }
     })
 
 
+
+    function encodeString(str) {
+        return btoa(encodeURIComponent(str));
+    }
 
 </script>
 </body>

@@ -7,6 +7,7 @@ import kopo.poly.dto.BasketDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.service.IBasketService;
 import kopo.poly.util.CmmUtil;
+import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,9 @@ public class BasketController {
         if (word == null  || word.equals("null")) {
             word = "";
         }
+        word = EncryptUtil.decodeString(word);
+
+        log.info(word);
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 

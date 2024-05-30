@@ -11,6 +11,7 @@ import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,13 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".main Start!");
 
-        List<Map<String, Object>> pList = userInfoService.getUserList();
+        int from = (page-1) * 10 + 1;
+
+        int to = page * 10;
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().from(from).to(to).build();
+
+        List<Map<String, Object>> pList = userInfoService.getUserList(pDTO);
         if (pList == null) pList = new ArrayList<>();
 
         log.info(pList.toString());
@@ -40,7 +47,8 @@ public class AdminController {
 
         for (Map<String, Object> rMap : pList) {
             if(!String.valueOf(rMap.get("userId")).equals("admin")) {
-                UserInfoDTO rDTO = UserInfoDTO.builder(
+                UserInfoDTO rDTO = UserInfoDTO.builder
+                        (
                 ).userId(String.valueOf(rMap.get("userId"))
                 ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
                 ).nickname(String.valueOf(rMap.get("nickname"))
@@ -232,9 +240,11 @@ public class AdminController {
 
         }
 
+        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
+        log.info(dto.toString());
+
         log.info(this.getClass().getName() + ".deleteUser End!");
 
-        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
 
         return dto;
 

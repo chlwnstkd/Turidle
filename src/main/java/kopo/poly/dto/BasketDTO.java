@@ -11,6 +11,8 @@ public record BasketDTO(
         String word,
         String targetCode,
         String definition,
-        String pos
+        String pos,
+        int from,
+        int to
 ) {
 }
