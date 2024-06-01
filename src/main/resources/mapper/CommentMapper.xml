@@ -63,7 +63,6 @@
         UPDATE COMMENT SET
                         CONTENTS = #{contents},
                         REG_DT = NOW()
-        WHERE
         WHERE COMMENT_NUMBER = #{commentNumber}
           AND POST_NUMBER = #{postNumber}
     </update>

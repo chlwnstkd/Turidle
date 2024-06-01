@@ -15,6 +15,8 @@ public record DictDTO(
         String region, // 지역
         String relationWord, // 비슷한 말
         String example, // 예시
-        String original // 원본
+        String original, // 원본
+        int from,
+        int to
 ) {
 }

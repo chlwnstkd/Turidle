@@ -8,6 +8,7 @@ import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.PostDTO;
 import kopo.poly.service.IDictService;
 import kopo.poly.util.CmmUtil;
+import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -40,6 +41,10 @@ public class DictController {
         log.info(this.getClass().getName() + ".dictList Start!");
 
         String text = CmmUtil.nvl(request.getParameter("text"));
+
+        text = EncryptUtil.decodeString(text);
+
+        log.info(text);
 
         try {
             List<DictDTO> rList = dictService.getDictList(text);
@@ -88,6 +93,11 @@ public class DictController {
 
         String targetCode = CmmUtil.nvl(request.getParameter("targetCode"));
         String word = CmmUtil.nvl(request.getParameter("word"));
+
+
+        word = EncryptUtil.decodeString(word);
+
+        log.info(word);
 
         log.info("targetCode : " + targetCode);
 

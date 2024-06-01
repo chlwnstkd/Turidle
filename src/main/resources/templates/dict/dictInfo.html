@@ -81,6 +81,19 @@
 
     </style>
 
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
+
 </head>
 
 <body style=" background: #ebecf0;">
@@ -344,10 +357,14 @@
                 alert("검색할 단어를 검색하여야 합니다");
                 return;
             }
-            location.href = "/dict/dictList?text=" + text
+            let encodedString = encodeString(text);
+            location.href="/dict/dictList?text=" + encodedString
         }
-
     })
+
+    function encodeString(str) {
+        return btoa(encodeURIComponent(str));
+    }
 
 
 </script>
