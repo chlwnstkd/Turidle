@@ -14,6 +14,8 @@ public record CommentDTO (
          String nickname,
          String postNumber,
          String regDt,
-         String contents
+         String contents,
+         int from,
+         int to
 ){
 }

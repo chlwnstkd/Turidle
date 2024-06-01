@@ -29,7 +29,7 @@ public class AdminController {
     @GetMapping(value = "/main")
     public String main(ModelMap model, @RequestParam(defaultValue = "1") int page)
             throws Exception {
-
+/
         log.info(this.getClass().getName() + ".main Start!");
 
         int from = (page-1) * 10 + 1;
@@ -62,21 +62,8 @@ public class AdminController {
         // 페이지당 보여줄 아이템 개수 정의
         int itemsPerPage = 10;
 
-        // 페이지네이션을 위해 전체 아이템 개수 구하기
-        int totalItems = rList.size();
-
         // 전체 페이지 개수 계산
-        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
-
-        // 현재 페이지에 해당하는 아이템들만 선택하여 rList에 할당
-        int fromIndex = (page - 1) * itemsPerPage;
-        int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
-
-        log.info(fromIndex + "");
-        log.info(toIndex + "");
-        log.info(itemsPerPage + "");
-
-        rList = rList.subList(fromIndex, toIndex);
+        int totalPages = (int) Math.ceil((double) Optional.ofNullable(userInfoService.getUserCount()).orElse(0) / itemsPerPage);
 
         model.addAttribute("rList", rList);
         model.addAttribute("currentPage", page);

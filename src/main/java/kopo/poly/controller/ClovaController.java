@@ -55,14 +55,8 @@ public class ClovaController {
 //            result =  "다시 시도해 주세요"; // 패턴에 맞는 부분이 없을 경우 빈 문자열 반환
 //        }
 
+        result =  extractedSubstring.replace("\"", "");
 
-
-        if(!extractedSubstring.contains("\"")) {
-            result = extractedSubstring;
-
-        }else {
-            result = "다시 시도해 주세요";
-        }
 
         log.info("result : " + result);
 
