@@ -78,9 +78,6 @@ public class ChatController {
         return "chat/chatroom";
     }
 
-    /**
-     * 채팅방 목록
-     */
     @RequestMapping(value = "saveMessage")
     @ResponseBody
     public int saveMessage(HttpServletRequest request) throws Exception{

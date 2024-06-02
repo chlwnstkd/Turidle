@@ -82,6 +82,18 @@
     </style>
     <script th:inline="javascript">
         $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
             let rList = /*[[${rList}]]*/ '';
             console.log(rList)
 
@@ -128,7 +140,8 @@
                                 <!-- 페이지네이션 영역-->
                                 <div style="display: flex">
                                     <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination">
+                                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
+
                                             <li class="page-item">
                                                 <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>
                                             </li>
@@ -357,7 +370,11 @@
         //상세보기 이동
         window.doDetail = function (targetCode, word) {
             console.log(targetCode)
-            location.href = "/dict/dictInfo?targetCode=" + targetCode + "&word=" + word;
+
+
+            let encodedString = encodeString(word);
+
+            location.href = "/dict/dictInfo?targetCode=" + targetCode + "&word=" + encodedString;
         };
         $("#btnSearch").on("click", function () {
             search()
@@ -369,9 +386,17 @@
                 alert("검색할 단어를 검색하여야 합니다");
                 return;
             }
-            location.href="/dict/dictList?text=" + text
+
+
+            let encodedString = encodeString(text);
+            location.href="/dict/dictList?text=" + encodedString
+
         }
     })
+
+    function encodeString(str) {
+        return btoa(encodeURIComponent(str));
+    }
 
 
 

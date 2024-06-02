@@ -9,6 +9,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -116,5 +117,10 @@ public class EncryptUtil {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, newKey, ivSpec);
         return new String(cipher.doFinal(textBytes), "UTF-8");
+    }
+
+    public static String decodeString(String encodedString) {
+        byte[] decodedBytes = Base64.decodeBase64(encodedString);
+        return java.net.URLDecoder.decode(new String(decodedBytes, StandardCharsets.UTF_8), StandardCharsets.UTF_8);
     }
 }

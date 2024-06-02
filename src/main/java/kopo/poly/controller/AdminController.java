@@ -29,7 +29,7 @@ public class AdminController {
     @GetMapping(value = "/main")
     public String main(ModelMap model, @RequestParam(defaultValue = "1") int page)
             throws Exception {
-/
+
         log.info(this.getClass().getName() + ".main Start!");
 
         int from = (page-1) * 10 + 1;
