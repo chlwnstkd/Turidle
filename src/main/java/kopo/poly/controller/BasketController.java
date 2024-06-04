@@ -4,7 +4,9 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.BasketDTO;
+import kopo.poly.dto.DictDTO;
 import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IBasketService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
@@ -26,23 +28,39 @@ public class BasketController {
     
     private final IBasketService basketService;
 
+
+    /**
+     *
+     * @param model
+     * @param page
+     * @param session
+     * @param request
+     * @return basket 페이지
+     * @throws Exception
+     */
     @GetMapping("")
     public String basket(ModelMap model, @RequestParam(defaultValue = "1") int page, HttpSession session, HttpServletRequest request)
             throws Exception {
         log.info(this.getClass().getName() + ".basket Start!");
 
+        log.info("page : " + page);
+
         String word = CmmUtil.nvl(request.getParameter("text"));
 
-        if (word == null  || word.equals("null")) {
+        if ((word == null  || word.equals("null")) || word.equals("")) {
             word = "";
+        }else {
+            word = EncryptUtil.decodeString(word);
         }
-        word = EncryptUtil.decodeString(word);
-
         log.info(word);
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
-        BasketDTO pDTO = BasketDTO.builder().word(word).userId(userId).build();
+        int from = (page-1) * 5 + 1;
+
+        int to = page * 5;
+
+        BasketDTO pDTO = BasketDTO.builder().word(word).userId(userId).from(from).to(to).build();
 
         List<Map<String, Object>> pList = basketService.getBasketList(pDTO);
         if (pList == null) pList = new ArrayList<>();
@@ -67,20 +85,10 @@ public class BasketController {
         int itemsPerPage = 5;
 
         // 페이지네이션을 위해 전체 아이템 개수 구하기
-        int totalItems = rList.size();
+        int totalItems = basketService.getBasketCount(pDTO);
 
         // 전체 페이지 개수 계산
         int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
-
-        // 현재 페이지에 해당하는 아이템들만 선택하여 rList에 할당
-        int fromIndex = (page - 1) * itemsPerPage;
-        int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
-
-        log.info(fromIndex + "");
-        log.info(toIndex + "");
-        log.info(itemsPerPage + "");
-
-        rList = rList.subList(fromIndex, toIndex);
 
         model.addAttribute("rList", rList);
         model.addAttribute("currentPage", page);
