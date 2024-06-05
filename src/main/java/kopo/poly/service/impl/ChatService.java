@@ -1,6 +1,7 @@
 package kopo.poly.service.impl;
 
 import kopo.poly.dto.ChatDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.persistance.mapper.IChat2Mapper;
 import kopo.poly.persistance.mapper.IChatMapper;
 import kopo.poly.persistance.mapper.IUserInfoMapper;
@@ -52,11 +53,19 @@ public class ChatService implements IChatService {
         return rList;
     }
     @Override
-    public List<Map<String, Object>> getChatList() throws Exception {
+    public List<Map<String, Object>> getChatList(UserInfoDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".getChatList start!");
 
-        return userInfoMapper.getChatList();
+        return userInfoMapper.getChatList(pDTO);
+    }
+
+    @Override
+    public int getChatCount() throws Exception {
+
+        log.info(this.getClass().getName() + ".getUserCount start!");
+
+        return userInfoMapper.getChatCount();
     }
 
     @Override

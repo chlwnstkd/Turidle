@@ -19,13 +19,21 @@ public class BasketService implements IBasketService {
     private final IBasketMapper basketMapper;
 
 
-    /*  좋아요 정보 등록 코드 */
+    /*  보관함 정보 등록 코드 */
     @Transactional
     @Override
     public int getBasket(BasketDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".getBasket start!");
         return basketMapper.getBasket(pDTO);
     }
+
+    /*   보관함 아이템 조회 코드   */
+    @Override
+    public int getBasketCount(BasketDTO pDTO) throws Exception {
+        log.info(this.getClass().getName() + ".getBasketCount start!");
+        return basketMapper.getBasketCount(pDTO);
+    }
+
     /* 보관함 목록 조회 코드 */
     @Override
     public List<Map<String, Object>> getBasketList(BasketDTO pDTO) throws Exception {

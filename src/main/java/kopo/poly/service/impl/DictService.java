@@ -30,7 +30,27 @@ public class DictService implements IDictService {
 
         List<DictDTO> rList = new ArrayList<>();
 
-        String json = NetworkUtil.get(url, headers);
+        int maxRetries = 3;
+        int retryCount = 0;
+        boolean success = false;
+        String json = null;
+
+        while (retryCount < maxRetries && !success) {
+            try {
+                json = NetworkUtil.get(url, headers);
+                if(json != null) {
+                    success = true;
+                }
+            } catch (Exception e) {
+                retryCount++;
+                log.error("API 통신 실패: 재시도 횟수 = " + retryCount, e);
+                if (retryCount >= maxRetries) {
+                    throw new Exception("API 통신 실패: 최대 재시도 횟수를 초과했습니다.", e);
+                }
+                Thread.sleep(2000); // 2초 지연 후 재시도
+            }
+        }
+
 
         Map<String, Object> pMap = new ObjectMapper().readValue(json, LinkedHashMap.class);
 

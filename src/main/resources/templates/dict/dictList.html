@@ -92,20 +92,62 @@
 
         })
     </script>
+
     <script th:inline="javascript">
         $(document).ready(function () {
-            let rList = /*[[${rList}]]*/ '';
-            console.log(rList)
-
-            if(rList == "") {
-                alert("검색하신 단어와 일치하는 단어가 존재하지 않습니다")
-                location.href="/dict/dictSearch"
+            const userId = /*[[${session.SS_USER}]]*/ '';
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
             }
-        })
 
+            let rList = /*[[${rList}]]*/ '';
+            console.log(rList);
+            if (rList == "") {
+                alert("검색하신 단어와 일치하는 단어가 존재하지 않습니다");
+                location.href = "/dict/dictSearch";
+            }
 
+            // Sample values for currentPage and totalPages
+            const currentPage = /*[[${currentPage}]]*/ ''; // Replace with dynamic value
+            const totalPages = /*[[${totalPages}]]*/ ''; // Replace with dynamic value
+            let text = /*[[${text}]]*/ ''; // Replace with dynamic value
+
+            text = btoa(encodeURIComponent(text));
+
+            renderPagination(currentPage, totalPages, text);
+        });
+
+        function renderPagination(currentPage, totalPages, text) {
+            const pagination = document.getElementById('pagination');
+            if (!pagination) return;
+
+            const createPageItem = (page, label = page, isDisabled = false, isActive = false) => {
+                const li = document.createElement('li');
+                li.className = `page-item ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
+
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = `/dict/dictList?page=${page}&text=${text}`;
+                a.textContent = label;
+
+                li.appendChild(a);
+                return li;
+            };
+
+            pagination.innerHTML = '';
+
+            pagination.appendChild(createPageItem(1, '«', currentPage === 1));
+            pagination.appendChild(createPageItem(currentPage - 1, '‹', currentPage === 1));
+
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.appendChild(createPageItem(i, i, false, i === currentPage));
+            }
+
+            pagination.appendChild(createPageItem(currentPage + 1, '›', currentPage === totalPages));
+            pagination.appendChild(createPageItem(totalPages, '»', currentPage === totalPages));
+        }
     </script>
-
 </head>
 
 <body style=" background: #ebecf0;">
@@ -140,27 +182,7 @@
                                 <!-- 페이지네이션 영역-->
                                 <div style="display: flex">
                                     <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
-
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList?page=1&text=${text}}">&laquo;</a>
-                                            </li>
-                                            <!-- 이전 페이지로 이동하는 링크 -->
-                                            <li class="page-item" th:if="${currentPage > 1}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage - 1}, text=${text}) }">&lt;</a>
-                                            </li>
-                                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
-                                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:class="${pageNumber == currentPage ? 'active' : ''}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${pageNumber}, text=${text})}" th:text="${pageNumber}"></a>
-                                            </li>
-                                            <!-- 다음 페이지로 이동하는 링크 -->
-                                            <li class="page-item" th:if="${currentPage < totalPages}">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${currentPage + 1}), text=${text}}">&gt;</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" th:href="@{/dict/dictList(page=${totalPages}), text=${text}}">&raquo;</a>
-                                            </li>
-                                        </ul>
+                                        <ul class="pagination pagination-primary" id="pagination"></ul>
                                     </div>
                                 </div>
                             </form>
