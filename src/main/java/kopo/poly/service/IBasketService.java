@@ -12,4 +12,5 @@ public interface IBasketService {
 
     void insertBasket(BasketDTO pDTO) throws Exception; // 보관함 정보 등록
     void deleteBasket(BasketDTO pDTO) throws Exception; // 보관함 정보 삭제
+    int getBasketCount(BasketDTO pDTO) throws Exception; // 보관함 아이템 개수 조회
 }

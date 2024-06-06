@@ -49,6 +49,20 @@
         })
 
     })
+    function logout() {
+        $.ajax({
+            url: "/user/logout",
+            type: "POST",
+            success: function (json) {
+                if (json.result === 1) {
+                    location.href = "/index";
+                    alert(json.msg)
+                } else {
+                    alert(json.msg)
+                }
+            }
+        })
+    }
     function doSearch() {
         let userId = document.getElementById("userId").value;
         console.log(userId)
@@ -109,6 +123,9 @@
         </nav><!-- End Icons Navigation -->
             <a href="/admin/chatList" class="nav-item nav-link">
                 <img src="/img/chat.png" style="width: 50px">
+            </a>
+            <a href="#" onclick="logout()" class="nav-item nav-link">
+                <img src="/img/logout.png" style="width: 50px">
             </a>
     </div>
 </header>

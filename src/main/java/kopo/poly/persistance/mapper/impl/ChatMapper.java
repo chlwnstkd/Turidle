@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import kopo.poly.dto.ChatDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.persistance.mapper.AbstractMongoDBComon;
 import kopo.poly.persistance.mapper.IChatMapper;
 import kopo.poly.util.CmmUtil;
@@ -94,5 +95,22 @@ public class ChatMapper extends AbstractMongoDBComon implements IChatMapper {
         log.info(this.getClass().getName() + ".getSingerSong End!");
 
         return rList;
+    }
+
+    @Override
+    public void deleteChat(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".deleteChat Start!");
+
+
+        String colNm = CmmUtil.nvl(pDTO.userId());
+
+        log.info("colNm : " + colNm);
+
+        mongodb.dropCollection(colNm);
+
+        log.info(this.getClass().getName() + ".deleteChat End!");
+
+
     }
 }

@@ -75,9 +75,22 @@
          
       </style>
   </head>
+  <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+  <script th:inline="javascript">
+    $(document).ready(function () {
+
+      const userId = /*[[${session.SS_USER}]]*/ ''
+
+      if (userId === null || userId === undefined) {
+        alert("로그인 후 이용 가능합니다.");
+        location.href = "/index";
+      }
+
+    })
+  </script>
 
   <body style=" background: #ebecf0;">
-  <div th:replace="/header.html"></div>
+  <div th:replace="header.html"></div>
 
 
     <!-- Header Start -->

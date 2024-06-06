@@ -77,7 +77,8 @@
         .title,
         .writer,
         .date,
-        .count {
+        .count,
+        .userId{
             width: 25%;
         }
 
@@ -117,7 +118,7 @@
                                         <div class="count">등록일</div>
                                     </div>
                                     <div th:each="dto:${rList}" class="content_row">
-                                        <div class="title">[[${dto.userId}]]</div>
+                                        <div class="userId">[[${dto.userId}]]</div>
                                         <div class="writer">[[${dto.email}]]</div>
                                         <div class="date">[[${dto.nickname}]]</div>
                                         <div class="count">[[${dto.regDt}]]</div>
