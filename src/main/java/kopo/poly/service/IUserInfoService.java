@@ -12,7 +12,9 @@ public interface IUserInfoService {
 
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
 
-    List<Map<String, Object>> getUserList() throws Exception;
+    List<Map<String, Object>> getUserList(UserInfoDTO pDTO) throws Exception;
+    int getUserCount() throws Exception;
+
 
     int getUserLogin(UserInfoDTO pDTO) throws Exception;
     Map<String, Object> getUserInfo(UserInfoDTO pDTO) throws Exception;
@@ -20,5 +22,7 @@ public interface IUserInfoService {
     int newPasswordProc(UserInfoDTO pDTO) throws Exception;
     int updateUserInfo(UserInfoDTO pDTO) throws Exception;
     int deleteUser(UserInfoDTO pDTO) throws Exception;
+
+    int getChatCount() throws Exception;
 
 }

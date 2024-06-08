@@ -30,6 +30,18 @@
 
     <!-- Template Main CSS File -->
     <link href="/admin/css/style.css" rel="stylesheet">
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if ((userId === null || userId === undefined) || userId !== "admin") {
+                alert("관리자 로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -42,9 +54,47 @@
             })
         })
     </script>
+    <style>
+        .board_list {
+            display: flex;
+            flex-direction: column;
+            height: 50vh;
+        }
+
+        .top {
+            display: flex;
+            flex-direction: row;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .top > div {
+            padding: 8px;
+            text-align: center;
+        }
+
+        .title,
+        .userId,
+        .writer,
+        .date,
+        .count {
+            width: 25%;
+        }
+
+        .content_row {
+            display: flex;
+            flex-direction: row;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .content_row > div {
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-<div th:replace="~{/admin/header.html}"></div>
+<div th:replace="~{admin/header.html}"></div>
 
 <main id="main" class="main">
 
@@ -59,28 +109,23 @@
                     <div class="col-12">
                         <div class="card top-selling overflow-auto">
                             <div class="card-body pb-0">
-                                <h5 class="card-title"></h5>
-                                <table class="table table-borderless">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">아이디</th>
-                                        <th scope="col">이메일</th>
-                                        <th scope="col">닉네임</th>
-                                        <th scope="col">등록일</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="dto:${rList}">
-                                        <td class="userId">[[${dto.userId}]]</td>
-                                        <td>[[${dto.email}]]</td>
-                                        <td>[[${dto.nickname}]]</td>
-                                        <td>[[${dto.regDt}]]</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div class="board_list">
+                                    <div class="top">
+                                        <div class="title">아이디</div>
+                                        <div class="writer">이메일</div>
+                                        <div class="date">닉네임</div>
+                                        <div class="count">등록일</div>
+                                    </div>
+                                    <div th:each="dto:${rList}" class="content_row">
+                                        <div class="userId">[[${dto.userId}]]</div>
+                                        <div class="writer">[[${dto.email}]]</div>
+                                        <div class="date">[[${dto.nickname}]]</div>
+                                        <div class="count">[[${dto.regDt}]]</div>
+                                    </div>
+                                </div>
                                 <div style="display: flex">
                                     <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination">
+                                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
                                             <li class="page-item">
                                                 <a class="page-link" th:href="@{/admin/main?page=1}">&laquo;</a>
                                             </li>
