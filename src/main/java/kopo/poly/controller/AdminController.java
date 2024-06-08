@@ -173,6 +173,31 @@ public class AdminController {
 
         return "admin/userInfo";
     }
+
+    @GetMapping(value = "/userChange")
+    public String userChange(HttpServletRequest request, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".userChange Start!");
+
+        String userId = CmmUtil.nvl((String) request.getParameter("userId"));
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                .orElseGet(HashMap::new);
+
+        UserInfoDTO rDTO = UserInfoDTO.builder(
+        ).userId(String.valueOf(rMap.get("userId"))
+        ).nickname(String.valueOf(rMap.get("nickname"))
+        ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+        ).regDt(String.valueOf(rMap.get("regDt"))
+        ).build();
+
+        log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email() + "/" + rDTO.regDt());
+
+        model.addAttribute("rDTO", rDTO);
+
+        return "admin/userChange";
+    }
     @ResponseBody
     @PostMapping(value = "searchUser")
     public MsgDTO searchUser(HttpServletRequest request) throws Exception {
@@ -227,6 +252,48 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".deleteUser End!");
 
+
+        return dto;
+
+    }
+
+
+
+    @ResponseBody
+    @PostMapping(value = "changeUser")
+    public MsgDTO changeUser(HttpServletRequest request) throws Exception {
+        log.info(this.getClass().getName() + ".changeUser Start!");
+
+        String userId = CmmUtil.nvl(request.getParameter("userId"));
+        String email = CmmUtil.nvl(request.getParameter("email"));
+        String nickname = CmmUtil.nvl(request.getParameter("nickname"));
+
+
+        log.info("userId : " + userId);
+        log.info("email : " + email);
+        log.info("nickname : " + nickname);
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).email(EncryptUtil.encAES128CBC(email)).nickname(nickname).build();
+
+        int res = 0;
+
+        int success = Optional.ofNullable(userInfoService.updateUserInfo(pDTO))
+                .orElse(0);
+
+        String msg ="";
+
+        if(success != 0) {
+
+            msg = "변경시켰습니다";
+
+            res = 1;
+
+        }
+
+        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
+        log.info(dto.toString());
+
+        log.info(this.getClass().getName() + ".changeUser End!");
 
         return dto;
 

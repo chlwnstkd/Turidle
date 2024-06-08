@@ -11,8 +11,10 @@ import java.util.Objects;
 public interface IUserInfoMapper {
 
 
-    List<Map<String, Object>> getUserList() throws Exception;
-    List<Map<String, Object>> getChatList() throws Exception;
+    List<Map<String, Object>> getUserList(UserInfoDTO pDTO) throws Exception;
+    List<Map<String, Object>> getChatList(UserInfoDTO pDTO) throws Exception;
+
+    int getUserCount() throws Exception;
 
 
     //회원 가입하기(회원정보 등록하기)
@@ -39,5 +41,6 @@ public interface IUserInfoMapper {
     int updatePassword(UserInfoDTO pDTO) throws Exception;
     int deleteUser(UserInfoDTO pDTO) throws Exception;
     int updateUserInfo(UserInfoDTO pDTO) throws Exception; // 소비자 정보 수정
+    int getChatCount() throws Exception;
 
 }

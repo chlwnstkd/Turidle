@@ -84,7 +84,26 @@
 
     </style>
 
+
     <script src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (!(userId === null || userId === undefined)) {
+
+                if(userId === "admin") {
+                    alert("이미 로그인 되어있습니다.");
+                    location.href = "/admin/main";
+                }else {
+                    alert("이미 로그인 되어있습니다.");
+                    location.href = "/home";
+                }
+            }
+
+        })
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
             $("#goLogin").on("click", function () {
