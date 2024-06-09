@@ -58,12 +58,24 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
 
 </head>
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
-<div th:replace="/header.html"></div>
+<div th:replace="header.html"></div>
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent"
@@ -92,7 +104,8 @@
                                 <!-- 페이지네이션 영역-->
                                 <div style="display: flex">
                                     <div class="mx-auto" style="padding-left: 5%">
-                                        <ul class="pagination pagination-primary" id="pagination">
+                                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
+
                                             <li class="page-item">
                                                 <a class="page-link" th:href="@{/post/postList?page=1}">&laquo;</a>
                                             </li>

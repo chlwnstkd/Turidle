@@ -15,12 +15,33 @@
     </resultMap>
     
     <!-- 게시판 목록 조회 쿼리 -->
-    <select id="getPostList" resultMap="postResult">
-        SELECT POST_NUMBER, TITLE, READ_COUNT, REG_ID,
-        DATE_FORMAT(POST.REG_DT, '%Y/%m/%d') AS REG_DT, NICKNAME
-        FROM POST
-        INNER JOIN USER_INFO ON USER_ID = REG_ID
-        ORDER BY POST_NUMBER DESC;
+    <select id="getPostList" parameterType="PostDTO" resultMap="postResult">
+        WITH NumberedPosts AS (
+            SELECT
+                POST_NUMBER,
+                TITLE,
+                READ_COUNT,
+                REG_ID,
+                DATE_FORMAT(POST.REG_DT, '%Y/%m/%d') AS REG_DT,
+                NICKNAME,
+                ROW_NUMBER() OVER (ORDER BY POST_NUMBER DESC) AS rownum
+            FROM POST
+                     INNER JOIN USER_INFO ON USER_ID = REG_ID
+        )
+        SELECT
+            POST_NUMBER,
+            TITLE,
+            READ_COUNT,
+            REG_ID,
+            REG_DT,
+            NICKNAME
+        FROM NumberedPosts
+        WHERE rownum BETWEEN #{from} AND #{to};
+
+    </select>
+
+    <select id="getPostCount" resultType="int">
+        SELECT COUNT(*) FROM POST;
     </select>
 
     <!-- 게시글 등록 쿼리 -->

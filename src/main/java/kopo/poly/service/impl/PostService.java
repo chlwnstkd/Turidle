@@ -20,11 +20,19 @@ public class PostService implements IPostService {
 
     /* 게시글 목록 조회 코드 */
     @Override
-    public List<Map<String, Object>> getPostList() throws Exception {
+    public List<Map<String, Object>> getPostList(PostDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".getPostList start!");
 
-        return postMapper.getPostList();
+        return postMapper.getPostList(pDTO);
+    }
+
+    @Override
+    public int getPostCount() throws Exception {
+
+        log.info(this.getClass().getName() + ".getPostCount start!");
+
+        return postMapper.getPostCount();
     }
 
     /* 게시글 정보 조회 코드 */
@@ -44,7 +52,8 @@ public class PostService implements IPostService {
         ).contents(String.valueOf(rMap.get("contents"))
         ).readCount(String.valueOf(rMap.get("readCount"))
         ).regDt(String.valueOf(rMap.get("regDt"))
-        ).regId(String.valueOf(rMap.get("nickname"))
+        ).regId(String.valueOf(rMap.get("regId"))
+        ).nickname(String.valueOf(rMap.get("nickname"))
         ).title(String.valueOf(rMap.get("title"))
         ).build();
 
