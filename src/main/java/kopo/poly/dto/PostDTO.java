@@ -10,6 +10,9 @@ public record PostDTO(
          String contents,
          String readCount,
          String regDt,
-         String regId
+         String regId,
+         String nickname,
+         int from,
+         int to
 ) {
 }

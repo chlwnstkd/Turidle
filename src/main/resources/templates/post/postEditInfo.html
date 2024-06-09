@@ -63,11 +63,11 @@
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
-<div th:replace="/header.html"></div>
+<div th:replace="header.html"></div>
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent"
-             style="height: 93vh; text-align: center; background-image: url(/img/imoji2.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+             style="height: 93vh; text-align: center; background-image: url(/img/imoji3.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
             <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
                  style="width: 100%">
                 <div class="row" style="margin-top: 5%;display: grid">
@@ -248,6 +248,18 @@
 <!-- custom js -->
 <script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+
+        const userId = /*[[${session.SS_USER}]]*/ ''
+
+        if (userId === null || userId === undefined) {
+            alert("로그인 후 이용 가능합니다.");
+            location.href = "/index";
+        }
+
+    })
+</script>
 <script th:inline="javascript">
     // HTML로딩이 완료되고, 실행됨
     $(document).ready(function () {

@@ -39,8 +39,13 @@ public class PostController {
             throws Exception {
         log.info(this.getClass().getName() + ".postList Start!");
 
+        int from = (page-1) * 10 + 1;
 
-        List<Map<String, Object>> pList = postService.getPostList();
+        int to = page * 10;
+
+        PostDTO pDTO = PostDTO.builder().from(from).to(to).build();
+
+        List<Map<String, Object>> pList = postService.getPostList(pDTO);
         if (pList == null) pList = new ArrayList<>();
 
         log.info(pList.toString());
@@ -61,21 +66,7 @@ public class PostController {
         // 페이지당 보여줄 아이템 개수 정의
         int itemsPerPage = 10;
 
-        // 페이지네이션을 위해 전체 아이템 개수 구하기
-        int totalItems = rList.size();
-
-        // 전체 페이지 개수 계산
-        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
-
-        // 현재 페이지에 해당하는 아이템들만 선택하여 rList에 할당
-        int fromIndex = (page - 1) * itemsPerPage;
-        int toIndex = Math.min(fromIndex + itemsPerPage, totalItems);
-
-        log.info(fromIndex + "");
-        log.info(toIndex + "");
-        log.info(itemsPerPage + "");
-
-        rList = rList.subList(fromIndex, toIndex);
+        int totalPages = (int) Math.ceil((double) Optional.ofNullable(postService.getPostCount()).orElse(0) / itemsPerPage);
 
         model.addAttribute("rList", rList);
         model.addAttribute("currentPage", page);
@@ -85,7 +76,7 @@ public class PostController {
 
         log.info(this.getClass().getName() + ".postList End!");
 
-        return "/post/postList";
+        return "post/postList";
     }
 
     // 게시글 등록페이지 이동코드
@@ -95,7 +86,7 @@ public class PostController {
         log.info(this.getClass().getName() + ".postReg Start!");
         log.info(this.getClass().getName() + ".postReg End!");
 
-        return "/post/postReg";
+        return "post/postReg";
     }
 
     // 게시글 등록 로직코드
@@ -134,7 +125,7 @@ public class PostController {
         return  MsgDTO.builder().msg(msg).result(res).build();
     }
 
-    // 게시글 상세보기 코드   찬우형의 보물                                                                                                                                                                                                                   내 이름은 준 상 초이! 탐정이죠
+    // 게시글 상세보기 코드                                                                                                                                                                                                              내 이름은 준 상 초이! 탐정이죠
     // 구현완료(11/13)
     @GetMapping(value = "/postInfo")
     public String postInfo(HttpServletRequest request, ModelMap model,  @RequestParam(name = "page", defaultValue = "1") int page) throws Exception {
@@ -219,7 +210,7 @@ public class PostController {
 
         log.info(this.getClass().getName() + ".postInfo End!");
 
-        return "/post/postInfo";
+        return "post/postInfo";
     }
 
     // 게시글 수정페이지 이동코드
@@ -240,7 +231,7 @@ public class PostController {
 
         log.info(this.getClass().getName() + ".postEditInfo End!");
 
-        return "/post/postEditInfo";
+        return "post/postEditInfo";
     }
 
     // 게시글 수정로직 코드

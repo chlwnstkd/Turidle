@@ -58,6 +58,18 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
 
     <script th:inline="javascript">
 
@@ -197,7 +209,7 @@
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
-<div th:replace="/header.html"></div>
+<div th:replace="header.html"></div>
 <section class="product_description_area" style="margin-top: -150px !important;">
     <div class="container">
         <div class="tab-content" id="myTabContent"
@@ -226,7 +238,7 @@
                                         </dl>
                                         <dl style="display: flex;">
                                             <dt>작성자:</dt>
-                                            <dd name="seq">[[${rDTO.regId}]] &nbsp; | &nbsp;</dd>
+                                            <dd name="seq">[[${rDTO.nickname}]] &nbsp; | &nbsp;</dd>
                                         </dl>
                                         <dl style="display: flex;">
                                             <dt>좋아요:</dt>
@@ -300,7 +312,8 @@
                 <!-- 페이지네이션 영역-->
                 <div style="display: flex; margin-left: auto; margin-right: auto" >
                     <div class="mx-auto">
-                        <ul class="pagination pagination-primary" id="pagination">
+                        <ul class="pagination pagination-primary" id="pagination" th:if="${#lists.size(rList) > 0}">
+
                             <li class="page-item">
                                 <a class="page-link" th:attr="onclick='pageMove(\'' + 1 + '\')'">&laquo;</a>
                             </li>
@@ -501,8 +514,6 @@
 <script src="/assets/js/theme.js"></script>
 <script src="/assets/js/custom.js"></script>
 <script th:inline="javascript">
-    // Controller에서 받은 세션에 저장된 값
-    const ss_id = /*[[${session.SS_USER}]]*/ '';
 
     // 공지사항 게시글 작성자 아이디
     const id = /*[[${rDTO.regId}]]*/ '';
