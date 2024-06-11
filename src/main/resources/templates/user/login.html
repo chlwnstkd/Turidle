@@ -100,6 +100,14 @@
                     return;
                 }
 
+                let h = h_check(f2.userId.value)
+                if( h == -1) // 한글
+                {
+                    alert("ID에 한글이나 특수 문자가 있습니다. \n\nID는  영문,숫자의 조합 입력하십시오. ");
+                    f2.userId.focus();
+                    return;
+                }
+
                 // Ajax 호출해서 회원가입하기
                 $.ajax({
                         url: "/user/getUserIdExists",

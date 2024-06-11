@@ -96,8 +96,8 @@
         </button>
         <div class="collapse navbar-collapse justify-content-between"
                 id="navbarCollapse">
-            <div class="navbar-nav font-weight-bold mx-auto py-0" style="padding-right: 45%" >
-                <a href="/home" class="nav-item nav-link active"> 홈</a>
+            <div class="navbar-nav font-weight-bold mx-auto py-0" style="padding-right: 45%">
+                <a href="/home" class="nav-item nav-link"> 홈</a>
                 <a href="/dict/dictSearch" class="nav-item nav-link">사투리 사전</a>
                 <a href="/trans" class="nav-item nav-link">사투리 번역</a>
                 <a href="/post/postList" class="nav-item nav-link">커뮤니티</a>
@@ -108,3 +108,20 @@
         </div>
     </nav>
 </div>
+
+<script>
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-item.nav-link');
+
+        // 모든 링크에서 active 클래스 제거
+        navLinks.forEach(link => link.classList.remove('active'));
+
+        // 특정 부분이 현재 경로에 포함되어 있는지 확인하고 active 클래스 추가
+        navLinks.forEach(link => {
+            const linkPath = link.getAttribute('href').split('/')[1]; // 앞부분만 추출
+            const currentPathPart = currentPath.split('/')[1]; // 현재 경로의 앞부분만 추출
+            if (currentPathPart && currentPathPart === linkPath) {
+                link.classList.add('active');
+            }
+        });
+</script>

@@ -8,6 +8,7 @@ import kopo.poly.dto.DictDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IBasketService;
+import kopo.poly.service.IDictService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,9 @@ import java.util.Map;
 public class BasketController {
     
     private final IBasketService basketService;
-
+    private final IDictService dictService;
 
     /**
-     *
      * @param model
      * @param page
      * @param session
@@ -150,5 +150,33 @@ public class BasketController {
         }
 
         return MsgDTO.builder().msg(msg).result(res).build();
+    }
+
+    @GetMapping("/basketInfo")
+    public String basketInfo(ModelMap model, HttpServletRequest request)
+            throws Exception {
+        log.info(this.getClass().getName() + ".basketInfo Start!");
+
+        String targetCode = CmmUtil.nvl(request.getParameter("targetCode"));
+        String word = CmmUtil.nvl(request.getParameter("word"));
+
+
+        word = EncryptUtil.decodeString(word);
+
+        log.info(word);
+
+        log.info("targetCode : " + targetCode);
+
+        DictDTO rDTO = dictService.getDictInfo(targetCode);
+
+        rDTO = rDTO.toBuilder().word(word).build();
+
+        log.info(rDTO.toString());
+
+        model.addAttribute("rDTO", rDTO);
+
+        log.info(this.getClass().getName() + ".basketInfo End!");
+
+        return "basket/basketInfo";
     }
 }
