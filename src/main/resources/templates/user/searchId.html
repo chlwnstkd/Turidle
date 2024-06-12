@@ -8,6 +8,24 @@
     <meta content="Free HTML Templates" name="description"/>
     <link href="/css/login.css" rel="stylesheet"/>
     <script src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (!(userId === null || userId === undefined)) {
+
+                if(userId === "admin") {
+                    alert("이미 로그인 되어있습니다.");
+                    location.href = "/admin/main";
+                }else {
+                    alert("이미 로그인 되어있습니다.");
+                    location.href = "/home";
+                }
+            }
+
+        })
+    </script>
     <script type="text/javascript">
 
         // HTML로딩이 완료되고, 실행됨
@@ -16,7 +34,8 @@
             let f1 = document.getElementById("f1");
             let f2 = document.getElementById("f2");
             var emailAuthNumber = "";
-
+            var email = "";
+            let emailCheck = "Y";
 
             $("#btnSearchUserId").on("click", function () {
                 if (f1.nickname1.value === "") {
@@ -29,6 +48,13 @@
                     f1.email1.focus();
                     return;
                 }
+                var regex=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if(!regex.test(f1.email1.value)){
+                    alert("이메일 형식에 맞게 입력하세요.");
+                    return;
+                }
+
+
                 $.ajax({
                         url: "/user/searchUserIdProc",
                         type: "post", // 전송방식은 Post
@@ -68,6 +94,18 @@
                     f2.email.focus();
                     return;
                 }
+                var regex=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if(!regex.test(f2.email.value)){
+                    alert("이메일 형식에 맞게 입력하세요.");
+                    return;
+                }
+
+                if (emailCheck !== "N" || email != f2.email.value) {
+                    alert("이메일 중복 체크 및 중복되지 않은 이메일로 가입 바랍니다.");
+                    f2.email.focus();
+                    return;
+                }
+
                 if (f2.authNumber.value != emailAuthNumber) {
                     alert("이메일 인증번호가 일치하지 않습니다.");
                     f2.authNumber.focus();
@@ -96,6 +134,12 @@
                     f2.email.focus();
                     return;
                 }
+                var regex=/([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if(!regex.test(f2.email.value)){
+                    alert("이메일 형식에 맞게 입력하세요.");
+                    return;
+                }
+
 
                 // Ajax 호출해서 이메일 찾기
                 $.ajax({
@@ -113,9 +157,9 @@
                             } else {
                                 alert("이메일로 인증번호가 발송되었습니다. \n받은 메일의 인증번호를 입력하기 바랍니다.");
                                 emailAuthNumber = json.authNumber;
-
+                                email = f2.email.value;
+                                emailCheck = "N"
                             }
-
                         }
                     }
                 )
