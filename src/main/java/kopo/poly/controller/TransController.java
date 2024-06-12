@@ -17,7 +17,7 @@ public class TransController {
 
         log.info(this.getClass().getName() + ".trans Start!");
 
-        return "/trans/trans";
+        return "trans/trans";
     }
 
 }

@@ -80,6 +80,18 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            const userId = /*[[${session.SS_USER}]]*/ ''
+
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
+
+        })
+    </script>
     <script type="text/javascript">
 
         // HTML로딩이 완료되고, 실행됨
@@ -94,10 +106,16 @@
         })
 
         function doTrans() {
-            document.getElementById("result").value = "방언을 번역하는 중입니다";
             let contents = document.getElementById("contents").value;
             let before = document.getElementById("before").value;
             let after = document.getElementById("after").value;
+            let koreanRegex = /^(?=.*[\u3131-\uD79D])[\u3131-\uD79D\s]+$/;
+
+            if (!koreanRegex.test(contents)) {
+                alert("내용에 한글만 입력해 주세요.");
+                return;
+            }
+            document.getElementById("result").value = "방언을 번역하는 중입니다";
 
             $.ajax({
                 url: "/clova/prompt",
@@ -129,7 +147,7 @@
 
 <body style=" background: #ebecf0;">
 <!--================Product Description Area =================-->
-<div th:replace="~{/header.html}"></div>
+<div th:replace="~{header.html}"></div>
 <section class="product_description_area">
     <div class="container">
         <div class="tab-content" id="myTabContent" style="height: 93vh;padding-top: 200px !important;  text-align: center; background-image: url(/img/tranlate.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
