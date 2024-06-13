@@ -88,11 +88,14 @@
                 location.href = "/index";
             }
 
+
+            let word = /*[[${word}]]*/ ''; // Replace with dynamic value
+
             let rList = /*[[${rList}]]*/ '';
             console.log(rList);
 
             console.log(rList);
-            if (rList == "") {
+            if (rList == "" && word != "") {
                 alert("검색하신 단어와 일치하는 단어가 존재하지 않습니다");
                 location.href = "/basket";
             }
@@ -100,7 +103,6 @@
             // Sample values for currentPage and totalPages
             const currentPage = /*[[${currentPage}]]*/ ''; // Replace with dynamic value
             const totalPages = /*[[${totalPages}]]*/ ''; // Replace with dynamic value
-            let word = /*[[${word}]]*/ ''; // Replace with dynamic value
 
             console.log(currentPage)
             console.log(totalPages)
