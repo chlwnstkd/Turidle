@@ -92,8 +92,8 @@
                 // 웹소켓으로부터 받은 데이터를 JSON 구조로 변환하기
                 let data = JSON.parse(msg.data);
                 console.log(data)
-                if (data.name === userName) {
-                    $("#chat").append("<div class='message-wrapper reverse'>" +
+                if (data.userId === roomName) {
+                    $("#chat").append("<div class='message-wrapper'>" +
                         "<div class='message-box-wrapper'>" +
                         "<span style='color: black; font-size: 10pt'><strong>" + data.name + "</strong></span>" +
                         "<div class='message-box'>" +
@@ -103,8 +103,10 @@
                         "</div>" +
                         "</div>")
 
+
                 } else {
-                    $("#chat").append("<div class='message-wrapper'>" +
+
+                    $("#chat").append("<div class='message-wrapper reverse'>" +
                         "<div class='message-box-wrapper'>" +
                         "<span style='color: black; font-size: 10pt'><strong>" + data.name + "</strong></span>" +
                         "<div class='message-box'>" +
