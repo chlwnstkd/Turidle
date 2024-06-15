@@ -100,6 +100,12 @@
                     return;
                 }
 
+                if (calBytes(f2.userId.value) > 200) {
+                    alert("최대 200Bytes까지 입력 가능합니다.");
+                    f2.userId.focus();
+                    return;
+                }
+
                 let h = h_check(f2.userId.value)
                 if( h == -1) // 한글
                 {
@@ -129,8 +135,14 @@
             }
             // 이메일 중복 체크
             function emailExists(f2) {
-                if (f2.email.value === "") {
+                if (f2.email.value === "")  {
                     alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+
+                if (calBytes(f2.email.value) > 4000) {
+                    alert("최대 4000Bytes까지 입력 가능합니다.");
                     f2.email.focus();
                     return;
                 }
@@ -172,6 +184,12 @@
                     return;
                 }
 
+                if (calBytes(f2.userId.value) > 200) {
+                    alert("최대 200Bytes까지 입력 가능합니다.");
+                    f2.userId.focus();
+                    return;
+                }
+
                 if (userIdCheck !== "N" || userId != f2.userId.value) {
                     alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
                     f2.userId.focus();
@@ -192,8 +210,21 @@
                     return;
                 }
 
+                if (calBytes(f2.nickname.value) > 4000) {
+                    alert("최대 4000Bytes까지 입력 가능합니다.");
+                    f2.nickname.focus();
+                    return;
+                }
+
+
+
                 if (f2.pw.value === "") {
                     alert("비밀번호를 입력하세요.");
+                    f2.pw.focus();
+                    return;
+                }
+                if (calBytes(f2.pw.value) > 4000) {
+                    alert("최대 4000Bytes까지 입력 가능합니다.");
                     f2.pw.focus();
                     return;
                 }
@@ -210,8 +241,14 @@
                     return;
                 }
 
-                if (f2.email.value === "" || email != f2.email.value)  {
+                if (f2.email.value === "")  {
                     alert("이메일을 입력하세요.");
+                    f2.email.focus();
+                    return;
+                }
+
+                if (calBytes(f2.email.value) > 4000) {
+                    alert("최대 4000Bytes까지 입력 가능합니다.");
                     f2.email.focus();
                     return;
                 }
@@ -259,6 +296,23 @@
                         }
                     }
                 )
+            }
+
+            //글자 길이 바이트 단위로 체크하기(바이트값 전달)
+            function calBytes(str) {
+                let tcount = 0;
+                let tmpStr = String(str);
+                let strCnt = tmpStr.length;
+                let onechar;
+                for (let i = 0; i < strCnt; i++) {
+                    onechar = tmpStr.charAt(i);
+                    if (escape(onechar).length > 4) {
+                        tcount += 2;
+                    } else {
+                        tcount += 1;
+                    }
+                }
+                return tcount;
             }
             function h_check(Objectname)
             {
