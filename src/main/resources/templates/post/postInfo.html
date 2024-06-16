@@ -88,6 +88,23 @@
             })
         });
 
+
+        //글자 길이 바이트 단위로 체크하기(바이트값 전달)
+        function calBytes(str) {
+            let tcount = 0;
+            let tmpStr = String(str);
+            let strCnt = tmpStr.length;
+            let onechar;
+            for (let i = 0; i < strCnt; i++) {
+                onechar = tmpStr.charAt(i);
+                if (escape(onechar).length > 4) {
+                    tcount += 2;
+                } else {
+                    tcount += 1;
+                }
+            }
+            return tcount;
+        }
         function deleteComment(commentNumber, userId) {
             let postNumber = /*[[${postNumber}]]*/ '';
 
@@ -119,6 +136,7 @@
 
         function updateComment(commentNumber ,userId, contents) {
 
+
             if (ss_id === userId) {
 
                 document.getElementById("comment").value = contents;
@@ -147,6 +165,12 @@
             }
             if (comment === "") {
                 alert("내용을 입력하시기 바랍니다.");
+                return;
+            }
+
+            if (calBytes(comment) > 4000) {
+                alert("최대 4000Bytes까지 입력 가능합니다.");
+                document.getElementById("comment").focus();
                 return;
             }
             if (changeWrite === "c") {
