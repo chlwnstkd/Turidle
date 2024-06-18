@@ -111,6 +111,8 @@
             let after = document.getElementById("after").value;
             let koreanRegex = /^(?=.*[\u3131-\uD79D])[\u3131-\uD79D\s]+$/;
 
+
+
             if (!koreanRegex.test(contents)) {
                 alert("내용에 한글만 입력해 주세요.");
                 return;
