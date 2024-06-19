@@ -36,6 +36,7 @@
     // HTML로딩이 완료되고, 실행됨
     $(document).ready(function () {
 
+
         const userId = /*[[${session.SS_USER}]]*/ ''
 
         if ((userId === null || userId === undefined) || userId !== "admin") {
@@ -52,10 +53,43 @@
 
     })
 
+
+    //글자 길이 바이트 단위로 체크하기(바이트값 전달)
+    function calBytes(str) {
+        let tcount = 0;
+        let tmpStr = String(str);
+        let strCnt = tmpStr.length;
+        let onechar;
+        for (let i = 0; i < strCnt; i++) {
+            onechar = tmpStr.charAt(i);
+            if (escape(onechar).length > 4) {
+                tcount += 2;
+            } else {
+                tcount += 1;
+            }
+        }
+        return tcount;
+    }
+
     // 회원 탈퇴
     function doChange() {
 
         let id = /*[[${rDTO.userId}]]*/ '';
+
+        let f = document.getElementById("f"); // form 태그
+
+
+        if (f.nickname.value === "") {
+            alert("이름을 입력하세요.");
+            f.nickname.focus();
+            return;
+        }
+
+        if (calBytes(f.nickname.value) > 4000) {
+            alert("최대 4000Bytes까지 입력 가능합니다.");
+            f.nickname.focus();
+            return;
+        }
 
         // Ajax 호출해서 회원정보 변경하기
         $.ajax({
