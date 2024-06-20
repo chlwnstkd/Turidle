@@ -44,16 +44,7 @@ public class ClovaController {
         }
 
         log.info(extractedSubstring);
-//        Pattern pattern = Pattern.compile("\"(.*?)\"");
-//        Matcher matcher = pattern.matcher(result);
 
-        // 패턴에 맞는 부분이 있다면 추출하여 반환
-//        if (matcher.find()) {
-//            log.info(matcher.group());
-//            result = matcher.group(1);
-//        } else {
-//            result =  "다시 시도해 주세요"; // 패턴에 맞는 부분이 없을 경우 빈 문자열 반환
-//        }
 
         result =  extractedSubstring.replace("\"", "");
 
