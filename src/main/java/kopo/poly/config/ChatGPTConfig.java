@@ -7,23 +7,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-
-@Configuration
+@Configuration // 스프링 설정 클래스임을 나타내는 어노테이션
 public class ChatGPTConfig {
 
-    @Value("${openai.secret-key}")
+    @Value("${openai.secret-key}") // application.properties 파일에서 openai.secret-key 값을 주입 받음
     private String secretKey;
 
-    @Bean
+    @Bean // RestTemplate 빈을 생성하는 메소드
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        return new RestTemplate(); // RestTemplate 객체를 반환
     }
 
-    @Bean
+    @Bean // HttpHeaders 빈을 생성하는 메소드
     public HttpHeaders httpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(secretKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
+        HttpHeaders headers = new HttpHeaders(); // HttpHeaders 객체 생성
+        headers.setBearerAuth(secretKey); // Bearer 인증 방식으로 secretKey 설정
+        headers.setContentType(MediaType.APPLICATION_JSON); // Content-Type을 JSON으로 설정
+        return headers; // 설정된 HttpHeaders 객체를 반환
     }
 }
