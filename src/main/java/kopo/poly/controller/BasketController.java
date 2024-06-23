@@ -1,12 +1,10 @@
 package kopo.poly.controller;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.BasketDTO;
 import kopo.poly.dto.DictDTO;
 import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IBasketService;
 import kopo.poly.service.IDictService;
 import kopo.poly.util.CmmUtil;
@@ -26,7 +24,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class BasketController {
-    
+
     private final IBasketService basketService;
     private final IDictService dictService;
 
@@ -49,15 +47,14 @@ public class BasketController {
 
         if ((word == null  || word.equals("null")) || word.equals("")) {
             word = "";
-        }else {
+        } else {
             word = EncryptUtil.decodeString(word);
         }
         log.info(word);
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
-        int from = (page-1) * 5 + 1;
-
+        int from = (page - 1) * 5 + 1;
         int to = page * 5;
 
         BasketDTO pDTO = BasketDTO.builder().word(word).userId(userId).from(from).to(to).build();
@@ -68,13 +65,13 @@ public class BasketController {
         List<BasketDTO> rList = new ArrayList<>();
 
         for (Map<String, Object> rMap : pList) {
-            BasketDTO rDTO = BasketDTO.builder(
-            ).userId(String.valueOf(rMap.get("userId"))
-            ).word(String.valueOf(rMap.get("word"))
-            ).targetCode(String.valueOf(rMap.get("targetCode"))
-            ).definition(String.valueOf(rMap.get("definition"))
-            ).pos(String.valueOf(rMap.get("pos"))
-            ).build();
+            BasketDTO rDTO = BasketDTO.builder()
+                    .userId(String.valueOf(rMap.get("userId")))
+                    .word(String.valueOf(rMap.get("word")))
+                    .targetCode(String.valueOf(rMap.get("targetCode")))
+                    .definition(String.valueOf(rMap.get("definition")))
+                    .pos(String.valueOf(rMap.get("pos")))
+                    .build();
 
             rList.add(rDTO);
         }
@@ -101,10 +98,10 @@ public class BasketController {
 
         return "basket/basket";
     }
+
     @ResponseBody
     @PostMapping(value = "/update")
     public MsgDTO update(HttpSession session, HttpServletRequest request) {
-
         log.info(this.getClass().getName() + ".update Start!");
 
         String msg = "";
@@ -123,21 +120,21 @@ public class BasketController {
             log.info("definition : " + definition);
             log.info("pos : " + pos);
 
-            BasketDTO pDTO = BasketDTO.builder(
-            ).userId(userId
-            ).targetCode(targetCode
-            ).word(word
-            ).definition(definition
-            ).pos(pos
-            ).build();
+            BasketDTO pDTO = BasketDTO.builder()
+                    .userId(userId)
+                    .targetCode(targetCode)
+                    .word(word)
+                    .definition(definition)
+                    .pos(pos)
+                    .build();
 
-            if(basketService.getBasket(pDTO) == 1) {
+            if (basketService.getBasket(pDTO) == 1) {
                 basketService.deleteBasket(pDTO);
-                msg = "보관함에서 취소히였습니다";
+                msg = "보관함에서 취소되었습니다";
                 res = 1;
             } else {
                 basketService.insertBasket(pDTO);
-                msg = " 보관함에 추가되었습니다";
+                msg = "보관함에 추가되었습니다";
                 res = 1;
             }
 
@@ -160,15 +157,12 @@ public class BasketController {
         String targetCode = CmmUtil.nvl(request.getParameter("targetCode"));
         String word = CmmUtil.nvl(request.getParameter("word"));
 
-
         word = EncryptUtil.decodeString(word);
 
         log.info(word);
-
         log.info("targetCode : " + targetCode);
 
         DictDTO rDTO = dictService.getDictInfo(targetCode);
-
         rDTO = rDTO.toBuilder().word(word).build();
 
         log.info(rDTO.toString());
