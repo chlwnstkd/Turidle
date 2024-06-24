@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--suppress ALL -->
 <mapper namespace="kopo.poly.persistance.mapper.IBasketMapper">
 
+    <!-- 결과 매핑 설정: BASKET 테이블의 컬럼과 Java의 HashMap 객체 속성을 매핑 -->
     <resultMap id="basketResult" type="java.util.HashMap">
         <id column="TARGET_CODE" property="targetCode"/>
         <result column="TARGET_CODE" property="targetCode"/>
@@ -12,27 +14,28 @@
         <result column="POS" property="pos"/>
     </resultMap>
 
-    <!-- 보관함 정보 조회 쿼리 -->
+    <!-- 보관함 정보 조회 쿼리: 특정 사용자와 타겟 코드에 대한 레코드 개수 조회 -->
     <select id="getBasket" parameterType="BasketDTO" resultType="int">
         SELECT COUNT(*) FROM BASKET
         WHERE USER_ID = #{userId}
-        AND TARGET_CODE = #{targetCode}
+          AND TARGET_CODE = #{targetCode}
     </select>
 
+    <!-- 사용자 ID와 단어가 포함된 레코드 개수 조회 쿼리 -->
     <select id="getBasketCount" resultType="int">
         SELECT COUNT(*) FROM BASKET
         WHERE USER_ID = #{userId}
-        AND   WORD like CONCAT('%',#{word},'%')
+          AND   WORD like CONCAT('%',#{word},'%')
     </select>
 
-    <!-- 보관함 목록 조회 쿼리 -->
+    <!-- 보관함 목록 조회 쿼리: 특정 사용자 ID와 단어에 대한 페이징 처리된 레코드 조회 -->
     <select id="getBasketList" parameterType="BasketDTO" resultMap="basketResult">
         SELECT TARGET_CODE, USER_ID, WORD, DEFINITION, POS
         FROM (
                  WITH NumberedRows AS (
                      SELECT
                          ROW_NUMBER() OVER (ORDER BY TARGET_CODE DESC) AS rownum,
-                         TARGET_CODE,
+                             TARGET_CODE,
                          USER_ID,
                          WORD,
                          DEFINITION,
@@ -40,7 +43,7 @@
                      FROM
                          BASKET
                      WHERE USER_ID = #{userId}
-                     AND WORD like CONCAT('%',#{word},'%')
+                       AND WORD like CONCAT('%',#{word},'%')
                  )
                  SELECT
                      rownum,
@@ -59,17 +62,16 @@
 
     </select>
 
-
-    <!-- 보관함 정보 삽입 쿼리 -->
+    <!-- 보관함 정보 삽입 쿼리: 새로운 레코드를 BASKET 테이블에 삽입 -->
     <insert id="insertBasket" parameterType="BasketDTO">
         INSERT INTO BASKET
         VALUES (#{userId}, #{targetCode}, #{pos}, #{word}, #{definition})
     </insert>
 
-    <!-- 보관함 정보 삭제 쿼리 -->
+    <!-- 보관함 정보 삭제 쿼리: 특정 사용자 ID와 타겟 코드에 대한 레코드를 삭제 -->
     <delete id="deleteBasket" parameterType="BasketDTO">
         DELETE FROM BASKET
         WHERE TARGET_CODE = #{targetCode}
-        AND   USER_ID = #{userId}
+          AND   USER_ID = #{userId}
     </delete>
 </mapper>
