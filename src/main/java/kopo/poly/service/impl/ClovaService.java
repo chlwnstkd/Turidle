@@ -20,27 +20,28 @@ import java.util.List;
 @Service
 public class ClovaService implements IClovaService {
 
+    // Clova API 클라이언트 의존성 주입
     private final IClovaApiService clovaApiClient;
 
     public String prompt(String text) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper(); // JSON 객체 생성 도구
 
-        // Create the system message JSON object
+        // 시스템 메시지 JSON 객체 생성
         ObjectNode systemMessage = mapper.createObjectNode();
         systemMessage.put("role", "system");
         systemMessage.put("content", "");
 
-        // Create the user message JSON object
+        // 사용자 메시지 JSON 객체 생성
         ObjectNode userMessage = mapper.createObjectNode();
         userMessage.put("role", "user");
         userMessage.put("content", text);
 
-        // Create the messages JSON array
+        // 메시지 JSON 배열 생성
         ArrayNode messages = mapper.createArrayNode();
         messages.add(systemMessage);
         messages.add(userMessage);
 
-        // Create the main request data JSON object
+        // 메인 요청 데이터 JSON 객체 생성
         ObjectNode requestData = mapper.createObjectNode();
         requestData.set("messages", messages);
         requestData.put("topP", 0.8);
@@ -48,27 +49,30 @@ public class ClovaService implements IClovaService {
         requestData.put("maxTokens", 256);
         requestData.put("temperature", 0.5);
         requestData.put("repeatPenalty", 5.0);
-        requestData.set("stopBefore", mapper.createArrayNode()); // Empty array
+        requestData.set("stopBefore", mapper.createArrayNode()); // 빈 배열
         requestData.put("includeAiFilters", true);
         requestData.put("seed", 0);
 
-        // Call the Feign client method
+        // Feign 클라이언트 메서드 호출
         List<String> resultList = clovaApiClient.prompt(requestData);
 
+        // 결과 로그 출력
         resultList.forEach(str -> log.info("resultList : " + str));
 
-        // Assuming resultList contains the responses in order
-        // Handle the responses as needed
+        // resultList가 응답을 순서대로 포함한다고 가정
+        // 필요한 대로 응답 처리
         if (!resultList.isEmpty()) {
-            // For example, extract the last response
-            String lastResponse = resultList.get(resultList.size() - 6);
+            // 예를 들어, 마지막 응답 추출
+            String lastResponse = resultList.get(resultList.size() - 6); // -1이 아닌 -6으로 변경된 이유는 확인 필요
             Gson gson = new Gson();
 
+            // JSON 문자열을 ResultData 객체로 변환
             ResultData resultData = gson.fromJson(lastResponse.substring(lastResponse.indexOf("{")), ResultData.class);
 
+            // 응답 메시지 내용 반환
             return resultData.getMessage().getContent();
         } else {
-            throw new IOException("Empty response from API");
+            throw new IOException("API로부터 빈 응답을 받았습니다.");
         }
     }
 }
