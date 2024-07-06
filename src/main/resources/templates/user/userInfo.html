@@ -12,29 +12,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
-   <script th:inline="javascript">
-       let userId = /*[[${session.SS_USER}]]*/ '';
-
-       console.log(userId)
-
-       if(userId === null) {
-           alert("로그인 후 이용 가능합니다")
-           location.href="/user/login";
-       }
-   </script>
-    <script type="text/javascript">
-
-        // HTML로딩이 완료되고, 실행됨
+    <script th:inline="javascript">
         $(document).ready(function () {
 
+            const userId = /*[[${session.SS_USER}]]*/ '';
 
+            if (userId === null || userId === undefined) {
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/index";
+            }
             // 회원정보 수정 페이지
             $("#btnUpdate").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
                 location.href = "/user/userInfoUpdate";
             })
             $("#btnPw").on("click", function () {
                 location.href = "/user/newPassword";
-
             })
 
 
@@ -43,8 +35,26 @@
 
             })
 
+            $("#btnLogout").on("click", function () {
+                logout()
+
+            })
         })
 
+        function logout() {
+            $.ajax({
+                url: "/user/logout",
+                type: "POST",
+                success: function (json) {
+                    if (json.result === 1) {
+                        location.href = "/index";
+                        alert(json.msg)
+                    } else {
+                        alert(json.msg)
+                    }
+                }
+            })
+        }
         // 회원 탈퇴
         function doDelete() {
 
@@ -58,13 +68,11 @@
                     }
                 ).then(
                     function (json) {
-                        alert(json.msg);
                         location.href = "/index"; // 인덱스 페이지로 이동
                     }
                 )
             }
         }
-
     </script>
     <style>
         .divTableCell {
@@ -97,11 +105,11 @@
     </style>
 </head>
 <body>
-<div th:replace="/header.html"></div>
-<form id="f" name="f" style="height: 80vh; text-align: center; background-image: url(/img/userInfo.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
+<div th:replace="header.html"></div>
+<form id="f" name="f" style="height: 80vh; text-align: center; background-image: url(/img/userInfo2.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
     <div style="width: 100vh;margin: auto;">
         <div class="divTable minimalistBlack" style="margin-right: 20%;position: relative;padding-top: 20%;background-color:transparent;">
-            <div class="divTableBody" style="margin-left: 40%;text-align: left">
+            <div class="divTableBody" style="margin-left: 30%;text-align: left">
                 <div class="divTableRow">
                     <div class="divTableCell" style="margin-bottom: 10%;background-color:transparent;">아이디 : [[${rDTO.userId}]]</div>
                 </div>
@@ -113,10 +121,11 @@
                 </div>
             </div>
         </div>
-        <div style="margin: auto;padding-top: 10%; padding-left: 3%">
+        <div style="margin: auto;padding-top: 5%; padding-left: 3%">
             <button id="btnPw" class="form_btn" type="button">비밀번호 변경</button>
             <button id="btnUpdate" class="form_btn" type="button">정보 수정</button>
             <button id="btnDelete" class="form_btn" type="button">회원 탈퇴</button>
+            <button id="btnLogout" class="form_btn" type="button">로그 아웃</button>
         </div>
     </div>
 </form>
