@@ -34,53 +34,97 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".login Start!");
 
-        return "/user/login";
+        return "user/login";
     }
+
     @GetMapping(value = "searchId")
     public String searchId() {
 
         log.info(this.getClass().getName() + ".login Start!");
 
-        return "/user/searchId";
+        return "user/searchId";
     }
 
     @GetMapping(value = "newPassword")
-    public String newPassword() {
+    public String newPassword(HttpSession session) {
 
         log.info(this.getClass().getName() + ".newPassword Start!");
-
-        return "/user/newPassword";
-    }
-
-    @GetMapping(value = "userInfo")
-    public String userInfo(HttpSession session, ModelMap model) throws Exception {
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
         log.info(userId);
 
-        String url = "/user/userInfo";
         if(!userId.equals("")) {
+            session.setAttribute("NEW_PASSWORD", userId);
+
+        }
+
+        return "user/newPassword";
+    }
+
+    @PostMapping(value = "logout")
+    @ResponseBody
+    public MsgDTO logout(HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".logout Start!");
+
+        int res = 0;
+        String msg = "다시 시도해주세요";
+
+        try {
+
+            session.setAttribute("SS_USER", "");
+            session.removeAttribute("SS_USER");
+
+            res = 1;
+            msg = "로그아웃 하였습니다";
+        }catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.toString());
+        }
+        return MsgDTO.builder().result(res).msg(msg).build();
+    }
+
+    @GetMapping(value = "userInfo")
+    public String userInfo(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".userInfo Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+
+        try {
+            log.info(userId);
             UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
             Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
                     .orElseGet(HashMap::new);
 
+            String email = String.valueOf(rMap.get("email"));
+
+            if (email.equals("null")) {
+                email = "";
+            }else {
+                email = EncryptUtil.decAES128CBC(email);
+            }
+
+            log.info("email : "+ email);
+
             UserInfoDTO rDTO = UserInfoDTO.builder(
             ).userId(String.valueOf(rMap.get("userId"))
             ).nickname(String.valueOf(rMap.get("nickname"))
-            ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+            ).email(email
             ).regDt(String.valueOf(rMap.get("regDt"))
             ).build();
 
             log.info(rDTO.userId() + "/" + rDTO.nickname() + "/" + rDTO.email());
 
             model.addAttribute("rDTO", rDTO);
-        }else{
-            url = "/index";
-        }
-        return url;
-    }
 
+        } catch (Exception e) {
+            log.info(e.toString());
+            e.printStackTrace();
+        }
+        return "user/userInfo";
+    }
 
 
     @ResponseBody
@@ -106,6 +150,7 @@ public class UserInfoController {
         return rDTO;
 
     }
+
     @ResponseBody
     @PostMapping(value = "getEmailExists")
     public UserInfoDTO getEmailExists(HttpServletRequest request) throws Exception {
@@ -158,7 +203,7 @@ public class UserInfoController {
         if (res == 1) {
             msg = "회원가입되었습니다";
 
-        } else if(res == 2) {
+        } else if (res == 2) {
             msg = "이미 가입된 아이디 입니다";
         } else {
             msg = "오류로 인해 회원가입에 실패하였습니다";
@@ -191,7 +236,7 @@ public class UserInfoController {
         if (userId.equals("admin") && password.equals("1234")) {
             dto = MsgDTO.builder().result(2).msg("관리자 페이지에 로그인합니다").build();
             session.setAttribute("SS_USER", userId);
-        }else {
+        } else {
             UserInfoDTO pDTO = UserInfoDTO.builder()
                     .userId(userId)
                     .password(EncryptUtil.encHashSHA256(password))
@@ -215,6 +260,7 @@ public class UserInfoController {
         return dto;
 
     }
+
     /**
      * 아아디 찾기 로직 수행
      */
@@ -233,11 +279,13 @@ public class UserInfoController {
 
         UserInfoDTO pDTO = UserInfoDTO.builder().nickname(nickname).email(EncryptUtil.encAES128CBC(email)).build();
 
+        log.info(pDTO.toString());
+
 
         Map<String, Object> rMap = Optional.ofNullable(userInfoService.searchUserIdOrPasswordProc(pDTO))
                 .orElseGet(HashMap::new);
 
-        if(rMap.get("userId") != "") {
+        if (rMap.get("userId") != null) {
 
             String title = "아이디 확인 이메일";
             String contents = rMap.get("nickname") + "님의 아이디는 " + rMap.get("userId") + "입니다";
@@ -288,7 +336,11 @@ public class UserInfoController {
         // userId 값을 넣은 이유는 비밀번호 재설정하는 newPasswordProc 함수에서 사용하기 위함
         session.setAttribute("NEW_PASSWORD", userId);
 
-        if(rMap.get("userId") != "") {
+        String newPassword = CmmUtil.nvl((String) session.getAttribute("NEW_PASSWORD"));
+
+        log.info(newPassword);
+
+        if (rMap.get("userId") != "") {
             res = 1;
         }
 
@@ -298,6 +350,7 @@ public class UserInfoController {
 
         return dto;
     }
+
     /**
      * 비밀번호 찾기 로직 수행
      * <p>
@@ -314,6 +367,8 @@ public class UserInfoController {
 
         // 정상적인 접근인지 체크
         String newPassword = CmmUtil.nvl((String) session.getAttribute("NEW_PASSWORD"));
+
+        log.info(newPassword);
 
         if (newPassword.length() > 0) { //정상 접근
 
@@ -362,9 +417,9 @@ public class UserInfoController {
         int success = Optional.ofNullable(userInfoService.deleteUser(pDTO))
                 .orElse(0);
 
-        String msg ="";
+        String msg = "";
 
-        if(success != 0) {
+        if (success != 0) {
 
             msg = "탈퇴되었습니다";
 
@@ -375,38 +430,46 @@ public class UserInfoController {
 
         }
 
+        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
+        log.info(dto.toString());
+
         log.info(this.getClass().getName() + ".user/deleteUser End!");
 
-        MsgDTO dto = MsgDTO.builder().msg(msg).result(res).build();
 
         return dto;
 
     }
 
     @GetMapping(value = "/userInfoUpdate")
-    public String userInfoUpdate(HttpSession session, ModelMap model) throws Exception{
+    public String userInfoUpdate(HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".userInfoUpdate start!");
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
 
-        log.info(userId);
+        try {
+            log.info(userId);
 
-        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+            UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
-        Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
-                .orElseGet(HashMap::new);
+            Map<String, Object> rMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO))
+                    .orElseGet(HashMap::new);
 
-        UserInfoDTO rDTO = UserInfoDTO.builder(
-        ).userId(String.valueOf(rMap.get("userId"))
-        ).nickname(String.valueOf(rMap.get("nickname"))
-        ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
-        ).build();
+            UserInfoDTO rDTO = UserInfoDTO.builder(
+            ).userId(String.valueOf(rMap.get("userId"))
+            ).nickname(String.valueOf(rMap.get("nickname"))
+            ).email(EncryptUtil.decAES128CBC(String.valueOf(rMap.get("email")))
+            ).build();
 
-        model.addAttribute("rDTO", rDTO);
+            model.addAttribute("rDTO", rDTO);
+        } catch (Exception e) {
+            log.info(e.toString());
+            e.printStackTrace();
+        }
 
         log.info(this.getClass().getName() + ".userInfoUpdate start!");
-        return "/user/userInfoUpdate";
+        return "user/userInfoUpdate";
     }
+
     @ResponseBody
     @PostMapping(value = "loginOut")
     public MsgDTO loginProc(HttpSession session) throws Exception {
@@ -423,7 +486,6 @@ public class UserInfoController {
 
         return dto;
     }
-
 
 
     @ResponseBody
