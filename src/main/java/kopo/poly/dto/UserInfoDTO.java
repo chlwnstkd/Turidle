@@ -15,6 +15,8 @@ public record UserInfoDTO(
         String nickname,
         String regDt,
         String existsYn,
-        int authNumber
+        int authNumber,
+        int from,
+        int to
 ){
 }
