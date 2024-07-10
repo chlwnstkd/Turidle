@@ -2,6 +2,7 @@ package kopo.poly.service.impl;
 
 import kopo.poly.dto.MailDTO;
 import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.persistance.mapper.IChatMapper;
 import kopo.poly.persistance.mapper.IUserInfoMapper;
 import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserInfoService;
@@ -25,15 +26,30 @@ public class UserInfoService implements IUserInfoService {
     private final IUserInfoMapper userInfoMapper;
 
     private final IMailService mailService;
+    private final IChatMapper chatMapper;
 
     @Override
-    public List<Map<String, Object>> getUserList() throws Exception {
+    public List<Map<String, Object>> getUserList(UserInfoDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".getUserList start!");
 
-        return userInfoMapper.getUserList();
+        return userInfoMapper.getUserList(pDTO);
     }
 
+    @Override
+    public int getUserCount() throws Exception {
+
+        log.info(this.getClass().getName() + ".getUserCount start!");
+
+        return userInfoMapper.getUserCount();
+    }
+    @Override
+    public int getChatCount() throws Exception {
+
+        log.info(this.getClass().getName() + ".getUserCount start!");
+
+        return userInfoMapper.getChatCount();
+    }
     @Override
     public String getUserExists(UserInfoDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".getUserIdExists Start!");
@@ -54,8 +70,6 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + ".emailAuth Start!");
 
         String existsYn = userInfoMapper.getEmailExists(pDTO);
-
-
 
         int authNumber = 0;
 
@@ -110,6 +124,7 @@ public class UserInfoService implements IUserInfoService {
 
         if(success > 0) {
             res = 1;
+            chatMapper.deleteChat(pDTO);
         }
 
         return res;
