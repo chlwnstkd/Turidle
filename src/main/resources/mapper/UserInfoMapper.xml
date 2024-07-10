@@ -12,10 +12,37 @@
         <result column="REG_DT" property="regDt"/>
     </resultMap>
 
-    <select id="getUserList" resultMap="userResult">
+
+    <select id="getUserList" parameterType="UserInfoDTO" resultMap="userResult">
         SELECT USER_ID, NICKNAME, EMAIL, REG_DT
-        FROM USER_INFO
-        ORDER BY REG_DT DESC;
+        FROM (
+                 WITH NumberedRows AS (
+                     SELECT
+                         ROW_NUMBER() OVER (ORDER BY REG_DT DESC) AS rownum,
+                             USER_ID,
+                         NICKNAME,
+                         EMAIL,
+                         REG_DT
+                     FROM
+                         USER_INFO
+                 )
+                 SELECT
+                     rownum,
+                     USER_ID,
+                     NICKNAME,
+                     EMAIL,
+                     REG_DT
+                 FROM
+                     NumberedRows
+                 WHERE
+                     rownum BETWEEN #{from} AND #{to}
+             ) AS PagedResults
+        ORDER BY
+            PagedResults.REG_DT DESC;
+    </select>
+
+    <select id="getUserCount" resultType="int">
+        SELECT COUNT(*) FROM USER_INFO;
     </select>
 
     <!--  userId가 존재하는지 확인  -->
@@ -88,14 +115,39 @@
               )
     </insert>
 
-    <select id="getChatList" resultMap="userResult">
-        SELECT UI.USER_ID as USER_ID, UI.NICKNAME as NICKNAME, UI.EMAIL as EMAIL, UI.REG_DT as REG_DT
-        FROM USER_INFO UI
-                 JOIN (
-            SELECT USER_ID, MAX(DATE) AS LAST_CHAT_DATE
-            FROM CHAT
-            GROUP BY USER_ID
-        ) C ON UI.USER_ID = C.USER_ID
-        ORDER BY C.LAST_CHAT_DATE DESC;
+    <select id="getChatList" parameterType="UserInfoDTO" resultMap="userResult">
+        WITH UserChatDates AS (
+            SELECT
+                UI.USER_ID,
+                UI.NICKNAME,
+                UI.EMAIL,
+                UI.REG_DT,
+                MAX(C.DATE) AS LAST_CHAT_DATE
+            FROM USER_INFO UI
+                     RIGHT JOIN CHAT C ON UI.USER_ID = C.USER_ID
+            GROUP BY UI.USER_ID, UI.NICKNAME, UI.EMAIL, UI.REG_DT
+        ),
+             NumberedRows AS (
+                 SELECT
+                     ROW_NUMBER() OVER (ORDER BY LAST_CHAT_DATE DESC) AS rownum,
+                         USER_ID,
+                     NICKNAME,
+                     EMAIL,
+                     REG_DT
+                 FROM UserChatDates
+             )
+        SELECT
+            USER_ID,
+            NICKNAME,
+            EMAIL,
+            REG_DT
+        FROM NumberedRows
+        WHERE rownum BETWEEN #{from} AND #{to}
+        ORDER BY rownum;
     </select>
+    <select id="getChatCount" resultType="int">
+        SELECT COUNT(DISTINCT USER_ID) AS chat_count
+        FROM CHAT;
+    </select>
+
 </mapper>
