@@ -16,20 +16,20 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 
 import java.util.Map;
 
-@Slf4j
-@EnableWebSocket
-@RequiredArgsConstructor
-@Configuration
-public class WebSoketConfig implements WebSocketConfigurer {
+@Slf4j // 로그 사용을 위한 어노테이션
+@EnableWebSocket // 웹소켓을 활성화하는 어노테이션
+@RequiredArgsConstructor // final 필드나 @NonNull 필드에 대한 생성자를 자동으로 생성해주는 롬복 어노테이션
+@Configuration // 스프링 설정 클래스임을 나타내는 어노테이션
+public class WebSoketConfig  implements WebSocketConfigurer {
 
-    private final ChatHandler chatHandler;
+    private final ChatHandler chatHandler; // ChatHandler를 주입받음
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         log.info("WebSocket Execute!!!");
 
         registry.addHandler(chatHandler, "/ws/*/*")
-                .setAllowedOrigins("*")
+                .setAllowedOrigins("*") // 모든 도메인에서의 접근을 허용
                 .addInterceptors(
                         new HttpSessionHandshakeInterceptor() {
 
