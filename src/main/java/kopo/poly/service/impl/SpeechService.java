@@ -15,11 +15,12 @@ import com.google.protobuf.ByteString;
 import javax.sound.sampled.*;
 import java.util.ArrayList;
 
+import kopo.poly.service.ISpeechService;
 import org.springframework.stereotype.Service;
 
 
 @Service // 서비스 클래스
-public class SpeechService {
+public class SpeechService implements ISpeechService {
 
     // 음성 인식을 수행하는 메서드
     public String recognizeSpeech() {
