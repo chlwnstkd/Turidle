@@ -101,7 +101,7 @@
                 doTrans(); // 공지사항 수정하기 실행
             })
             $("#btnStt").on("click", function () {
-                dostt(); // 공지사항 수정하기 실행
+                doStt(); // 공지사항 수정하기 실행
             })
             $("#btnCopy").on("click", function () {
                 doCopy(); // 공지사항 수정하기 실행
@@ -134,6 +134,18 @@
                     console.log(json)
 
                     document.getElementById("result").value = json;
+
+                }
+            })
+        }
+        function doStt() {
+            $.ajax({
+                url: "/trans/recognize",
+                type: "GET",
+                success: function (json) {
+
+                    console.log(json)
+
 
                 }
             })
