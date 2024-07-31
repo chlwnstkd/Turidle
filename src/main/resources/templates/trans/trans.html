@@ -100,10 +100,14 @@
             $("#btnTrans").on("click", function () {
                 doTrans(); // 공지사항 수정하기 실행
             })
+            $("#btnStt").on("click", function () {
+                dostt(); // 공지사항 수정하기 실행
+            })
             $("#btnCopy").on("click", function () {
                 doCopy(); // 공지사항 수정하기 실행
             })
         })
+
 
         function doTrans() {
             let contents = document.getElementById("contents").value;
