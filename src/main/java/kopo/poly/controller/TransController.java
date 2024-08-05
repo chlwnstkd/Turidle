@@ -27,6 +27,8 @@ public class TransController {
 
     @GetMapping("/recognize") // HTTP GET 엔드포인트
     public String recognizeSpeech() throws Exception{
+
+        log.info(this.getClass().getName() + ".recognize Start!");
         // 음성 인식을 수행하고 결과를 반환
         return speechService.recognizeSpeech();
     }
