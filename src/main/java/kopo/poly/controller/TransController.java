@@ -29,8 +29,9 @@ public class TransController {
     public String recognizeSpeech() throws Exception{
 
         log.info(this.getClass().getName() + ".recognize Start!");
-        // 음성 인식을 수행하고 결과를 반환
-        return speechService.recognizeSpeech();
+        // 음성 인식을 수행
+        String result = speechService.recognizeSpeech();
+        return result;
     }
 
 }
