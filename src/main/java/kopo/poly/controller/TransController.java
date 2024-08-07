@@ -1,6 +1,7 @@
 package kopo.poly.controller;
 
 import kopo.poly.service.ISpeechService;
+import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,7 +31,7 @@ public class TransController {
 
         log.info(this.getClass().getName() + ".recognize Start!");
         // 음성 인식을 수행
-        String result = speechService.recognizeSpeech();
+        String result = CmmUtil.nvl(speechService.recognizeSpeech());
         return result;
     }
 
