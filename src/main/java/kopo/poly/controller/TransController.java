@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Optional;
+
 @Slf4j
 @RequestMapping(value = "/trans")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class TransController {
 
         log.info(this.getClass().getName() + ".recognize Start!");
         // 음성 인식을 수행
-        String result = CmmUtil.nvl(speechService.recognizeSpeech());
+        String result = Optional.ofNullable(speechService.recognizeSpeech()).orElse("");
         return result;
     }
 
