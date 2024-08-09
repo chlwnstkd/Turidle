@@ -16,14 +16,17 @@ import javax.sound.sampled.*;
 import java.util.ArrayList;
 
 import kopo.poly.service.ISpeechService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Service // 서비스 클래스
 public class SpeechService implements ISpeechService {
 
     // 음성 인식을 수행하는 메서드
     public String recognizeSpeech() {
+
+        log.info(this.getClass().getName() + ".recognizeSpeech");
         ResponseObserver<StreamingRecognizeResponse> responseObserver = null; // 응답 옵저버
         StringBuilder transcript = new StringBuilder(); // 인식된 텍스트 저장소
 
