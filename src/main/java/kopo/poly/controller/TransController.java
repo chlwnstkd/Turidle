@@ -35,7 +35,6 @@ public class TransController {
 
         // 음성 인식을 수행
         return Optional.ofNullable(speechService.recognizeSpeech()).orElse("");
-        ;
     }
 
 }
