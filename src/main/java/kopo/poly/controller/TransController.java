@@ -32,9 +32,10 @@ public class TransController {
     public String recognizeSpeech() throws Exception{
 
         log.info(this.getClass().getName() + ".recognize Start!");
+
         // 음성 인식을 수행
-        String result = Optional.ofNullable(speechService.recognizeSpeech()).orElse("");
-        return result;
+        return Optional.ofNullable(speechService.recognizeSpeech()).orElse("");
+        ;
     }
 
 }
