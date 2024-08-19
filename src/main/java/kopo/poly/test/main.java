@@ -13,7 +13,7 @@ import java.util.List;
 public class main {
 
     /** Demonstrates using the Speech API to transcribe an audio file. */
-    public static void main(String... args) throws Exception {
+    public static void main(String[] args) throws Exception {
         // Instantiates a client
         try (SpeechClient speechClient = SpeechClient.create()) {
 
