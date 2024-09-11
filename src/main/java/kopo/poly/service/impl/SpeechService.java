@@ -3,120 +3,115 @@ package kopo.poly.service.impl;
 import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
-import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.SpeechClient;
-import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
-import com.google.cloud.speech.v1.StreamingRecognitionConfig;
-import com.google.cloud.speech.v1.StreamingRecognitionResult;
-import com.google.cloud.speech.v1.StreamingRecognizeRequest;
-import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
-
-import javax.sound.sampled.*;
-import java.util.ArrayList;
-
 import kopo.poly.service.ISpeechService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.*;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+
+@Service
 @Slf4j
-@Service // 서비스 클래스
 public class SpeechService implements ISpeechService {
 
-    // 음성 인식을 수행하는 메서드
-    public String recognizeSpeech() {
+    /**
+     * 5초 동안 마이크로폰 스트리밍 음성 인식을 수행합니다.
+     */
+    @Override
+    public String streamingMicRecognize() throws Exception {
+        final StringBuilder transcriptBuilder = new StringBuilder();
+        final CountDownLatch latch = new CountDownLatch(1);
+        ArrayList<com.google.cloud.speech.v1.StreamingRecognizeResponse> responses = new ArrayList<>();
 
-        log.info(this.getClass().getName() + ".recognizeSpeech");
-        ResponseObserver<StreamingRecognizeResponse> responseObserver = null; // 응답 옵저버
-        StringBuilder transcript = new StringBuilder(); // 인식된 텍스트 저장소
+        ResponseObserver<com.google.cloud.speech.v1.StreamingRecognizeResponse> responseObserver = new ResponseObserver<com.google.cloud.speech.v1.StreamingRecognizeResponse>() {
+            public void onStart(StreamController controller) {}
 
-        try (SpeechClient client = SpeechClient.create()) { // SpeechClient 생성
-            responseObserver = new ResponseObserver<StreamingRecognizeResponse>() {
-                ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>(); // 응답 리스트
+            public void onResponse(com.google.cloud.speech.v1.StreamingRecognizeResponse response) {
+                responses.add(response);
+            }
 
-                public void onStart(StreamController controller) {
-                    // 스트림 시작 시 호출되는 메서드
+            public void onComplete() {
+                log.info("onComplete called");
+                for (com.google.cloud.speech.v1.StreamingRecognizeResponse response : responses) {
+                    com.google.cloud.speech.v1.StreamingRecognitionResult result = response.getResultsList().get(0);
+                    com.google.cloud.speech.v1.SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
+                    String transcript = alternative.getTranscript();
+                    transcriptBuilder.append(transcript).append(" ");
                 }
+                log.info("transcriptBuilder : " +transcriptBuilder.toString());
+                latch.countDown(); // onComplete가 끝나면 latch를 카운트다운함
+            }
 
-                public void onResponse(StreamingRecognizeResponse response) {
-                    // 응답 수신 시 호출되는 메서드
-                    responses.add(response); // 응답 리스트에 추가
-                }
+            public void onError(Throwable t) {
+                log.error("Error in response: " + t.toString());
+                latch.countDown(); // 오류 발생 시에도 latch를 카운트다운함
+            }
+        };
 
-                public void onComplete() {
-                    // 스트림 완료 시 호출되는 메서드
-                    for (StreamingRecognizeResponse response : responses) {
-                        StreamingRecognitionResult result = response.getResultsList().get(0); // 첫 번째 결과
-                        SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0); // 첫 번째 대안
-                        transcript.append(alternative.getTranscript()); // 인식된 텍스트 추가
-                        System.out.printf("Transcript : %s\n", alternative.getTranscript()); // 인식된 텍스트 출력
-                    }
-                }
+        try (com.google.cloud.speech.v1.SpeechClient client = com.google.cloud.speech.v1.SpeechClient.create()) {
+            ClientStream<com.google.cloud.speech.v1.StreamingRecognizeRequest> clientStream = client.streamingRecognizeCallable().splitCall(responseObserver);
 
-                public void onError(Throwable t) {
-                    // 오류 발생 시 호출되는 메서드
-                    System.out.println(t); // 오류 메시지 출력
-                }
-            };
-
-            ClientStream<StreamingRecognizeRequest> clientStream = client.streamingRecognizeCallable()
-                    .splitCall(responseObserver); // 스트리밍 인식 클라이언트 스트림
-
-            RecognitionConfig recognitionConfig = RecognitionConfig.newBuilder()
-                    .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16) // 오디오 인코딩
-                    .setLanguageCode("ko-KR") // 언어 코드 (한국어)
-                    .setSampleRateHertz(16000) // 샘플 속도
+            com.google.cloud.speech.v1.RecognitionConfig recognitionConfig = com.google.cloud.speech.v1.RecognitionConfig.newBuilder()
+                    .setEncoding(com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16)
+                    .setLanguageCode("ko-KR")
+                    .setSampleRateHertz(16000)
                     .build();
 
-            StreamingRecognitionConfig streamingRecognitionConfig = StreamingRecognitionConfig.newBuilder()
-                    .setConfig(recognitionConfig) // 인식 구성
+            com.google.cloud.speech.v1.StreamingRecognitionConfig streamingRecognitionConfig = com.google.cloud.speech.v1.StreamingRecognitionConfig.newBuilder()
+                    .setConfig(recognitionConfig)
                     .build();
 
-            StreamingRecognizeRequest request = StreamingRecognizeRequest.newBuilder()
+            com.google.cloud.speech.v1.StreamingRecognizeRequest request = com.google.cloud.speech.v1.StreamingRecognizeRequest.newBuilder()
                     .setStreamingConfig(streamingRecognitionConfig)
-                    .build(); // 첫 번째 요청
+                    .build();
 
-            clientStream.send(request); // 첫 번째 요청 전송
+            clientStream.send(request);
 
-            AudioFormat audioFormat = new AudioFormat(16000, 16, 1, true, false); // 오디오 형식
-            DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat); // 마이크 오디오 스트림
+            AudioFormat audioFormat = new AudioFormat(16000, 16, 1, true, true);
+            DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 
             if (!AudioSystem.isLineSupported(targetInfo)) {
-                // 마이크 지원 여부 확인
-                System.out.println("Microphone not supported"); // 지원되지 않음을 알리는 메시지
-                System.exit(0); // 프로그램 종료
+                log.info("마이크로폰이 지원되지 않습니다.");
+                return "";
             }
 
-            TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo); // 타겟 데이터 라인
-            targetDataLine.open(audioFormat); // 데이터 라인 열기
-            targetDataLine.start(); // 데이터 라인 시작
-            System.out.println("Start speaking"); // 마이크 시작 메시지
+            TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
+            targetDataLine.open(audioFormat);
+            targetDataLine.start();
+            log.info("말씀하세요.");
 
-            long startTime = System.currentTimeMillis(); // 시작 시간
-            AudioInputStream audio = new AudioInputStream(targetDataLine); // 오디오 입력 스트림
+            long startTime = System.currentTimeMillis();
+            AudioInputStream audio = new AudioInputStream(targetDataLine);
+            byte[] data = new byte[6400];
 
             while (true) {
-                // 무한 루프
-                long estimatedTime = System.currentTimeMillis() - startTime; // 경과 시간
-                byte[] data = new byte[6400]; // 오디오 데이터 배열
-                audio.read(data); // 오디오 데이터 읽기
-                if (estimatedTime > 6000) { // 60초 경과 시
-                    System.out.println("Stop speaking."); // 마이크 종료 메시지
-                    targetDataLine.stop(); // 데이터 라인 중지
-                    targetDataLine.close(); // 데이터 라인 닫기
-                    break; // 루프 종료
+                long elapsedTime = System.currentTimeMillis() - startTime;
+                int bytesRead = audio.read(data);
+                if (bytesRead == -1 || elapsedTime > 5000) {
+                    log.info("말씀을 멈추세요.");
+                    break;
                 }
-                request = StreamingRecognizeRequest.newBuilder()
-                        .setAudioContent(ByteString.copyFrom(data))
-                        .build(); // 오디오 콘텐츠 요청
-                clientStream.send(request); // 요청 전송
+
+                com.google.cloud.speech.v1.StreamingRecognizeRequest audioRequest = com.google.cloud.speech.v1.StreamingRecognizeRequest.newBuilder()
+                        .setAudioContent(ByteString.copyFrom(data, 0, bytesRead))
+                        .build();
+                clientStream.send(audioRequest);
             }
+
+            targetDataLine.stop();
+            targetDataLine.close();
+
+            clientStream.closeSend(); // 스트리밍 종료
+
+            // onComplete가 호출될 때까지 대기
+            latch.await();
+
         } catch (Exception e) {
-            // 예외 처리
-            System.out.println(e); // 예외 메시지 출력
+            log.error(e.toString());
         }
 
-        responseObserver.onComplete(); // 완료 이벤트
-        return transcript.toString(); // 인식된 텍스트 반환
+        return transcriptBuilder.toString().trim();
     }
 }

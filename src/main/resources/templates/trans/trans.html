@@ -140,13 +140,16 @@
         }
         function doStt() {
             $.ajax({
-                url: "/trans/recognize",
-                type: "GET",
+                url: "/stt",
+                type: "post",
+                dataType: "text",
                 success: function (json) {
 
-                    console.log(1)
-
                     console.log(json)
+
+
+                    document.getElementById("contents").value = json;
+
 
 
                 }
