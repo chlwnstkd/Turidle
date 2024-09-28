@@ -1,4 +1,4 @@
-package kopo.poly.chat;
+package kopo.poly.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.ChatDTO;
