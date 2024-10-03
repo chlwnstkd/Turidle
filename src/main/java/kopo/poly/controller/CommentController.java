@@ -150,4 +150,86 @@ public class CommentController {
         // 수정 결과 메시지와 상태를 반환
         return MsgDTO.builder().msg(msg).result(res).build();
     }
+
+    /**
+     * 유저 신고 로직
+     * @param session HTTP 세션 객체
+     * @param request HTTP 요청 객체
+     * @return 삭제 결과 메시지를 포함한 MsgDTO 객체
+     */
+    @ResponseBody
+    @PostMapping(value = "/reportUser")
+    public MsgDTO reportUser(HttpSession session, HttpServletRequest request) {
+        log.info(this.getClass().getName() + ".reportUser Start!");
+
+        String msg = "";
+        int res = 0;
+
+        try {
+            // 세션에서 사용자 아이디와 요청 파라미터에서 게시글 번호, 댓글 번호를 가져옴
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+            String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
+            String commentNumber = CmmUtil.nvl(request.getParameter("commentNumber"));
+
+            log.info("userId : " + userId);
+            log.info("commentNumber : " + commentNumber);
+
+            // 댓글 삭제를 위한 DTO 생성
+            CommentDTO pDTO = CommentDTO.builder().commentNumber(commentNumber).userId(userId).postNumber(postNumber).build();
+            commentService.deleteComment(pDTO);
+
+            msg = "신고하였습니다.";
+            res = 1;
+        } catch (Exception e) {
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+        } finally {
+            log.info(this.getClass().getName() + ".reportUser End!");
+        }
+
+        // 삭제 결과 메시지와 상태를 반환
+        return MsgDTO.builder().result(res).msg(msg).build();
+    }
+
+    /**
+     * 유저 숨김 로직
+     * @param session HTTP 세션 객체
+     * @param request HTTP 요청 객체
+     * @return 삭제 결과 메시지를 포함한 MsgDTO 객체
+     */
+    @ResponseBody
+    @PostMapping(value = "/hideUser")
+    public MsgDTO hideUser(HttpSession session, HttpServletRequest request) {
+        log.info(this.getClass().getName() + ".hideUser Start!");
+
+        String msg = "";
+        int res = 0;
+
+        try {
+            // 세션에서 사용자 아이디와 요청 파라미터에서 게시글 번호, 댓글 번호를 가져옴
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+            String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
+            String commentNumber = CmmUtil.nvl(request.getParameter("commentNumber"));
+
+            log.info("userId : " + userId);
+            log.info("commentNumber : " + commentNumber);
+
+            // 댓글 삭제를 위한 DTO 생성
+            CommentDTO pDTO = CommentDTO.builder().commentNumber(commentNumber).userId(userId).postNumber(postNumber).build();
+            commentService.deleteComment(pDTO);
+
+            msg = "숨김/해제 되었습니다.";
+            res = 1;
+        } catch (Exception e) {
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+        } finally {
+            log.info(this.getClass().getName() + ".hideUser End!");
+        }
+
+        // 삭제 결과 메시지와 상태를 반환
+        return MsgDTO.builder().result(res).msg(msg).build();
+    }
 }
