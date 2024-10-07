@@ -3,10 +3,7 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.*;
-import kopo.poly.service.ICommentService;
-import kopo.poly.service.ILikeService;
-import kopo.poly.service.IPostService;
-import kopo.poly.service.IUserInfoService;
+import kopo.poly.service.*;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +28,7 @@ public class PostController {
     private final ILikeService likeService;
     private  final ICommentService commentService;
     private final IUserInfoService userInfoService;
+    private final IHideService hideService;
 
     // GET 방식으로 게시글 목록을 조회하고 페이지 이동을 처리하는 메소드입니다.
     // 페이지 파라미터를 받아와서 해당 페이지의 게시글 목록을 조회하여 모델에 담아 postList.html을 반환합니다.
@@ -137,7 +135,7 @@ public class PostController {
     // 게시글 상세보기 메소드입니다.
     // 게시글 번호와 페이지를 받아와 상세 정보와 댓글을 조회하여 postInfo.html을 반환합니다.
     @GetMapping(value = "/postInfo")
-    public String postInfo(HttpServletRequest request, ModelMap model,  @RequestParam(name = "page", defaultValue = "1") int page) throws Exception {
+    public String postInfo(HttpServletRequest request, ModelMap model, HttpSession session,  @RequestParam(name = "page", defaultValue = "1") int page) throws Exception {
         log.info(this.getClass().getName() + ".postInfo 시작!");
         String postNumber = CmmUtil.nvl(request.getParameter("postNumber"));
 
@@ -189,14 +187,35 @@ public class PostController {
             Map<String, Object> pMap = Optional.ofNullable(userInfoService.getUserInfo(pDTO1))
                     .orElseGet(HashMap::new);
 
+            String hideId = CmmUtil.nvl((String) rMap.get("userId"));
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER"));
+
+            log.info("hideId : " + hideId);
+            log.info("userId : " + userId);
+
+            // 댓글 삭제를 위한 DTO 생성
+            HideDTO pDTO3 = HideDTO.builder().userId(userId).hideId(hideId).build();
+
+
+            int res = hideService.getHide(pDTO3);
+            String contents = CmmUtil.nvl(String.valueOf(rMap.get("contents")));
+            String nickname = CmmUtil.nvl((String) pMap.get("nickname"));
+
+            log.info("res : " + res);
+
+            if (res != 0) {
+                nickname = "숨긴 유저";
+                contents = "숨긴 유저의 댓글입니다";
+            }
+
             // 댓글 정보를 CommentDTO 객체로 생성합니다.
             CommentDTO DTO = CommentDTO.builder(
                     ).commentNumber(String.valueOf(rMap.get("commentNumber")))
-                    .nickname(String.valueOf(pMap.get("nickname")))
-                    .userId(String.valueOf(rMap.get("userId")))
+                    .nickname(nickname)
+                    .userId(hideId)
                     .regDt(String.valueOf(rMap.get("regDt")))
                     .postNumber(String.valueOf(rMap.get("postNumber")))
-                    .contents(String.valueOf(rMap.get("contents")))
+                    .contents(contents)
                     .build();
 
             rList.add(DTO);

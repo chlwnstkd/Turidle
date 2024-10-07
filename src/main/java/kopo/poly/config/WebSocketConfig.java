@@ -1,6 +1,7 @@
 package kopo.poly.config;
 
-import kopo.poly.chat.ChatHandler;
+import kopo.poly.handler.ChatHandler;
+import kopo.poly.handler.SpeechWebSocketHandler;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,10 @@ import java.util.Map;
 @EnableWebSocket // 웹소켓을 활성화하는 어노테이션
 @RequiredArgsConstructor // final 필드나 @NonNull 필드에 대한 생성자를 자동으로 생성해주는 롬복 어노테이션
 @Configuration // 스프링 설정 클래스임을 나타내는 어노테이션
-public class WebSoketConfig  implements WebSocketConfigurer {
+public class WebSocketConfig  implements WebSocketConfigurer {
 
     private final ChatHandler chatHandler; // ChatHandler를 주입받음
+    private final SpeechWebSocketHandler speechWebSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -61,5 +63,7 @@ public class WebSoketConfig  implements WebSocketConfigurer {
                             }
                         }
                 );
+        registry.addHandler(speechWebSocketHandler, "/audio").setAllowedOrigins("*");
+
     }
 }

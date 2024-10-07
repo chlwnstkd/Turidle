@@ -1,34 +1,33 @@
 <!doctype html>
-<html lang="zxx">
+<html lang="ko">
 
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title></title>
+    <title>음성 인식 및 번역 페이지</title>
     <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="icon" href="/assets/images/favicon.png">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <!-- animate CSS -->
+    <!-- Animate CSS -->
     <link rel="stylesheet" href="/assets/css/animate.css">
-    <!-- owl carousel CSS -->
+    <!-- Owl Carousel CSS -->
     <link rel="stylesheet" href="/assets/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/assets/css/lightslider.min.css">
-    <!-- font awesome CSS -->
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="/assets/css/all.css">
-    <!-- flaticon CSS -->
+    <!-- Flaticon CSS -->
     <link rel="stylesheet" href="/assets/css/flaticon.css">
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
-    <!-- font awesome CSS -->
+    <!-- Magnific Popup CSS -->
     <link rel="stylesheet" href="/assets/css/magnific-popup.css">
-    <!-- style CSS -->
+    <!-- Style CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
-    <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
-    <script src="/assets/js/jquery-3.6.0.min.js"></script>
     <!-- Favicon -->
     <link href="/img/favicon.ico" rel="icon"/>
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com"/>
     <link
@@ -44,6 +43,7 @@
     />
     <script src="https://kit.fontawesome.com/cb71939295.js" crossorigin="anonymous"></script>
 
+    <!-- Flaticon Font -->
     <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
 
     <!-- Libraries Stylesheet -->
@@ -52,14 +52,12 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="/css/style.css" rel="stylesheet"/>
+
     <style>
-        button {
-            font-family: "Dongle", sans-serif;
+        button, h2 {
+            font-family: "Dongle", sans-serif !important;
         }
 
-    </style>
-
-    <style>
         input.img-button {
             background: url("/img/zoom.png") !important;
             border: none !important;
@@ -73,49 +71,80 @@
             text-align: center;
         }
 
-
         .content_row > div {
             padding: 8px;
             text-align: center;
         }
-
     </style>
-    <script th:inline="javascript">
+
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/jquery-1.12.1.min.js"></script>
+    <!-- Popper JS -->
+    <script src="/assets/js/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <!-- Easing JS -->
+    <script src="/assets/js/easing.js"></script>
+    <!-- Owl Carousel JS -->
+    <script src="/assets/js/owl.carousel.min.js"></script>
+    <!-- Lightslider JS -->
+    <script src="/assets/js/lightslider.min.js"></script>
+    <!-- Masonry JS -->
+    <script src="/assets/js/masonry.pkgd.js"></script>
+    <!-- Nice Select JS -->
+    <script src="/assets/js/jquery.nice-select.min.js"></script>
+    <!-- Slick JS -->
+    <script src="/assets/js/slick.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="/assets/js/swiper.jquery.js"></script>
+    <!-- CounterUp JS -->
+    <script src="/assets/js/jquery.counterup.min.js"></script>
+    <script src="/assets/js/waypoints.min.js"></script>
+    <!-- Contact JS -->
+    <script src="/assets/js/contact.js"></script>
+    <!-- AjaxChimp JS -->
+    <script src="/assets/js/jquery.ajaxchimp.min.js"></script>
+    <!-- jQuery Form JS -->
+    <script src="/assets/js/jquery.form.js"></script>
+    <!-- jQuery Validate JS -->
+    <script src="/assets/js/jquery.validate.min.js"></script>
+    <!-- Mail Script JS -->
+    <script src="/assets/js/mail-script.js"></script>
+    <!-- Stellar JS -->
+    <script src="/assets/js/stellar.js"></script>
+    <!-- Theme JS -->
+    <script src="/assets/js/theme.js"></script>
+    <!-- Custom JS -->
+    <script src="/assets/js/custom.js"></script>
+
+
+    <script type="text/javascript">
+        // HTML 로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
-            const userId = /*[[${session.SS_USER}]]*/ ''
+            // 사용자 세션 확인 (기존 코드)
+            const userId = /*[[${session.SS_USER}]]*/ '';
 
             if (userId === null || userId === undefined) {
                 alert("로그인 후 이용 가능합니다.");
                 location.href = "/index";
             }
 
-        })
-    </script>
-    <script type="text/javascript">
-
-        // HTML로딩이 완료되고, 실행됨
-        $(document).ready(function () {
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            // 버튼 클릭 시 이벤트 생성 (onclick 이벤트와 동일)
             $("#btnTrans").on("click", function () {
-                doTrans(); // 공지사항 수정하기 실행
-            })
-            $("#btnStt").on("click", function () {
-                doStt(); // 공지사항 수정하기 실행
-            })
+                doTrans();
+            });
             $("#btnCopy").on("click", function () {
-                doCopy(); // 공지사항 수정하기 실행
-            })
-        })
+                doCopy();
+            });
+        });
 
-
+        // 번역 기능 수행 함수
         function doTrans() {
             let contents = document.getElementById("contents").value;
             let before = document.getElementById("before").value;
             let after = document.getElementById("after").value;
             let koreanRegex = /^(?=.*[\u3131-\uD79D])[\u3131-\uD79D\s]+$/;
-
-
 
             if (!koreanRegex.test(contents)) {
                 alert("내용에 한글만 입력해 주세요.");
@@ -126,59 +155,89 @@
             $.ajax({
                 url: "/clova/prompt",
                 type: "POST",
-                data: {contents: contents,
-                        before: before,
-                        after: after},
+                data: {
+                    contents: contents,
+                    before: before,
+                    after: after
+                },
                 success: function (json) {
-
-                    console.log(json)
-
+                    console.log(json);
                     document.getElementById("result").value = json;
-
+                },
+                error: function (xhr, status, error) {
+                    console.error("번역 요청 오류:", error);
+                    alert("번역 요청 중 오류가 발생했습니다.");
+                    document.getElementById("result").value = "";
                 }
-            })
+            });
         }
-        function doStt() {
-            $.ajax({
-                url: "/stt",
-                type: "post",
-                dataType: "text",
-                success: function (json) {
 
-                    console.log(json)
-
-
-                    document.getElementById("contents").value = json;
-
-
-
-                }
-            })
-        }
+        // 결과 복사 함수
         function doCopy() {
-
             let result = document.getElementById("result");
 
             result.select(); // 텍스트 영역 내용 선택
             document.execCommand("copy"); // 복사 명령 실행
-            alert("복사하였습니다 (복사한 단어 : " + result.value + ")");
-
+            alert("복사하였습니다 (복사한 단어: " + result.value + ")");
         }
     </script>
+    <style>
+        /* 모달 배경 */
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* 모달 내용 */
+        .modal-content {
+            position: relative;
+            margin: auto;
+            padding: 20px;
+            width: 300px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* 버튼 스타일 */
+        button {
+            margin: 10px;
+        }
+    </style>
 
 </head>
 
-<body style=" background: #ebecf0;">
-<!--================Product Description Area =================-->
+<body style="background: #ebecf0;">
+<!-- Header (Thymeleaf로 대체) -->
 <div th:replace="~{header.html}"></div>
+<!--<div id="recordingModal" class="modal">-->
+<!--    <div class="modal-content">-->
+<!--        <h2>녹음 중...</h2>-->
+<!--        <p>녹음을 중지하려면 아래 버튼을 클릭하세요.</p>-->
+<!--        <button id="btnStopModal">녹음 정지</button>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!-- Product Description Area -->
 <section class="product_description_area">
     <div class="container">
-        <div class="tab-content" id="myTabContent" style="height: 93vh;padding-top: 200px !important;  text-align: center; background-image: url(/img/tranlate.png);background-repeat : no-repeat; background-size: contain; background-position:center;justify-content : center;">
-            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab" style="margin-top: -5%; width: 100%">
+        <div class="tab-content" id="myTabContent"
+             style="height: 65vh; padding-top: 112px !important; text-align: center; background-image: url(/img/translate.png); background-repeat: no-repeat; background-size: contain; background-position: center; justify-content: center;">
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab"
+                 style="margin-top: -5%; width: 100%">
                 <div class="row" style="margin-top: 5%;">
                     <div class="col-lg-6" style="display: flex;margin-top: 4%;height: 51vh;max-width: 80%">
                         <div class="review_list" style="width: 100%;margin-right: 10%;margin-left: 10%;">
-                            <select name="likeLanguage" id="before" class="pl" style="width: 420px !important; height: 95px !important;outline: none; border: none;font-size: 35px">
+                            <select name="likeLanguage" id="before" class="pl"
+                                    style="width: 420px !important; height: 95px !important;outline: none; border: none;font-size: 35px">
                                 <option value="0" selected="">번역할 지역</option>
                                 <option value="서울 말">표준말</option>
                                 <option value="강원도 말">강원도</option>
@@ -188,17 +247,27 @@
                                 <option value="충청도 말">충청도</option>
                             </select>
                             <div class="review_list" style="width: 100%;margin-right: 10%; height: 45%; margin-top: 3%">
-                                <textarea name="contents" id="contents" placeholder="내용을 입력하세요" style="width: 100%;height: 80%;
+                                <textarea name="contents" id="contents" placeholder="내용을 입력하세요" style="width: 100%;height: 187px;
                                             border: none; outline: none; resize: none; background-color: transparent; font-size: 30px"></textarea>
                                 </textarea>
-                                <button type="button" id="btnTrans" style="width: 100%;height: 95%;border: none;background-color: black;outline: none">음성 인식</button>
-                            </div>
-                            <div class="review_list" style="width: 100%;margin-right: 10%;height: 10%;">
-                                <button type="button" id="btnStt" style="width: 100%;height: 95%;border: none;background-color: transparent;outline: none"></button>
+                                <span id="loading" style="width: 100%;justify-content: center;height: 196px;font-size:30px;display: none;">음성 인식 중...</span>
+
+                                <div style="display: flex; align-items: center; height: 30%">
+                                    <button type="button" id="btnTrans"
+                                            style="width: 80%;height: 100%;font-size:50px;margin-left:15%;border: none;background-color: transparent;outline: none">
+                                        번역하기
+                                    </button>
+
+                                        <button type="button" id="btnStt"
+                                                style="width: 20%;margin-top:3%;height: 100%;border: none;background-color: transparent;outline: none">
+                                            <i class="fa-solid fa-microphone fa-2x"></i></button>
+
+                                </div>
                             </div>
                         </div>
-                        <div class="review_list" style="width: 95%" >
-                            <select name="likeLanguage" id="after" class="pl" style="width: 420px !important; height: 95px !important;outline: none; border: none; font-size: 35px">
+                        <div class="review_list" style="width: 95%">
+                            <select name="likeLanguage" id="after" class="pl"
+                                    style="width: 420px !important; height: 95px !important;outline: none; border: none; font-size: 35px">
                                 <option value="0" selected="">번역될 지역</option>
                                 <option value="표준말">표준말</option>
                                 <option value="강원도방원">강원도</option>
@@ -209,11 +278,15 @@
                             </select>
                             <div class="review_list" style="width: 100%;margin-right: 10%; height: 45%; margin-top: 3%">
                                 <textarea name="contents" id="result" style="width: 100%;height: 95%;
-                                            border: none; outline: none; resize: none; background-color: transparent; font-size: 30px" readonly></textarea>
+                                            border: none; outline: none; resize: none; background-color: transparent; font-size: 30px"
+                                          readonly></textarea>
                                 </textarea>
                             </div>
                             <div class="review_list" style="width: 100%;margin-right: 10%;height: 10%;">
-                                <button type="button" id="btnCopy" style="width: 100%;height: 95%;border: none;background-color: transparent;outline: none"></button>
+                                <button type="button" id="btnCopy"
+                                        style="font-size:50px;margin-left:5%;margin-top: -4%; width: 100%;height: 95%;border: none;background-color: transparent;outline: none">
+                                    복사하기
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -221,37 +294,102 @@
             </div>
         </div>
     </div>
+
 </section>
-<!--================End Product Description Area =================-->
-<script src="/assets/js/jquery-1.12.1.min.js"></script>
-<!-- popper js -->
-<script src="/assets/js/popper.min.js"></script>
-<!-- bootstrap js -->
-
-<script src="/assets/js/bootstrap.min.js"></script>
-<!-- easing js -->
-<!-- swiper js -->
-<script src="/assets/js/lightslider.min.js"></script>
-<!-- swiper js -->
-<script src="/assets/js/masonry.pkgd.js"></script>
-
-<!-- particles js -->
-<script src="/assets/js/owl.carousel.min.js"></script>
-<script src="/assets/js/jquery.nice-select.min.js"></script>
-<!-- slick js -->
-<script src="/assets/js/slick.min.js"></script>
-<script src="/assets/js/swiper.jquery.js"></script>
-<script src="/assets/js/jquery.counterup.min.js"></script>
-<script src="/assets/js/waypoints.min.js"></script>
-<script src="/assets/js/contact.js"></script>
-<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
-<script src="/assets/js/jquery.form.js"></script>
-<script src="/assets/js/jquery.validate.min.js"></script>
-<script src="/assets/js/mail-script.js"></script>
-<script src="/assets/js/stellar.js"></script>
-<!-- custom js -->
-<script src="/assets/js/theme.js"></script>
-<script src="/assets/js/custom.js"></script>
+<!-- End Product Description Area -->
 </body>
+<script>
+    async function getMicrophoneAudioFormat() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioTrack = stream.getAudioTracks()[0];
+
+            // 오디오 트랙의 설정 가져오기
+            const settings = audioTrack.getSettings();
+
+            // 필요한 정보 추출
+            const sampleRate = settings.sampleRate; // 샘플 레이트
+            const channels = settings.channelCount; // 채널 수
+            const sampleSizeInBits = settings.sampleSize; // LINEAR16 형식의 비트 크기
+            const signed = true; // LINEAR16은 signed format
+            const bigEndian = false; // LINEAR16은 little-endian
+
+            console.log('오디오 포맷 정보:', settings);
+            console.log('샘플 레이트:', sampleRate);
+            console.log('샘플 비트 크기:', sampleSizeInBits);
+            console.log('채널 수:', channels);
+            console.log('signed:', signed);
+            console.log('bigEndian:', bigEndian);
+
+            return {
+                sampleRate: sampleRate,
+                sampleSizeInBits: sampleSizeInBits,
+                channels: channels,
+                signed: signed,
+                bigEndian: bigEndian
+            };
+
+        } catch (error) {
+            console.error('마이크 접근 오류:', error);
+        }
+    }
+
+    // 마이크 연결 상태 확인 함수
+    function checkMicrophoneAvailability() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            alert("마이크 사용이 지원되지 않는 브라우저입니다.");
+            return;
+        }
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(function (devices) {
+                const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+                if (audioInputDevices.length === 0) {
+                    alert("마이크가 연결되어 있지 않습니다. 마이크를 연결한 후 다시 시도해 주세요.");
+                    return;
+                } else {
+                    console.log("마이크가 연결되어 있습니다.");
+                    startRecording();
+                }
+            })
+            .catch(function (err) {
+                console.error('장치 열거 중 오류 발생:', err);
+                alert("마이크 상태를 확인하는 중 오류가 발생했습니다.");
+                return;
+            });
+    }
+
+    // 함수 호출
+    async function startRecording() {
+        // 비동기적으로 오디오 포맷 데이터를 가져옴
+        const audioFormat = await getMicrophoneAudioFormat();
+
+        console.log(audioFormat); // 오디오 포맷 객체 출력
+
+        $.ajax({
+            url: "/stt",
+            type: "post",
+            contentType: 'application/json', // JSON 형식으로 전송
+            data: JSON.stringify(audioFormat), // JSON 문자열로 변환하여 전송
+            dataType: "text",
+            success: function (json) {
+                console.log(json);
+                document.getElementById("contents").value = json;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('AJAX 오류 발생:', textStatus, errorThrown);
+            }
+        });
+    }
+
+    // 버튼 클릭 시 이벤트 처리
+    $(document).ready(function () {
+        $("#btnStt").on("click", function () {
+            checkMicrophoneAvailability();
+        });
+    });
+</script>
+
+
 
 </html>

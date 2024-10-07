@@ -16,9 +16,6 @@ import java.util.Optional;
 @Controller
 public class TransController {
 
-    // SpeechService 주입
-    private final ISpeechService speechService;
-
     @GetMapping(value = "")
     public String trans() {
 

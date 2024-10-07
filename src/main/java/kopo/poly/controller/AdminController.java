@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.PostDTO;
+import kopo.poly.dto.ReportDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IChatService;
+import kopo.poly.service.IReportService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
@@ -26,6 +28,7 @@ public class AdminController {
     // IUserInfoService와 IChatService 인터페이스를 주입 받음
     private final IUserInfoService userInfoService;
     private final IChatService chatService;
+    private final IReportService reportService;
 
     // "/admin/main" URL에 대한 GET 요청을 처리하는 메서드
     @GetMapping(value = "/main")
@@ -132,6 +135,8 @@ public class AdminController {
         // 뷰 이름 반환
         return "admin/chatList";
     }
+
+
 
     // "/admin/chatroom" URL에 대한 GET 요청을 처리하는 메서드
     @GetMapping(value = "/chatroom")
@@ -321,5 +326,59 @@ public class AdminController {
         log.info(this.getClass().getName() + ".changeUser End!");
 
         return dto;
+    }
+
+    @GetMapping(value = "/reportList")
+    public String reportList(ModelMap model, @RequestParam(defaultValue = "1") int page)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".reportList Start!");
+
+        // 페이지 계산을 위한 변수 설정
+        int from = (page - 1) * 10 + 1;
+        int to = page * 10;
+
+        // UserInfoDTO 객체 생성
+        ReportDTO pDTO = ReportDTO.builder().from(from).to(to).build();
+
+        // 사용자 목록을 가져옴
+        List<Map<String, Object>> pList = reportService.getReportList(pDTO);
+        if (pList == null) pList = new ArrayList<>();
+
+        log.info(pList.toString());
+
+        // 사용자 정보를 담을 리스트 생성
+        List<ReportDTO> rList = new ArrayList<>();
+
+        // 사용자 목록을 순회하며 DTO로 변환
+        for (Map<String, Object> rMap : pList) {
+            if (!String.valueOf(rMap.get("userId")).equals("admin")) {
+                ReportDTO rDTO = ReportDTO.builder()
+                        .userId(String.valueOf(rMap.get("userId")))
+                        .reportId(String.valueOf(rMap.get("userId")))
+                        .reason(String.valueOf(rMap.get("reason")))
+                        .regDt(String.valueOf(rMap.get("regDt")))
+                        .build();
+
+                rList.add(rDTO);
+            }
+        }
+
+        // 페이지당 보여줄 아이템 개수 정의
+        int itemsPerPage = 10;
+
+        // 전체 페이지 개수 계산
+        int totalPages = (int) Math.ceil((double) Optional.ofNullable(reportService.getReportCount()).orElse(0) / itemsPerPage);
+
+
+        // 모델에 필요한 데이터를 추가
+        model.addAttribute("rList", rList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        log.info(this.getClass().getName() + ".reportList");
+
+        // 뷰 이름 반환
+        return "admin/reportList";
     }
 }

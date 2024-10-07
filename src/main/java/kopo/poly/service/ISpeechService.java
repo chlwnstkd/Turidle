@@ -6,6 +6,5 @@ import java.io.IOException;
 
 public interface ISpeechService {
 
-    String streamingMicRecognize() throws Exception;
-
+    String streamingMicRecognize(String[] audioFormat) throws Exception;
 }

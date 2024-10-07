@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.persistance.mapper.IReportMapper">
+
+    <resultMap id="reportResult" type="java.util.HashMap">
+        <id column="REPORT_ID" property="reportId"/>
+        <result column="REPORT_ID" property="reportId"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="REASON" property="reason"/>
+        <result column="REG_DT" property="regDt"/>
+    </resultMap>
+    <!-- 신고 목록 조회 쿼리 -->
+    <select id="getReportList" parameterType="ReportDTO" resultMap="reportResult">
+        SELECT REPORT_ID, USER_ID, REASON, REG_DT
+        FROM (
+                 WITH NumberedRows AS (
+                     SELECT
+                         ROW_NUMBER() OVER (ORDER BY REG_DT DESC) AS rownum,
+                             REPORT_ID,
+                         USER_ID,
+                         REASON,
+                         REG_DT
+                     FROM
+                         REPORT_INFO
+                 )
+                 SELECT
+                     rownum,
+                     REPORT_ID,
+                     USER_ID,
+                     REASON,
+                     REG_DT
+                 FROM
+                     NumberedRows
+                 WHERE
+                     rownum BETWEEN #{from} AND #{to}
+             ) AS PagedResults
+        ORDER BY
+            PagedResults.REG_DT DESC;
+    </select>
+    <!-- 신고 정보 조회 쿼리 -->
+    <select id="getReport" parameterType="ReportDTO" resultType="int">
+        SELECT COUNT(*) FROM REPORT_INFO
+        WHERE REPORT_ID = #{reportId}
+        AND   USER_ID = #{userId}
+    </select>
+
+    <!-- 신고 정보 삽입 쿼리 -->
+    <insert id="insertReport" parameterType="ReportDTO">
+        INSERT INTO REPORT_INFO
+        VALUES (#{reportId}, #{userId}, #{reason}, NOW())
+    </insert>
+
+    <select id="getReportCount" resultType="int">
+        SELECT COUNT(*) FROM REPORT_INFO;
+    </select>
+    
+</mapper>

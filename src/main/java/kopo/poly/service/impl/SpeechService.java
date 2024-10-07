@@ -3,73 +3,82 @@ package kopo.poly.service.impl;
 import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
-import com.google.protobuf.ByteString;
 import kopo.poly.service.ISpeechService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
+import com.google.cloud.speech.v1.*;
+import com.google.protobuf.ByteString;
+import com.google.cloud.speech.v1.RecognitionConfig;
+
 
 import javax.sound.sampled.*;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SpeechService implements ISpeechService {
 
-    /**
-     * 5초 동안 마이크로폰 스트리밍 음성 인식을 수행합니다.
-     */
     @Override
-    public String streamingMicRecognize() throws Exception {
+    public String streamingMicRecognize(String[] format) throws Exception {
         final StringBuilder transcriptBuilder = new StringBuilder();
         final CountDownLatch latch = new CountDownLatch(1);
-        ArrayList<com.google.cloud.speech.v1.StreamingRecognizeResponse> responses = new ArrayList<>();
+        ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>();
+        AtomicBoolean isCompleted = new AtomicBoolean(false); // 추가된 부분
 
-        ResponseObserver<com.google.cloud.speech.v1.StreamingRecognizeResponse> responseObserver = new ResponseObserver<com.google.cloud.speech.v1.StreamingRecognizeResponse>() {
+        ResponseObserver<StreamingRecognizeResponse> responseObserver = new ResponseObserver<>() {
             public void onStart(StreamController controller) {}
 
-            public void onResponse(com.google.cloud.speech.v1.StreamingRecognizeResponse response) {
+            public void onResponse(StreamingRecognizeResponse response) {
                 responses.add(response);
             }
 
             public void onComplete() {
-                log.info("onComplete called");
-                for (com.google.cloud.speech.v1.StreamingRecognizeResponse response : responses) {
-                    com.google.cloud.speech.v1.StreamingRecognitionResult result = response.getResultsList().get(0);
-                    com.google.cloud.speech.v1.SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-                    String transcript = alternative.getTranscript();
-                    transcriptBuilder.append(transcript).append(" ");
+                if (!isCompleted.getAndSet(true)) { // 완료 상태를 확인
+                    log.info("onComplete called");
+                    for (StreamingRecognizeResponse response : responses) {
+                        StreamingRecognitionResult result = response.getResultsList().get(0);
+                        SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
+                        String transcript = alternative.getTranscript();
+                        transcriptBuilder.append(transcript).append(" ");
+                    }
+                    log.info("transcriptBuilder : " + transcriptBuilder.toString());
+                    latch.countDown(); // onComplete가 끝나면 latch를 카운트다운함
                 }
-                log.info("transcriptBuilder : " +transcriptBuilder.toString());
-                latch.countDown(); // onComplete가 끝나면 latch를 카운트다운함
             }
 
             public void onError(Throwable t) {
                 log.error("Error in response: " + t.toString());
+                isCompleted.set(true); // 오류 발생 시에도 완료 상태를 설정
                 latch.countDown(); // 오류 발생 시에도 latch를 카운트다운함
             }
         };
 
-        try (com.google.cloud.speech.v1.SpeechClient client = com.google.cloud.speech.v1.SpeechClient.create()) {
-            ClientStream<com.google.cloud.speech.v1.StreamingRecognizeRequest> clientStream = client.streamingRecognizeCallable().splitCall(responseObserver);
+        try (SpeechClient client = SpeechClient.create()) {
+            ClientStream<StreamingRecognizeRequest> clientStream = client.streamingRecognizeCallable().splitCall(responseObserver);
 
-            com.google.cloud.speech.v1.RecognitionConfig recognitionConfig = com.google.cloud.speech.v1.RecognitionConfig.newBuilder()
-                    .setEncoding(com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16)
+            RecognitionConfig recognitionConfig = RecognitionConfig.newBuilder()
+                    .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
                     .setLanguageCode("ko-KR")
-                    .setSampleRateHertz(16000)
+                    .setSampleRateHertz(Integer.parseInt(format[0]))
                     .build();
 
-            com.google.cloud.speech.v1.StreamingRecognitionConfig streamingRecognitionConfig = com.google.cloud.speech.v1.StreamingRecognitionConfig.newBuilder()
+            StreamingRecognitionConfig streamingRecognitionConfig = StreamingRecognitionConfig.newBuilder()
                     .setConfig(recognitionConfig)
                     .build();
 
-            com.google.cloud.speech.v1.StreamingRecognizeRequest request = com.google.cloud.speech.v1.StreamingRecognizeRequest.newBuilder()
+            StreamingRecognizeRequest request = StreamingRecognizeRequest.newBuilder()
                     .setStreamingConfig(streamingRecognitionConfig)
                     .build();
 
             clientStream.send(request);
 
-            AudioFormat audioFormat = new AudioFormat(16000, 16, 1, true, true);
+            AudioFormat audioFormat = new AudioFormat(Float.parseFloat(format[0]), Integer.parseInt(format[1]), Integer.parseInt(format[2]), true, false);
             DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 
             if (!AudioSystem.isLineSupported(targetInfo)) {
@@ -88,16 +97,19 @@ public class SpeechService implements ISpeechService {
 
             while (true) {
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                int bytesRead = audio.read(data);
-                if (bytesRead == -1 || elapsedTime > 5000) {
+                int bytesRead = targetDataLine.read(data, 0, data.length); // 수정된 부분
+
+                if (bytesRead == -1 || elapsedTime > 3000 || isCompleted.get()) { // 3초 이상 지나면 멈추기
                     log.info("말씀을 멈추세요.");
                     break;
                 }
 
-                com.google.cloud.speech.v1.StreamingRecognizeRequest audioRequest = com.google.cloud.speech.v1.StreamingRecognizeRequest.newBuilder()
-                        .setAudioContent(ByteString.copyFrom(data, 0, bytesRead))
-                        .build();
-                clientStream.send(audioRequest);
+                if (bytesRead > 0) {
+                    StreamingRecognizeRequest audioRequest = StreamingRecognizeRequest.newBuilder()
+                            .setAudioContent(ByteString.copyFrom(data, 0, bytesRead))
+                            .build();
+                    clientStream.send(audioRequest);
+                }
             }
 
             targetDataLine.stop();

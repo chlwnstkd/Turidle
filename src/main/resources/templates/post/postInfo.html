@@ -76,6 +76,7 @@
         const ss_id = /*[[${session.SS_USER}]]*/ '';
         var changeWrite = "w";
         var updateNumber = "";
+        var reportUser = "";
 
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
@@ -85,6 +86,9 @@
             });
             $("#btnList").on("click", function () {
                 location.href = "/post/postList";
+            })
+            $("#reportUser").on("click", function () {
+                userReport();
             })
         });
 
@@ -150,6 +154,60 @@
             } else {
                 alert("본인이 작성한 글만 수정 가능합니다.");
             }
+        }
+        function reportCheck(userId) {
+            $.ajax({
+                url: "/comment/reportCheck",
+                type: "POST",
+                dataType: "JSON",
+                data: {userId: userId},
+            }).then(function (json) {
+
+                if (json === 0) {
+                    // 신고 모달을 띄움
+                    $('#reportModal').modal('show');
+                    reportUser = userId;
+                } else {
+                    alert("이미 신고한 사용자입니다.");
+                }
+            });
+        }
+
+        function userReport() {
+            const reason = document.getElementById('reason').value;
+
+            $.ajax({
+                url: "/comment/reportUser",
+                type: "POST",
+                dataType: "JSON",
+                data: {reportUser: reportUser,
+                        reason: reason},
+            }).then(function (json) {
+
+                if (json.result === 0) {
+                    alert("다시 시도해주세요")
+                } else {
+                    alert(json.msg)
+                    $('#reportModal').modal('hide');
+                    location.reload();
+                }
+            });
+        }
+        function hideUser(userId) {
+            $.ajax({
+                url: "/comment/hideUser",
+                type: "POST",
+                dataType: "JSON",
+                data: {hideId: userId}
+            }).then(function (json) {
+
+                if (json.result === 1) {
+                    alert(json.msg)
+                    location.reload();
+                } else {
+                    alert(json.msg)
+                }
+            });
         }
 
         function doSubmit() {
@@ -322,6 +380,10 @@
                                                th:onclick="deleteComment([[${dto.commentNumber}]],[[${dto.userId}]])">삭제하기</a></li>
                                         <li><a class="dropdown-item" style="background-color: #17A2B8"
                                                th:onclick="updateComment([[${dto.commentNumber}]],[[${dto.userId}]],[[${dto.contents}]])">수정하기</a></li>
+                                        <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                               th:onclick="reportCheck([[${dto.userId}]])">유저 신고</a></li>
+                                        <li><a class="dropdown-item" style="background-color: #17A2B8"
+                                               th:onclick="hideUser([[${dto.userId}]])">유저 숨김/해제</a></li>
                                     </ul>
                                 </div>
                                 <div class="d-flex" style="white-space: pre-line;font-size: 24px; float: left"
@@ -381,7 +443,7 @@
         font-size: 120%
     }
 
-    .hangle-h1 {
+    .hangle-h1, h5 {
         font-family: "Dongle", sans-serif;
         font-weight: 400;
         font-style: normal;
@@ -638,6 +700,31 @@
         }
     }
 </script>
-</body>
 
+<!-- 신고 모달 -->
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">유저 신고</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="reason">신고 사유를 입력해주세요:</label>
+                        <textarea class="form-control" id="reason" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="reportUser">신고하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 </html>
