@@ -218,13 +218,14 @@
 <body style="background: #ebecf0;">
 <!-- Header (Thymeleaf로 대체) -->
 <div th:replace="~{header.html}"></div>
-<!--<div id="recordingModal" class="modal">-->
-<!--    <div class="modal-content">-->
-<!--        <h2>녹음 중...</h2>-->
-<!--        <p>녹음을 중지하려면 아래 버튼을 클릭하세요.</p>-->
-<!--        <button id="btnStopModal">녹음 정지</button>-->
-<!--    </div>-->
-<!--</div>-->
+
+<div id="recordingModal" class="modal">
+    <div class="modal-content">
+        <h2>녹음 중...</h2>
+        <p>녹음을 중지하려면 아래 버튼을 클릭하세요.</p>
+        <button id="btnStopModal">녹음 정지</button>
+    </div>
+</div>
 
 <!-- Product Description Area -->
 <section class="product_description_area">
@@ -299,97 +300,82 @@
 <!-- End Product Description Area -->
 </body>
 <script>
-    async function getMicrophoneAudioFormat() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const audioTrack = stream.getAudioTracks()[0];
+    let socket;
+    let mediaRecorder;
+    let audioChunks = [];
 
-            // 오디오 트랙의 설정 가져오기
-            const settings = audioTrack.getSettings();
-
-            // 필요한 정보 추출
-            const sampleRate = settings.sampleRate; // 샘플 레이트
-            const channels = settings.channelCount; // 채널 수
-            const sampleSizeInBits = settings.sampleSize; // LINEAR16 형식의 비트 크기
-            const signed = true; // LINEAR16은 signed format
-            const bigEndian = false; // LINEAR16은 little-endian
-
-            console.log('오디오 포맷 정보:', settings);
-            console.log('샘플 레이트:', sampleRate);
-            console.log('샘플 비트 크기:', sampleSizeInBits);
-            console.log('채널 수:', channels);
-            console.log('signed:', signed);
-            console.log('bigEndian:', bigEndian);
-
-            return {
-                sampleRate: sampleRate,
-                sampleSizeInBits: sampleSizeInBits,
-                channels: channels,
-                signed: signed,
-                bigEndian: bigEndian
-            };
-
-        } catch (error) {
-            console.error('마이크 접근 오류:', error);
-        }
-    }
-
-    // 마이크 연결 상태 확인 함수
-    function checkMicrophoneAvailability() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-            alert("마이크 사용이 지원되지 않는 브라우저입니다.");
-            return;
-        }
-
-        navigator.mediaDevices.enumerateDevices()
-            .then(function (devices) {
-                const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
-                if (audioInputDevices.length === 0) {
-                    alert("마이크가 연결되어 있지 않습니다. 마이크를 연결한 후 다시 시도해 주세요.");
-                    return;
-                } else {
-                    console.log("마이크가 연결되어 있습니다.");
-                    startRecording();
-                }
-            })
-            .catch(function (err) {
-                console.error('장치 열거 중 오류 발생:', err);
-                alert("마이크 상태를 확인하는 중 오류가 발생했습니다.");
-                return;
-            });
-    }
-
-    // 함수 호출
-    async function startRecording() {
-        // 비동기적으로 오디오 포맷 데이터를 가져옴
-        const audioFormat = await getMicrophoneAudioFormat();
-
-        console.log(audioFormat); // 오디오 포맷 객체 출력
-
-        $.ajax({
-            url: "/stt",
-            type: "post",
-            contentType: 'application/json', // JSON 형식으로 전송
-            data: JSON.stringify(audioFormat), // JSON 문자열로 변환하여 전송
-            dataType: "text",
-            success: function (json) {
-                console.log(json);
-                document.getElementById("contents").value = json;
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.error('AJAX 오류 발생:', textStatus, errorThrown);
-            }
-        });
-    }
-
-    // 버튼 클릭 시 이벤트 처리
     $(document).ready(function () {
+        // WebSocket 초기화
+        socket = new WebSocket('wss://' + location.host + '/ws/speech'); // 서버 URL로 변경 필요
+
+        socket.onopen = function () {
+            console.log('WebSocket 연결됨');
+        };
+        socket.onclose = function (event) {
+            console.log('WebSocket 해제됨 코드 :' + event.code + "사유 : " +  event.reason);
+        };
+
+        socket.onmessage = function (event) {
+            const response = event.data;
+
+            console.log(response);
+            document.getElementById("contents").value += response + " ";
+        };
+
         $("#btnStt").on("click", function () {
-            checkMicrophoneAvailability();
+            startRecording();
+        });
+        $("#btnStopModal").on("click", function () {
+            stopRecording();
         });
     });
-</script>
 
+    async function startRecording() {
+        document.getElementById("contents").value = ""; // 서버에서 받은 번역 결과 표시
+
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = []; // 새로운 녹음을 시작할 때 이전 데이터를 초기화
+
+        mediaRecorder.ondataavailable = function (event) {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.start(); // 자동으로 데이터가 제공됨
+        $("#recordingModal").show();
+
+        mediaRecorder.onstop = function () {
+            console.log('녹음 정지');
+            $("#recordingModal").hide(); // 모달창 숨김
+
+            // Blob으로 오디오 조각을 결합
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            sendAudioInChunks(audioBlob); // 오디오 데이터를 청크로 전송
+        };
+
+        console.log('녹음 시작');
+    }
+
+    function stopRecording() {
+        if (mediaRecorder) {
+            mediaRecorder.stop(); // 녹음 중지
+        }
+    }
+
+    function sendAudioInChunks(audioBlob) {
+        const chunkSize = 1048576; // 64KB 청크
+        const totalChunks = Math.ceil(audioBlob.size / chunkSize);
+        let offset = 0;
+
+        for (let i = 0; i < totalChunks; i++) {
+            const slice = audioBlob.slice(offset, offset + chunkSize);
+            socket.send(slice); // 오디오 조각을 WebSocket으로 전송
+            offset += chunkSize; // 다음 청크로 이동
+            console.log(`청크 ${i + 1}/${totalChunks} 전송 완료`);
+        }
+    }
+</script>
 
 
 </html>
