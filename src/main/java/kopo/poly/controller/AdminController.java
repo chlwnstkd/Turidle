@@ -355,7 +355,7 @@ public class AdminController {
             if (!String.valueOf(rMap.get("userId")).equals("admin")) {
                 ReportDTO rDTO = ReportDTO.builder()
                         .userId(String.valueOf(rMap.get("userId")))
-                        .reportId(String.valueOf(rMap.get("userId")))
+                        .reportId(String.valueOf(rMap.get("reportId")))
                         .reason(String.valueOf(rMap.get("reason")))
                         .regDt(String.valueOf(rMap.get("regDt")))
                         .build();
