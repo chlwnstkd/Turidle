@@ -323,15 +323,44 @@
         };
 
         $("#btnStt").on("click", function () {
-            startRecording();
+            checkMicrophoneAvailability();
+
         });
         $("#btnStopModal").on("click", function () {
+
             stopRecording();
         });
     });
 
+    // 마이크 연결 상태 확인 함수
+    function checkMicrophoneAvailability() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            alert("마이크 사용이 지원되지 않는 브라우저입니다.");
+            return;
+        }
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(function (devices) {
+                const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+                if (audioInputDevices.length === 0) {
+                    alert("마이크가 연결되어 있지 않습니다. 마이크를 연결한 후 다시 시도해 주세요.");
+                    return;
+                } else {
+                    console.log("마이크가 연결되어 있습니다.");
+                    startRecording();
+                }
+            })
+            .catch(function (err) {
+                console.error('장치 열거 중 오류 발생:', err);
+                alert("마이크 상태를 확인하는 중 오류가 발생했습니다.");
+                return;
+            });
+    }
+
     async function startRecording() {
-        document.getElementById("contents").value = ""; // 서버에서 받은 번역 결과 표시
+
+
+        document.getElementById("contents").value = "";
 
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
